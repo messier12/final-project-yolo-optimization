@@ -48,7 +48,18 @@
 
 
 \subsection{YOLOv7}
-  \lipsum[1]
+  YOLOv7 merupakan famili YOLO yang dipublikasikan pada tahun 2022.
+  Pada YOLOv7, dilakukan beberapa perubahan untuk meningkatkan akurasi dan kecepatan deteksinya.
+  Perubahan-perubahan tersebut terdapat pada arsitekturnya dan pada \emph{bag-of-freebies}-nya.
+
+  Perubahan arsitektur dilakukan pada \emph{backbone}. YOLOv7 menggunakan \emph{Extended Efficient Layer Aggregation Network} (E-ELAN) sebagai \emph{backbone}.
+  E-ELAN merupakan arsitektur \emph{neural network} yang efisien karena E-ELAN didesain dengan mengontrol \emph{gradient path} terpanjang yang terpendek.
+  Karena efisiensinya, arsitektur E-ELAN ini dapat meningkatkan kecepatan deteksi dan akurasi.
+
+  \emph{Bag-of-freebies} merupakan kumpulan metode peningkatan akurasi yang tidak meningkatkan \emph{cost inferrence} namun dapat meningkatkan \emph{cost training} \parencite{yolov4}. 
+  Pada YOLOv7, ditambahkan beberapa \emph{bag-of-freebies} yang dapat dilatih seperti \emph{re-parameterized convolution} dan \emph{extra auxilary head} di tengah-tengah \emph{neural network}.
+  Selain kedua itu, YOLOv7 juga menambahkan \emph{trainable bag-of-freebies} dari YOLOR seperti EMA, \emph{Implicit Knowledge}, dan \emph{conv-bn topology Batch Normalization}.
+
 \subsection{Rekalkulasi Anchor}
   \lipsum[1]
 \subsection{Augmentasi \emph{Mosaic}}
