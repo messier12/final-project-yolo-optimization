@@ -25,7 +25,9 @@
 % Pengaturan jenis karakter
 \usepackage[utf8]{inputenc}
 
-\usepackage[style=apa, backend=biber]{biblatex}
+\usepackage[style=apa, 
+  backend=biber,
+  citestyle=authoryear-comp]{biblatex}
 \usepackage{enumitem} % Pembuatan list
 \usepackage{lipsum} % Pembuatan template kalimat
 \usepackage{graphicx} % Input gambar
@@ -64,6 +66,10 @@
 \titlespacing{\section}{0ex}{3ex}{1.5ex}
 \titlespacing{\subsection}{0ex}{3ex}{1.5ex}
 \titlespacing{\subsubsection}{0ex}{0.5ex}{0ex}
+
+\setcounter{secnumdepth}{3}
+
+
 
 \counterwithin{figure}{section}
 \counterwithin{table}{section}
@@ -136,12 +142,15 @@
 
   % Konten pendahuluan
   \input{contents/1-pendahuluan.tex}
+  \newpage
 
   % Konten tinjauan pustaka
   \input{contents/2-tinjauan-pustaka.tex}
+  \newpage
 
   % Konten metodologi
   \input{contents/3-metodologi.tex}
+  \newpage
 
   % Konten lainnya
   % \input{contents/4-lainnya.tex}
