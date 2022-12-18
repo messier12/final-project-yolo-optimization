@@ -1,5 +1,8 @@
 \section{Tinjauan Pustaka}
 \subsection{Arsitektur Famili YOLO}
+  Arsitektur famili YOLO pada dasarnya terbagi akan 3 bagian yaitu \emph{head}, \emph{neck}, dan \emph{backbone}.
+  Setiap bagian ini mempunyai fungsi masing-masing.
+  Berikut adalah penjelasan fungsi dan cara kerja dari ketiga bagian tersebut.
   \subsubsection{\emph{Layer Head} YOLO dan \emph{Anchor Box}}
     \begin{figure}[ht]
         \centering
@@ -39,7 +42,7 @@
     \emph{Backbone} dari YOLO merupakan bagian yang mengekstrak fitur dari citra yang diinputkan.
     Hasil ekstraksi fitur ini akan diinputkan pada \emph{neck} yang kemudian akan di\emph{upsampling} olehnya.
     Model-model YOLO dapat menggunakan \emph{feature extractor} dari model-model klasifikasi citra sebagai \emph{backbone}-nya.
-    Sebagai contoh, salah satu varian YOLO, YOLO-Z menggunakan ResNet-50 sebagai \emph{backbone}-nya sedangkan arsitektur YOLO dasarnya, YOLOv5 menggunakan CSP-Darknet \parencite{yoloz}.
+    Sebagai contoh, salah satu varian YOLO, YOLO-Z menggunakan ResNet-50 sebagai \emph{backbone}-nya sedangkan arsitektur YOLO dasarnya, YOLOv5 menggunakan \emph{backbone} YOLOv5v7.0 \parencite{yoloz}.
 
 
 
