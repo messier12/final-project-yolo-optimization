@@ -10,7 +10,7 @@
         \caption{Prediksi \emph{Anchor Box} dan \emph{offset} dari koordinat latis \parencite{yolov3}}
         \label{fig:anchorbox}
     \end{figure}
-    Semenjak YOLO9000, arsitektur famili YOLO yang dipublikasikan setelahnya terus menggunakan \emph{anchor box} untuk melakukan deteksi \parencites{yolov2}{yolov3}{yolov4}{scaledyolov4}{yolov5}{yolor}{yolov7}.
+    Arsitektur famili YOLO yang dipublikasikan setelah YOLOv2 terus menggunakan \emph{anchor box} untuk melakukan deteksi \parencites{yolov2}{yolov3}{yolov4}{scaledyolov4}{yolov5}{yolor}{yolov7}.
     \emph{Anchor boxes} merupakan beberapa \emph{Bounding Box} yang telah terdefinisikan. 
     Arsitektur YOLO akan memprediksi probabilitas \emph{anchor box} berada pada suatu koordinat latis beserta dengan \emph{offset anchor box} tersebut untuk menepatkan \emph{anchor box} pada objek yang dideteksi.
     Penggunaan \emph{anchor box} ini dapat meningkatkan akurasi deteksi karena \emph{neural network} hanya perlu mencari titik tengah objek dan \emph{error} dimensi \emph{boudning box} dengan menggunakan \emph{offset} \parencite{yolov3}.
@@ -32,7 +32,7 @@
 
     \emph{Neck} dari YOLO merupakan \emph{layer-layer} dimana \emph{head} YOLO mengambil fitur untuk dilakukan deteksi \emph{bounding box}.
     Pada YOLOv3 \textcite{yolov3}, arsitektur \emph{neck} dibuat menyerupai \emph{Feature Pyramid Network} (FPN) seperti pada Gambar \ref{fig:yolofpn}. 
-    Pada versi-versi YOLO selanjutnya, bentuk \emph{neck} ini tidak banyak berubah.
+    Pada versi-versi YOLO selanjutnya, bentuk \emph{neck} ini tidak banyak berubah dan pada dasarnya tetap mempertahankan bentuk \emph{pyramid}-nya.
 
     Penaikkan tingkatan \emph{pyramid} dari FPN merupakan \emph{upsampling} dari \emph{feature map} yang dihasilkan \emph{backbone}.
     Output tiap tingkatan pada FPN di \emph{neck} inilah yang diinputkan pada \emph{head} YOLO. 
@@ -48,29 +48,49 @@
 
 
 \subsection{YOLOv7}
-  YOLOv7 merupakan famili YOLO yang dipublikasikan pada tahun 2022.
+  YOLOv7 merupakan pendeteksi objek \emph{real time} dengan skor akurasi tertinggi pada dataset COCO di tahun 2022.
   Pada YOLOv7, dilakukan beberapa perubahan untuk meningkatkan akurasi dan kecepatan deteksinya.
-  Perubahan-perubahan tersebut terdapat pada arsitekturnya dan pada \emph{bag-of-freebies}-nya.
+  Perubahan-perubahan tersebut dilakukan pada arsitekturnya dan pada \emph{bag-of-freebies}-nya.
 
-  Perubahan arsitektur dilakukan pada \emph{backbone}. YOLOv7 menggunakan \emph{Extended Efficient Layer Aggregation Network} (E-ELAN) sebagai \emph{backbone}.
+  Perubahan arsitektur dilakukan pada \emph{backbone}. YOLOv7 menggunakan \emph{Extended Efficient Layer Aggregation Network} (E-ELAN) sebagai \emph{backbone}, berbeda dengan leluhurnya YOLOv4 yang menggunakan CSP-Darknet.
   E-ELAN merupakan arsitektur \emph{neural network} yang efisien karena E-ELAN didesain dengan mengontrol \emph{gradient path} terpanjang yang terpendek.
   Karena efisiensinya, arsitektur E-ELAN ini dapat meningkatkan kecepatan deteksi dan akurasi. \parencite{yolov7}
 
-  \emph{Bag-of-freebies} merupakan kumpulan metode peningkatan akurasi yang tidak meningkatkan \emph{cost inferrence} namun dapat meningkatkan \emph{cost training} \parencite{yolov4}. 
+  \emph{Bag-of-freebies} merupakan kumpulan metode peningkatan akurasi yang tidak meningkatkan \emph{cost inferrence} \parencite{yolov4}. 
   Pada YOLOv7, ditambahkan beberapa \emph{bag-of-freebies} yang dapat dilatih seperti \emph{re-parameterized convolution} dan \emph{extra auxilary head} di tengah-tengah \emph{neural network}.
   Selain kedua itu, YOLOv7 juga menambahkan \emph{trainable bag-of-freebies} dari YOLOR seperti EMA, \emph{Implicit Knowledge}, dan \emph{conv-bn topology Batch Normalization} \parencite{yolov7}.
 
-  Perubahan-perubahan ini membuat YOLOv7 menjadi model pendeteksi objek dengan akurasi tertinggi dari antar model-model deteksi dengan kecepatan deteksi di bawah 30 FPS pada Nvidia V100
 
-\subsection{Rekalkulasi Anchor}
-  \lipsum[1]
-\subsection{Augmentasi \emph{Mosaic}}
-  \lipsum[1]
+\subsection{Rekalkulasi \emph{Anchor}}
+  \emph{Anchor box} dari model-model \emph{pre-trained} YOLO pada umumnya mengoptimisasi \emph{anchor box} modelnya pada dataset COCO.
+  Ukuran \emph{anchor box} yang akan digunakan pada model YOLO dapat dikonfigurasikan agar lebih sesuai dengan dataset yang akan digunakan untuk melatih model YOLO.
+  Penyesuaian ini dapat meningkatkan IoU(\emph{Intersection Over Union}) prediksi model dengan \emph{ground truth} sehingga meningkatkan akurasi.
+
+  Penyesuaian dapat dilakukan dengan cara mengkonfigurasi secara manual tiap ukuran \emph{anchor box} atau dengan menggunakan algoritma \emph{clustering}.
+  Penggunaan algoritma \emph{clustering} akan lebih baik karena setiap ukuran \emph{anchor box}-nya disesuaikan dengan pengelompokan-pengelompokan ukuran \emph{bounding box} natural yang terdapat pada dataset.
+
+\subsection{Augmentasi Mosaik}
+  \begin{figure}[ht]
+    \centering
+    \includegraphics[scale=0.6]{pictures/mosaic-aug.png}
+    \caption{Contoh Augmentasi Data Mosaik \parencite{yolov5}}
+    \label{fig:mosaic}
+  \end{figure}
+
+  Augmentasi mosaik merupakan teknik augmentasi yang baru dikenalkan pada YOLOv4.
+  Teknik augmentasi ini akan memilih 4 gambar dari dataset, memotong gambar-gambar tersebut dan menggabungkannya secara acak pada satu gambar seperti pada Gambar \ref{fig:mosaic}.
+  Hasil dari penggabungan itu membuat gambar terlihat seperti mosaik.
+  Teknik augmentasi ini mampu meningkatkan akurasi model \parencite{yolov4}.
+
 
 \subsection{Penelitian Terkait}
   \subsubsection{YOLO-Z}
+    YOLO-Z merupakan arsitektur famili YOLO yang modifikasi dari YOLOv5 \parencite{yoloz}.
+    Modifikasi-modifikasi yang dilakukan meliputi pergantian \emph{backbone}, \emph{neck}, dan jumlah \emph{anchor}
+    \emph{Backbone} dari YOLOv5r5.0 menjadi DenseNet yang di-\emph{downscale}.
+    \emph{Neck} dari YOLO-Z juga diganti dari PanNet menjadi FPN dan biFPN tergatung pada \emph{scale} YOLO-Z yang digunakan.
+
+    Modifikasi-modifikasi
     \lipsum[2]
   \subsubsection{exYOLO}
-    \lipsum[2]
-  \subsubsection{Penelitian si orang slavic yg menang lomba}
     \lipsum[2]
