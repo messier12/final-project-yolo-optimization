@@ -40,6 +40,9 @@
 \usepackage{multirow} % Pembuatan baris ganda
 \usepackage{tabularx} % Untuk mengatur kolom, seperti grid pada CSS
 \usepackage{wrapfig}
+\usepackage{caption}
+\usepackage{listing}
+\usepackage{algorithmicx}
 
 % Definisi untuk "Hati ini sengaja dikosongkan"
 \patchcmd{\cleardoublepage}{\hbox{}}{
@@ -71,7 +74,7 @@
 
 % Pengaturan daftar isi
 
-\usepackage{tocloft}
+\usepackage[titles]{tocloft}
 \setlength{\cftsecindent}{2em}
 \setlength{\cftsubsecindent}{2em}
 \setlength{\cftbeforechapskip}{1.5ex}
@@ -79,8 +82,8 @@
 \setlength{\cftbeforetoctitleskip}{0cm}
 \setlength{\cftbeforeloftitleskip}{0cm}
 \setlength{\cftbeforelottitleskip}{0cm}
-\renewcommand{\cftsecfont}{\normalfont\bfseries}% membuat judul section pada daftar isi menjadi bold
-\renewcommand{\cftsecpagefont}{\normalfont\bfseries}% membuat nomor section daftar isi menjadi bold
+%\renewcommand{\cftsecfont}{\normalfont\bfseries}% membuat judul section pada daftar isi menjadi bold
+%\renewcommand{\cftsecpagefont}{\normalfont\bfseries}% membuat nomor section daftar isi menjadi bold
 \renewcommand{\cfttoctitlefont}{\hfill\Large\bfseries} % command untuk membuat heading bold dan besar
 \renewcommand{\cftaftertoctitle}{\hfill}
 \renewcommand{\cftloftitlefont}{\hfill\Large\bfseries}
@@ -91,6 +94,7 @@
 
 \counterwithin{figure}{chapter}
 \counterwithin{table}{chapter}
+\counterwithin{section}{chapter}
 
 % Mengganti figure dan table menjadi gambar dan tabel
 \renewcommand{\figurename}{Gambar}
@@ -113,8 +117,8 @@
   \input{cover/cover-outer.tex}
 
   % Sampul Bahasa Inggris
-  \renewcommand\covercontents{cover/cover-content-en.tex}
-  \input{cover/cover-outer.tex}
+  % \renewcommand\covercontents{cover/cover-content-en.tex}
+  % \input{cover/cover-outer.tex}
 
   % Lembar pengesahan
   \input{misc/lembar-pengesahan.tex}
@@ -181,16 +185,5 @@
     \def\chapter*#1{}
     \printbibliography
   \endgroup
-  \chapter{dummy}
-  \chapter{dummy}
-  \chapter{dummy}
-  \chapter{dummy}
-  \chapter{dummy}
-  \chapter{dummy}
-  \chapter{dummy}
-  \chapter{dummy}
-  \chapter{dummy}
-  \chapter{dummy}
-
 
 \end{document}

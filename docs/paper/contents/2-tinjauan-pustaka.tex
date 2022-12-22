@@ -4,7 +4,7 @@
     Arsitektur famili YOLO pada dasarnya terbagi akan 3 bagian yaitu \emph{head}, \emph{neck}, dan \emph{backbone}.
     Setiap bagian ini mempunyai fungsi masing-masing.
     Berikut adalah penjelasan fungsi dan cara kerja dari ketiga bagian tersebut.
-    \subsection{\emph{Layer Head} YOLO dan \emph{Anchor Box}}
+    \subsubsection{\emph{Layer Head} YOLO dan \emph{Anchor Box}}
       \begin{figure}[ht]
           \centering
           \includegraphics[scale=0.4]{pictures/anchorbox.png}
@@ -22,7 +22,7 @@
       Hasil prediksi \emph{Head} YOLO pada suatu tingkatan \emph{upsampling} berupa tensor dengan ukuran $N\times N \times [A\times(4+1+C)]$ dengan $N$ sebagai dimensi hasil \emph{upsampling}-nya, $A$ sebagai jumlah \emph{anchor boxes} untuk \emph{scaling} tersebut, dan $C$ sebagai jumlah kelas prediksi.
       Angka 4 merepresentasikan 4 \emph{offset} $b_x, b_y, b_w, b_h$ seperti pada Gambar \ref{fig:anchorbox} dan angka 1 merepresentasikan \emph{objectness score} dari prediksi \emph{bounding box}.
   
-    \subsection{\emph{Neck} YOLO}
+    \subsubsection{\emph{Neck} YOLO}
   
       \begin{figure}[ht]
           \centering
@@ -39,7 +39,7 @@
       Output tiap tingkatan pada FPN di \emph{neck} inilah yang diinputkan pada \emph{head} YOLO. 
       Melakukan prediksi pada tingkatan \emph{upsampling} yang berbeda-beda dapat membuat \emph{neural network} mendapatkan lebih banyak informasi semantik dan informasi yang lebih detail sehingga dapat lebih akurat dalam mendeteksi objek besar maupun kecil.
   
-    \subsection{\emph{Backbone} YOLO}
+    \subsubsection{\emph{Backbone} YOLO}
       \emph{Backbone} dari YOLO merupakan bagian yang mengekstrak fitur dari citra yang diinputkan.
       Hasil ekstraksi fitur ini akan diinputkan pada \emph{neck} yang kemudian akan di\emph{upsampling} olehnya.
       Model-model YOLO dapat menggunakan \emph{feature extractor} dari model-model klasifikasi citra sebagai \emph{backbone}-nya.
@@ -89,6 +89,8 @@
 
 
 \section{Penelitian Terkait}
+\label{section:relatedwork}
+
   \subsection{YOLO-Z}
     YOLO-Z merupakan arsitektur famili YOLO yang modifikasi dari YOLOv5 \parencite{yoloz}.
     Modifikasi-modifikasi yang dilakukan meliputi pergantian \emph{backbone}, \emph{neck}, dan jumlah \emph{anchor}
