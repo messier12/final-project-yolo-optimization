@@ -23,8 +23,19 @@
 \textbf{Abstrak}
 
 % Isi Abstrak
-Abstrak harus berisi seratus hingga dua ratus kata. \lipsum[1]
+Objek-objek \emph{airborne} merupakan objek-objek yang akan terlihat sangat kecil pada kamera.
+YOLOv7 merupakan model pendeteksi objek \emph{real time state of the art} yang dioptimisasi untuk pendeteksian objek umum.
+Oleh karena itu, untuk mendeteksi objek \emph{airborne} dengan baik, perlu dilakukan modifikasi pada YOLOv7.
+Tujuan dari penelitian ini adalah untuk menemukan solusi modifikasi YOLOv7 yang dapat mengoptimisasi kemampuan pendeteksian objek kecil khususnya objek \emph{airborne}.
+Modifikasi yang dilakukan terhadap YOLOv7 meliputi modifikasi arsitektur dan modifikasi \emph{bag-of-freebies}.
+Modifikasi arsitektur meliputi modifikasi \emph{neck} dan penambahan \emph{layer head}. 
+Modifikasi \emph{bag-of-freebies} meliputi penambahan augmentasi mosaik dan rekalkulasi \emph{anchor} aktif.
+Modifikasi-modifikasi ini akan dikombinasikan dan diuji performanya.
+Modifikasi yang menghasilkan model dengan skor mAP tertinggi pada dataset \emph{airborne} akan dipilih sebagai solusi optimisasi pada penelitian ini.
+
+
+%Abstrak harus berisi seratus hingga dua ratus kata. \lipsum[1]
 
 \vspace{2ex}
 \noindent
-\textbf{Kata Kunci: \emph{Roket, Anti-gravitasi, Meong}}
+\textbf{Kata Kunci: \emph{Deteksi Objek Kecil, YOLOv7, Modifikasi Arsitektur, Modifikasi Bag-of-Freebies, Objek Airborne}}
