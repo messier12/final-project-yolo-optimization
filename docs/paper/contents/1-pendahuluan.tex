@@ -1,5 +1,5 @@
-\section{PENDAHULUAN}
-\subsection{Latar Belakang}
+\chapter{PENDAHULUAN}
+\section{Latar Belakang}
     Seiring berkembangnya teknologi \emph{autonomous vehicles}, terdapat banyak keinginan untuk mengaplikasikan teknologi tersebut di berbagai bidang.
     Salah satu aplikasi teknologi ini di bidang komersil adalah \emph{Amazon Prime Air}.
     \emph{Amazon Prime Air} memanfaatkan \emph{Autonomous Aerial Vehicle}(AAV) untuk melakukan pengantaran barang dari warehouse ke rumah kostumer secara \emph{autonomous} \parencite{prime_air}.
@@ -30,16 +30,16 @@
     Terdapat versi scaled dari YOLOv7 yang memiliki jumlah parameter yang lebih kecil dan dapat diaplikasikan pada device edge computing \parencite{yolov7}.
     Oleh karena itu, YOLOv7 ini cocok untuk digunakan pada AAV di mana dibutuhkan suatu pendeteksi objek yang real-time.
 
-\subsection{Rumusan Masalah}
+\section{Rumusan Masalah}
     YOLOv7 bukan merupakan model deteksi objek umum sehingga YOLOv7 tidak didesain untuk melakukan deteksi objek kecil seperti objek-objek \emph{airborne}.
     Oleh karena itu, dibuat rumusan masalah seperti berikut:
     \begin{enumerate}
         \item Apa yang dapat dilakukan pada YOLOv7 untuk mengoptimisasi kemampuan deteksi objek \emph{airborne}?
     \end{enumerate}
 
-\subsection{Tujuan}
+\section{Tujuan}
     Adapun tujuan dari tugas akhir ini adalah untuk menemukan metode untuk mengoptimisasi kemampuan YOLOv7 mendeteksi objek airborne.
 
-\subsection{Batasan Masalah}
+\section{Batasan Masalah}
     Optimisasi kemampuan deteksi objek kecil hanya akan dilakukan memodifikasi beberapa bagian dari YOLOv7.
     Modifikasi yang akan dilakukan hanya akan meliputi rekalkulasi \emph{anchor}, augmentasi data, penambahan layer \emph{head}, modifikasi \emph{neck}, dan modifikasi \emph{backbone}.

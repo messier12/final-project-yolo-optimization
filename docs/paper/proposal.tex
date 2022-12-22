@@ -59,20 +59,20 @@
 
 % Pengaturan format judul bab
 \usepackage{titlesec}
-\renewcommand{\thesection}{\arabic{section}}
-\titleformat{\chapter}[display]{\bfseries\Large}{BAB \centering\Roman{chapter}}{0ex}{\vspace{0ex}\centering}
+\renewcommand{\thesection}{\thechapter.\arabic{section}}
+\titleformat{\chapter}[hang]{\centering\bfseries\Large}{BAB\ \arabic{chapter}\ }{0ex}{\vspace{0ex}\centering}
 \titleformat*{\section}{\large\bfseries}
 \titleformat*{\subsection}{\normalsize\bfseries}
+\titlespacing{\chapter}{0ex}{6ex}{3ex}
 \titlespacing{\section}{0ex}{3ex}{1.5ex}
 \titlespacing{\subsection}{0ex}{3ex}{1.5ex}
 \titlespacing{\subsubsection}{0ex}{0.5ex}{0ex}
-
-\setcounter{secnumdepth}{3}
+\setcounter{secnumdepth}{3} % Untuk memberi penomoran pada \subsubsection
 
 % Pengaturan daftar isi
 
 \usepackage{tocloft}
-\setlength{\cftsecindent}{0cm}
+\setlength{\cftsecindent}{2em}
 \setlength{\cftsubsecindent}{2em}
 \setlength{\cftbeforechapskip}{1.5ex}
 \setlength{\cftbeforesecskip}{1.5ex}
@@ -89,8 +89,8 @@
 \renewcommand{\cftafterlottitle}{\hfill}
 
 
-\counterwithin{figure}{section}
-\counterwithin{table}{section}
+\counterwithin{figure}{chapter}
+\counterwithin{table}{chapter}
 
 % Mengganti figure dan table menjadi gambar dan tabel
 \renewcommand{\figurename}{Gambar}
@@ -172,7 +172,8 @@
   % \input{contents/4-lainnya.tex}
 
   % Daftar pustaka
-  \section{DAFTAR PUSTAKA}
+  \chapter*{DAFTAR PUSTAKA}
+  \addcontentsline{toc}{chapter}{DAFTAR PUSTAKA}
   \renewcommand\refname{}
   \vspace{2ex}
   \renewcommand{\bibname}{}
@@ -180,16 +181,16 @@
     \def\chapter*#1{}
     \printbibliography
   \endgroup
-  \section{dummy}
-  \section{dummy}
-  \section{dummy}
-  \section{dummy}
-  \section{dummy}
-  \section{dummy}
-  \section{dummy}
-  \section{dummy}
-  \section{dummy}
-  \section{dummy}
+  \chapter{dummy}
+  \chapter{dummy}
+  \chapter{dummy}
+  \chapter{dummy}
+  \chapter{dummy}
+  \chapter{dummy}
+  \chapter{dummy}
+  \chapter{dummy}
+  \chapter{dummy}
+  \chapter{dummy}
 
 
 \end{document}
