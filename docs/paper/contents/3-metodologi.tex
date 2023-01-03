@@ -49,11 +49,12 @@
 
 \section{Kandidat Modifikasi}
 \label{section:modificationcandidates}
-  \subsection{Rekalkulasi \emph{Anchor} Aktif}
-    Yang dimaksud dengan rekalkulasi \emph{anchor} aktif adalah ketika ukuran-ukuran \emph{anchor box} direkalkulasi pada saat training.
-    Berbeda dengan \emph{clustering} ukuran \emph{anchor} sebelum \emph{training} seperti pada YOLOv2 \parencite{yolov2}, ukuran-ukuran \emph{anchor} akan di-\emph{learning} bersama dengan pendeteksi objeknya.
-    Untuk melakukan hal ini, digunakan algoritma optimisasi \emph{anchor box} dari \textcite{anchoropt}.
-    Dengan menggunakan algoritma tersebut, ukuran-ukuran \emph{anchor} akan teroptimisasi bukan hanya pada dataset, namun juga pada kemampuan YOLOv7.
+  \subsection{Rekalkulasi \emph{Anchor On-Training}}
+    Yang dimaksud dengan rekalkulasi \emph{anchor on-training}  adalah ketika ukuran-ukuran \emph{anchor box} direkalkulasi pada saat training.
+    Berbeda dengan \emph{clustering pre-training} seperti pada YOLOv2 \parencite{yolov2}, ukuran-ukuran \emph{anchor} akan di-\emph{learning} bersama dengan pendeteksi objeknya.
+    Untuk melakukan hal ini, digunakan algoritma optimisasi \emph{anchor box} yang mirip dengan algoritma \textcite{anchoropt}.
+    Pada bagian \emph{head}, akan ditempelkan suatu layer yang akan mengoutputkan faktor \emph{rescaling} dari tiap \emph{anchor box}.
+    Bagian tersebut akan di-\emph{training} bersama dengan YOLOv7 \emph{anchor box} akan teroptimisasi tidak hanya pada dataset, namun pada keseluruhan \emph{neural network} juga.
   \subsection{Augmentasi Mosaik}
     Berbeda dengan versi YOLO sebelumnya \parencites{yolov4}{yolov5}, YOLOv7 tidak menggunakan augmentasi mosaik.
     Padahal, dapat dilihat dari YOLOv4, augmentasi mosaik dapat meningkatkan akurasi deteksi.
@@ -174,3 +175,47 @@
   Setelah mendapatkan model modifikasi YOLOv7 yang sudah dilatih, \emph{auto-trainer} akan menguji model tersebut dengan dataset uji.
   Metrik-metrik pengujian, grafik histori \emph{training loss vs validation loss}, dan \emph{weights} dari model kemudian akan dikirim ke user.
   Dengan membuat \emph{auto-trainer} ini, proses pelatihan model dan pelaporan hasil menjadi terotomasi sehingga akan mempermudah proses penelitian.
+
+\section{Timeline Pelaksanaan Penelitian}
+  \newcommand{\w}{}
+  \newcommand{\G}{\cellcolor{gray}}
+  \begin{table}[h!]
+    \captionof{table}{Tabel timeline}
+    \label{tbl:timeline}
+    \begin{tabular}{|p{3.5cm}|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|}
+  
+      \hline
+      \multirow{2}{*}{Kegiatan} & \multicolumn{16}{|c|}{Minggu} \\
+      \cline{2-17} &
+      1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 & 16 \\
+      \hline
+  
+      % Gunakan \G untuk mengisi sel dan \w untuk mengosongkan sel
+      Persiapan Dataset &
+      \G & \w & \w & \w & \w & \w & \w & \w & \w & \w & \w & \w & \w & \w & \w & \w \\
+      \hline
+  
+      Pemb. \emph{Auto-trainer} &
+      \w & \G & \w & \w & \w & \w & \w & \w & \w & \w & \w & \w & \w & \w & \w & \w \\
+      \hline
+  
+      Pemb. Konfigurasi&
+      \w & \w & \G & \G & \G & \G & \G & \G & \G & \G & \G & \G & \w & \w & \w & \w \\
+      Modifikasi &
+      \w & \w & \G & \G & \G & \G & \G & \G & \G & \G & \G & \G & \w & \w & \w & \w \\
+      \hline
+  
+      Training Model &
+      \w & \w & \G & \G & \G & \G & \G & \G & \G & \G & \G & \G & \w & \w & \w & \w \\
+      \hline
+
+      Analisis &
+      \w & \w & \G & \G & \G & \G & \G & \G & \G & \G & \G & \G & \G & \w & \w & \w \\
+      \hline
+
+      Pemb. Laporan &
+      \w & \w & \w & \w & \w & \w & \w & \w & \w & \w & \w & \w & \G & \G & \G & \G \\
+      \hline
+  
+    \end{tabular}
+  \end{table}

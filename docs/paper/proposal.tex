@@ -1,5 +1,5 @@
 % Pengaturan ukuran teks dan bentuk halaman dua sisi
-\documentclass[12pt]{report}
+\documentclass[a4paper, 12pt]{book}
 
 % Pengaturan ukuran halaman dan margin
 \usepackage[a4paper,top=30mm,left=30mm,right=20mm,bottom=25mm]{geometry}
@@ -19,7 +19,6 @@
 \setlength{\parindent}{2em}
 
 % Package lainnya
-\usepackage{changepage}
 \usepackage{etoolbox} % Mengubah fungsi default
 
 % Pengaturan jenis karakter
@@ -48,7 +47,7 @@
 \patchcmd{\cleardoublepage}{\hbox{}}{
   \thispagestyle{empty}
   \vspace*{\fill}
-  \begin{center}\textit{[Halaman ini sengaja dikosongkan]}\end{center}
+  \begin{center}\textit{Halaman ini sengaja dikosongkan}\end{center}
   \vfill}{}{}
 
   % Pengaturan penomoran halaman
@@ -56,17 +55,20 @@
 \fancyhf{}
 \renewcommand{\headrulewidth}{0pt}
 \pagestyle{fancy}
-\fancyfoot[C,CO]{\thepage}
+%\fancyfoot[C,CO]{\thepage}
+\fancyfoot[RO,LE]{\thepage}
+%\fancyfoot[R]{\thepage}
+
 \patchcmd{\chapter}{plain}{fancy}{}{}
 \patchcmd{\chapter}{empty}{plain}{}{}
 
 % Pengaturan format judul bab
 \usepackage{titlesec}
 \renewcommand{\thesection}{\thechapter.\arabic{section}}
-\titleformat{\chapter}[hang]{\centering\bfseries\Large}{BAB\ \arabic{chapter}\ }{0ex}{\vspace{0ex}\centering}
+\titleformat{\chapter}[hang]{\centering\bfseries\large}{BAB\ \arabic{chapter}\ }{0ex}{\vspace{0ex}\centering}
 \titleformat*{\section}{\large\bfseries}
 \titleformat*{\subsection}{\normalsize\bfseries}
-\titlespacing{\chapter}{0ex}{6ex}{3ex}
+\titlespacing{\chapter}{0ex}{0ex}{4ex}
 \titlespacing{\section}{0ex}{3ex}{1.5ex}
 \titlespacing{\subsection}{0ex}{3ex}{1.5ex}
 \titlespacing{\subsubsection}{0ex}{0.5ex}{0ex}
@@ -115,6 +117,7 @@
   % Sampul Bahasa Indonesia
   \newcommand\covercontents{cover/cover-content-id.tex}
   \input{cover/cover-outer.tex}
+  \cleardoublepage
 
   % Sampul Bahasa Inggris
   % \renewcommand\covercontents{cover/cover-content-en.tex}
@@ -122,7 +125,7 @@
 
   % Lembar pengesahan
   \input{misc/lembar-pengesahan.tex}
-  \newpage
+  \cleardoublepage
 
   %% Lembar pengesahan
   %\input{misc/lembar-pengesahan-en.tex}
@@ -130,10 +133,10 @@
 
   % Abstrak
   \input{misc/abstrak.tex}
-  \newpage
+  \cleardoublepage
 
   \input{misc/abstrak-en.tex}
-  \newpage
+  \cleardoublepage
 
   %\newgeometry{top=0cm}
 
@@ -142,19 +145,19 @@
     \renewcommand*\contentsname{DAFTAR ISI}
     \addcontentsline{toc}{chapter}{\contentsname}
     \tableofcontents
-    \newpage
+    \cleardoublepage
 
     % Daftar gambar
     \renewcommand*\listfigurename{DAFTAR GAMBAR}
     \addcontentsline{toc}{chapter}{\listfigurename}
     \listoffigures
-    \newpage
+    \cleardoublepage
 
     % Daftar tabel
     \renewcommand*\listtablename{DAFTAR TABEL}
     \addcontentsline{toc}{chapter}{\listtablename}
     \listoftables
-    \newpage
+    \cleardoublepage
   \end{spacing}
 
   % Nomor halaman isi dimulai dari sini
@@ -162,15 +165,15 @@
 
   % Konten pendahuluan
   \input{contents/1-pendahuluan.tex}
-  \newpage
+  \cleardoublepage
 
   % Konten tinjauan pustaka
   \input{contents/2-tinjauan-pustaka.tex}
-  \newpage
+  \cleardoublepage
 
   % Konten metodologi
   \input{contents/3-metodologi.tex}
-  \newpage
+  \cleardoublepage
 
   % Konten lainnya
   % \input{contents/4-lainnya.tex}
