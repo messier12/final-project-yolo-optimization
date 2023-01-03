@@ -11,3 +11,7 @@
 *.blg
 *.run.xml
 *.synctex.gz
+*.nav
+*.snm
+*.xdv
+*.vrb
