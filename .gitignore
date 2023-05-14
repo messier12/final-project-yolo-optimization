@@ -15,3 +15,5 @@
 *.snm
 *.xdv
 *.vrb
+groundtruth.json
+valid_encounters_maxRange700_maxGap3_minEncLen30.json
