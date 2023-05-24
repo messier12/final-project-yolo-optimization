@@ -1,0 +1,122 @@
+% Judul dokumen
+\title{Buku Tugas Akhir ITS}
+\author{Solang, Dion Andreas}
+
+% Pengaturan ukuran teks dan bentuk halaman dua sisi
+\documentclass[12pt,twoside]{report}
+\usepackage{itss}
+
+\input{variables.tex}
+
+\input{misc/hyphenation.tex}
+
+% Menambahkan resource daftar pustaka
+\addbibresource{misc/bibliography.bib}
+
+% Isi keseluruhan dokumen
+\begin{document}
+
+
+% Sampul luar Bahasa Indonesia
+\newcommand\covercontents{cover/cover-content-id.tex}
+\input{cover/cover-outer-1.tex}
+
+% Atur ulang penomoran halaman
+\setcounter{page}{1}
+
+% cover dalam Bahasa Indonesia
+\renewcommand\covercontents{cover/cover-content-en.tex}
+\input{cover/cover-outer-2.tex}
+\clearpage
+\cleardoublepage
+
+% cover dalam Bahasa Inggris
+\renewcommand\covercontents{cover/cover-content-en.tex}
+\input{cover/cover-outer-2.tex}
+\cleardoublepage
+
+
+% Lembar pengesahan
+\input{misc/lembar-pengesahan.tex}
+\cleardoublepage
+\input{misc/lembar-pengesahan-en.tex}
+\cleardoublepage
+
+% Pernyataan keaslian
+\input{misc/pernyataan-keaslian.tex}
+\cleardoublepage
+\input{misc/pernyataan-keaslian-en.tex}
+\cleardoublepage
+
+% Nomor halaman pembuka dimulai dari sini
+\pagenumbering{roman}
+
+% Abstrak Bahasa Indonesia
+\input{abstract/abstract-id.tex}
+\cleardoublepage
+
+% Abstrak Bahasa Inggris
+\input{abstract/abstract-en.tex}
+\cleardoublepage
+
+% Kata pengantar
+\input{misc/kata-pengantar.tex}
+\cleardoublepage
+
+% Daftar isi
+\renewcommand*\contentsname{DAFTAR ISI}
+\addcontentsline{toc}{chapter}{\contentsname}
+\tableofcontents
+\cleardoublepage
+
+% Daftar gambar
+\renewcommand*\listfigurename{DAFTAR GAMBAR}
+\addcontentsline{toc}{chapter}{\listfigurename}
+\listoffigures
+\cleardoublepage
+
+% Daftar tabel
+\renewcommand*\listtablename{DAFTAR TABEL}
+\addcontentsline{toc}{chapter}{\listtablename}
+\listoftables
+\cleardoublepage
+
+% Nomor halaman isi dimulai dari sini
+\pagenumbering{arabic}
+
+% contents 1 pendahuluan
+\input{contents/1-pendahuluan.tex}
+\cleardoublepage
+
+% contents 2 tinjauan pustaka
+\input{contents/2-tinjauan-pustaka.tex}
+\cleardoublepage
+
+% contents 3 desain dan implementasi
+\input{contents/3-desain-implementasi.tex}
+\cleardoublepage
+
+% contents 4 pengujian dan analisis
+\input{contents/4-pengujian-analisis.tex}
+\cleardoublepage
+
+% contents 5 penutup
+\input{contents/5-penutup.tex}
+\cleardoublepage
+
+\chapter*{DAFTAR PUSTAKA}
+\addcontentsline{toc}{chapter}{DAFTAR PUSTAKA}
+\renewcommand\refname{}
+\vspace{2ex}
+\renewcommand{\bibname}{}
+\begingroup
+\def\chapter*#1{}
+\printbibliography
+\endgroup
+\cleardoublepage
+
+% Biografi penulis
+\input{misc/biografi-penulis.tex}
+\cleardoublepage
+
+\end{document}
