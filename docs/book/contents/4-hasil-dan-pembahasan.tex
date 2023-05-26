@@ -1,0 +1,85 @@
+\chapter{HASIL DAN PEMBAHASAN}
+
+% Ubah bagian-bagian berikut dengan isi dari pengujian dan analisis
+
+Pada bab ini, akan dipaparkan pengaruh modifikasi-modifikasi yang dilakukan pada YOLOv7.
+
+\section{Performa Awal}
+Untuk mengukur pengaruh dari modifikasi-modifikasi yang dilakukan pada YOLOv7, maka
+hal pertama yang harus dilakukan adalah mengukur performa YOLOv7 tanpa segala modifikasi
+yang diajukan pada bab \ref{section:modificationcandidates}. Arsitektur YOLOv7 \emph{plain} 
+ini di-\emph{train} pada 500 sampel data dari  \textcite{aot_dataset} dengan 300 epoch dan batch size 1.
+Dengan aturan tersebut, ditemukan bahwa model \emph{plain} tidak mampu untuk mendeteksi
+objek apapun pada dataset uji, dengan kriteria "terdeteksi" $IoU > 0.5$ (mAP@.5 = 0).
+
+Untuk keperluan komparasi dengan performa-performa dari modifikasi pada YOLOv7,
+model \emph{plain} ini akan selanjutnya disebut sebagai \verb*|YOLOv7-plain|.
+
+\section{Pengaruh Augmentasi Mosaic dan Rekalkulasi Anchor}
+
+
+Terdapat 3 modifikasi yang diujikan pada bagian ini, yaitu \verb*|YOLOv7-plain| yang ditambahkan augmentasi mosaic,
+\verb*|YOLOv7-plain| yang direkalkulasi anchor, dan \verb*|YOLOv7-plain| yang ditambahkan augmentasi mosaic dan rekalkulasi anchor.
+\subsection{Augmentasi Mosaic}
+  Proses melakukan augmentasi mosaic cukup \emph{straightforward},
+  augmentasi ini dilakukan pada beberapa data training.
+  Contoh hasil augmentasi dapat dilihat pada gambar \ref{fig:mosaic-train}
+  \begin{figure}[ht]
+    \centering
+    \includegraphics[scale=0.4]{figures/mosaic-aug-2.png}
+    \caption{Contoh Augmentasi Mosaic pada Dataset Training}
+    \label{fig:mosaic-train}
+  \end{figure}
+
+  %, sedangkan untuk rekalkulasi anchor akan dibahas pada bagian berikut.
+\subsection{Rekalkulasi Anchor}
+  Rekalkulasi anchor dilakukan dengan mengklaster data training ke 9 centroid menggunakan algoritma k-means.
+  Sembilan centroid tersebut digunakan sebagai anchor, 3 untuk tiap head pada arsitektur YOLO (terdapat 3 head).
+  Persebaran anchor sebelum dan sesudah direkalkulasi dapat dilihat 
+  pada Tabel \ref{tbl:recalculated_anchor} dan Gambar \ref{fig:anchor-dist}
+
+  \input{tables/recalculated-anchor.tex}
+  \vspace{1ex}
+  \begin{figure}[ht]
+    \centering
+    \includegraphics[width=\textwidth]{figures/anchor-dist-2.png}
+    \caption{Persebaran Anchor. Kiri: Anchor Lama. Kanan: Anchor Hasil Rekalkulasi}
+    \label{fig:anchor-dist}
+  \end{figure}
+
+  Jika kita memperhatikan persebaran anchor sebelum dan sesudah direkalkulasi pada Gambar \ref{fig:anchor-dist},
+  dapat kita lihat bahwa anchor hasil rekalkulasi lebih mencakup seluruh persebaran dataset daripada anchor lama.
+  8 dari 9 anchor lama bertempat di kuadran pertama dari garis median(garis putus-putus).
+  Hal ini berarti 8 anchor tersebut hanya mampu mendeteksi sekitar 25\% dari objek-objek pada dataset.
+  Sedangkan, anchor hasil rekalkulasi menempatkan anchor di setiap kuadran.
+
+
+
+\subsection{Performa Augmentasi Mosaik dan Rekalkulasi Anchor}
+  Performa dari tiap modifikasi dapat dilihat pada tabel \ref{tbl:mosaic_reanchor_performance}.
+  Pada tabel tersebut, terlihat bahwa YOLOv7 mampu untuk mendeteksi beberapa objek pada dataset uji ketika diberi 
+  augmentasi mosaic pada data train dan direkalkulasi anchornya.
+  \input{tables/mosaic-reanchor.tex}
+
+  Hanya modifikasi nomor 3 yang mampu melakukan deteksi, maka 
+  modifikasi tersebut dijadikan baseline untuk modifikasi-modifikasi lainnya.
+  Untuk mempermudah komparasi penambahan modifikasi-modifikasi selanjutnya,
+  maka model ini akan disebut sebagai \verb*|YOLOv7-base|.
+
+\section{Pengaruh Penggantian \emph{Box Loss Function}}
+Dengan menggunakan \verb*|YOLOv7-base| sebagai baseline, 
+Box Loss function dari YOLOv7 diganti menjadi EIoU.
+Telah juga dilakukan percobaan menggunakan convexciation pada EIoU.
+Hasil dari pengujian dapat dilihat pada Tabel \ref{tbl:loss_function_perf}
+
+\input{tables/loss-functions.tex}
+
+Ternyata, meskipun EIoU memiliki performa lebih baik daripada CIoU ketika diaplikasikan
+pada Faster-RCNN+ResNet50 dengan dataset VOC2007 dan COCO2017, EIoU tidak mampu untuk meningkatkan
+AP deteksi YOLOv7 pada dataset \textcite{aot_dataset}.
+
+\section{Pengaruh Perubahan Koneksi \emph{Neck-Backbone}}
+
+\section{Pengaruh Penambahan \emph{Head}}
+
+\section{Pengaruh Pengubahan \emph{Head} menjadi \emph{Anchor-Free}}

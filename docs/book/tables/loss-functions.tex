@@ -1,0 +1,17 @@
+\begin{table}[h]
+  \centering
+  \captionof{table}{Performa Modifikasi Augmentasi Mosaic dan Rekalkulasi Anchor}
+  \label{tbl:loss_function_perf}
+  \vspace{-1ex}
+  \begin{tabular}{ l l c }
+    \toprule[1.5pt]
+    No & Modifikasi        &mAP@50 \\
+    \midrule
+    0  & \textbf{yolov7-base + CIoU (original)}     & \textbf{11,2}\%\\
+    1  & \textbf{yolov7-base + EIoU}                & 0\%\\
+    2  & \textbf{yolov7-base + EIoU + Covexication} & 4,92\%\\
+    \midrule
+       & Peningkatan                                & \textbf{\textcolor{red}{-6,28\%}}\\
+    \bottomrule[1.5pt]
+  \end{tabular}
+\end{table}

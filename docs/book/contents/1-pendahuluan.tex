@@ -1,83 +1,48 @@
 \chapter{PENDAHULUAN}
-\label{chap:pendahuluan}
-
-% Ubah bagian-bagian berikut dengan isi dari pendahuluan
-
-Penelitian ini dilatarbelakangi oleh \lipsum[1][1-5]
-
 \section{Latar Belakang}
-\label{sec:latarbelakang}
+    Seiring berkembangnya teknologi \emph{autonomous vehicles}, terdapat banyak keinginan untuk mengaplikasikan teknologi tersebut di berbagai bidang.
+    Salah satu aplikasi teknologi ini di bidang komersil adalah \emph{Amazon Prime Air}.
+    \emph{Amazon Prime Air} memanfaatkan \emph{Autonomous Aerial Vehicle} (AAV) untuk melakukan pengantaran barang dari warehouse ke rumah kostumer secara \emph{autonomous} \parencite{prime_air}.
+    Untuk melakukan hal ini, AAV yang digunakan harus mempunyai kemampuan penerbangan \emph{autonomous} yang mumpuni.
 
-Pesatnya perkembangan roket yang merupakan \lipsum[1]
+    Salah satu tantangan terbesar dari penerbangan autonomous adalah kemampuan \emph{Sense and Avoid} (SAA) dari AAV.
+    Meskipun di udara terdapat ruang gerak yang luas, tetap terdapat resiko AAV akan menabrak objek di udara.
+    Objek - objek tersebut dapat berupa helikopter, pesawat, burung, misil, dan lain - lain.
+    Objek - objek ini juga sering disebut dengan objek \emph{airborne} \parencite{aot_docs}.
 
-\lipsum[2]
+    Salah satu sensor yang dapat digunakan untuk melakukan SAA adalah kamera.
+    Kamera memiliki bobot yang cukup ringan, sehingga dapat dibawah oleh AAV.
+    Selain itu, kamera juga memiliki harga yang relatif lebih murah dibandingkan sensor - sensor seperti LiDAR atau Radar.
 
-\section{Permasalahan}
-\label{sec:permasalahan}
+    Dengan memilih kamera sebagai sensor, maka dibutuhkan suatu model computer vision untuk diaplikasikan pada kamera tersebut.
+    Objek - objek \emph{airborne} akan tampak sangat kecil pada kamera seperti yang dapat dilihat pada Gambar \ref{fig:airborne-object-example-1}.
+    Beberapa dataset kamera \emph{airborne} yang memiliki resolusi 20482448 pixel, objeknya dapat berukuran 4 (0.00008\% luas resolusi) hingga 1000 pixel (0.01\% luas resolusi) sehingga terlihat sangat kecil \parencite{aot_dataset}.
+    Oleh karena itu, dibutuhkan suatu model yang dapat mendeteksi objek - objek yang sangat kecil sehingga dapat mendeteksi objek \emph{airborne}.
 
-Dari permasalahan tersebut maka \lipsum[1][1-6]
+    \begin{figure} [ht]
+        \centering
+        \includegraphics[scale=0.5]{figures/dataset-example-labeled.png}
+        \caption{Contoh Dataset Objek \emph{Airborne}}
+        \label{fig:airborne-object-example-1}
+    \end{figure}
+
+    YOLOv7 merupakan model state-of-the-art untuk melakukan pendeteksian objek secara real-time.
+    YOLOv7 memiliki akurasi tertinggi dari semua model pendeteksi objek dengan kecepatan deteksi 30 FPS (yang terpublikasi) pada GPU Nvidia V100.
+    Terdapat versi scaled dari YOLOv7 yang memiliki jumlah parameter yang lebih kecil dan dapat diaplikasikan pada device edge computing \parencite{yolov7}.
+    Oleh karena itu, YOLOv7 ini cocok untuk digunakan pada AAV di mana dibutuhkan suatu pendeteksi objek yang real-time.
+
+\section{Rumusan Masalah}
+    YOLOv7 bukan merupakan model deteksi objek umum sehingga YOLOv7 tidak didesain untuk melakukan deteksi objek kecil seperti objek-objek \emph{airborne}.
+    Oleh karena itu, dibuatlah rumusan masalah seperti berikut:
+    \begin{itemize}
+        \item Apa solusi yang dapat diaplikasikan pada YOLOv7 agar kemampuan deteksi objek \emph{airborne}-nya dapat dioptimalisasi?
+    \end{itemize}
 
 \section{Tujuan}
-\label{sec:Tujuan}
-
-Tujuan dari \lipsum[1][1-3] adalah:
-
-\begin{enumerate}[nolistsep]
-
-  \item Membuat \lipsum[2][1-3]
-
-  \item \lipsum[3][1-3]
-
-\end{enumerate}
+    Adapun tujuan dari tugas akhir ini adalah untuk menemukan solusi untuk mengoptimisasi kemampuan YOLOv7 mendeteksi objek airborne.
 
 \section{Batasan Masalah}
-\label{sec:batasanmasalah}
-
-Batasan-batasan dari \lipsum[1][1-3] adalah:
-
-\begin{enumerate}[nolistsep]
-
-  \item Mempermudah \lipsum[2][1-3]
-
-  \item \lipsum[3][1-5]
-
-  \item \lipsum[4][1-5]
-
-\end{enumerate}
-
-\section{Sistematika Penulisan}
-\label{sec:sistematikapenulisan}
-
-Laporan penelitian tugas akhir ini terbagi menjadi \lipsum[1][1-3] yaitu:
-
-\begin{enumerate}[nolistsep]
-
-  \item \textbf{BAB I Pendahuluan}
-
-        Bab ini berisi \lipsum[2][1-5]
-
-        \vspace{2ex}
-
-  \item \textbf{BAB II Tinjauan Pustaka}
-
-        Bab ini berisi \lipsum[3][1-5]
-
-        \vspace{2ex}
-
-  \item \textbf{BAB III Desain dan Implementasi Sistem}
-
-        Bab ini berisi \lipsum[4][1-5]
-
-        \vspace{2ex}
-
-  \item \textbf{BAB IV Pengujian dan Analisa}
-
-        Bab ini berisi \lipsum[5][1-5]
-
-        \vspace{2ex}
-
-  \item \textbf{BAB V Penutup}
-
-        Bab ini berisi \lipsum[6][1-5]
-
-\end{enumerate}
+    Optimisasi kemampuan deteksi objek kecil hanya akan dilakukan dengan memodifikasi YOLOv7.
+    Modifikasi yang diaplikasikan tidak boleh menyebabkan YOLOv7 untuk tidak dapat melakukan pendeteksian secara \emph{real time}.
+    Target pengaplikasian model ini adalah untuk AAV dengan \emph{computational resource} yang terbatas sehingga model hasil modifikasi harus cukup ringan untuk hal tersebut.
+    %Modifikasi yang mengubah arsitektur YOLOv7 secara signifikan sehingga tidak dapat melakukan pendeteksian secara \emph{real-time} tidak akan diaplikasian.
