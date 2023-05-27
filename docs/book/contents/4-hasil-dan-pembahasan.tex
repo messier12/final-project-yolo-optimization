@@ -24,7 +24,7 @@ Terdapat 3 modifikasi yang diujikan pada bagian ini, yaitu \verb*|YOLOv7-plain| 
   Proses melakukan augmentasi mosaic cukup \emph{straightforward},
   augmentasi ini dilakukan pada beberapa data training.
   Contoh hasil augmentasi dapat dilihat pada gambar \ref{fig:mosaic-train}
-  \begin{figure}[ht]
+  \begin{figure}[H]
     \centering
     \includegraphics[scale=0.4]{figures/mosaic-aug-2.png}
     \caption{Contoh Augmentasi Mosaic pada Dataset Training}
@@ -40,7 +40,7 @@ Terdapat 3 modifikasi yang diujikan pada bagian ini, yaitu \verb*|YOLOv7-plain| 
 
   \input{tables/recalculated-anchor.tex}
   \vspace{1ex}
-  \begin{figure}[ht]
+  \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{figures/anchor-dist-2.png}
     \caption{Persebaran Anchor. Kiri: Anchor Lama. Kanan: Anchor Hasil Rekalkulasi}
@@ -79,7 +79,41 @@ pada Faster-RCNN+ResNet50 dengan dataset VOC2007 dan COCO2017, EIoU tidak mampu 
 AP deteksi YOLOv7 pada dataset \textcite{aot_dataset}.
 
 \section{Pengaruh Perubahan Koneksi \emph{Neck-Backbone}}
+Untuk modifikasi ini, koneksi \emph{neck-backbone} yang diubah adalah
+koneksi layer neck yang memberikan feature pada \emph{head} pertama yang
+awalnya terkoneksi dengan skala 8 dari backbone, dipindahkan ke skala 4.
+Hal ini diilustrasikan pada Gambar \ref{fig:deeperconn}.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.7\textwidth]{figures/deeperconn.png}
+  \caption{Modifikasi Koneksi Neck. Kiri : Sebelum. Kanan : Sesudah.}
+  \label{fig:deeperconn}
+\end{figure}
+\input{tables/neck-backbone.tex}
+Perbandingan performa modifikasi ini dengan \verb*|YOLOv7-base| dapat dilihat pada tabel \ref{tbl:neck_backbone_perf}.
+Terlihat bahwa modifikasi ini berhasil meningkatkan skor mAP@50
+dari \verb*|YOLOv7-base| sebesar 2,98\%. Untuk mempermudah perbandingan dengan modifikasi lain, model hasil modifikasi
+ini akan disebut \verb*|YOLOv7-moveconnection|
+\vspace{2ex}
 
 \section{Pengaruh Penambahan \emph{Head}}
+Untuk modifikasi ini, pada skala 4 backbone, dipasangkan suatu layer head tambahan.
+Ilustrasi penambahan layer ini dapat dilihat pada gambar \ref{fig:addinghead}.
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.35\textwidth]{figures/addhead.png}
+  \caption{Penambahan Layer Head}
+  \label{fig:addinghead}
+\end{figure}
+
+\input{tables/add-head.tex}
+Seperti yang dapat dilihat pada tabel \ref{tbl:addhead}, penambahan modifikasi ini memberi performa 
+yang lebih buruk dibandingkan \verb*|YOLOv7-base|. 
+Padahal, modifikasi penambahan layer head dan \verb*|YOLOv7-moveconnection| dua-duanya menggunakan fitur pada skala 4.
+Alasan untuk hal ini akan diinvestiagsi dengan melihat output dari tiap skala pada model penambahan head dan \verb*|YOLOv7-moveconnection|.
 
 \section{Pengaruh Pengubahan \emph{Head} menjadi \emph{Anchor-Free}}
+Penggantian \emph{head} menjadi \emph{decoupled anchor-free head} membuat model tidak mampu mendeteksi apapun pada dataset uji (mAP=0\%).
+\input{tables/anchor-free-perf.tex}
+

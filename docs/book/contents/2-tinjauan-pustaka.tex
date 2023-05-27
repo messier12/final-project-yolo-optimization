@@ -5,7 +5,7 @@
     Setiap bagian ini mempunyai fungsi masing-masing.
     Berikut adalah penjelasan fungsi dan cara kerja dari ketiga bagian tersebut.
     \subsubsection{\emph{Layer Head} YOLO dan \emph{Anchor Box}}
-      \begin{figure}[ht]
+      \begin{figure}[H]
           \centering
           \includegraphics[scale=0.4]{figures/anchorbox.png}
           \caption{Prediksi \emph{Anchor Box} dan \emph{offset} dari koordinat latis \parencite{yolov3}}
@@ -24,7 +24,7 @@
   
     \subsubsection{\emph{Neck} YOLO}
   
-      \begin{figure}[ht]
+      \begin{figure}[H]
           \centering
           \includegraphics[scale=0.6]{figures/yolo-architecture-rough.png}
           \caption{\emph{Feature Pyramid Network} pada \emph{Neck} YOLO}
@@ -76,7 +76,7 @@
 
 \section{Augmentasi Mosaik}
 \label{section:mosaic_study}
-  \begin{figure}[ht]
+  \begin{figure}[H]
     \centering
     \includegraphics[scale=0.6]{figures/mosaic-aug.png}
     \caption{Contoh Augmentasi Data Mosaik \parencite{yolov5}}
@@ -101,7 +101,7 @@
     Modifikasi pada YOLO-Z didesain untuk mendeteksi objek kecil untuk tujuan melakukan deteksi \emph{cone} yang nampak jauh pada lintasan \emph{autonomous racing} secara \emph{real time} (lihat Gambar \ref{fig:yolozcone}).
     Modifikasi-modifikasi dibuktikan dapat meningkatkan kemampuan pendeteksian objek kecil \parencite{yoloz}.
     Oleh karena itu, untuk meningkatkan kemampuan mendeteksi objek kecil YOLOv7, beberapa modifikasi yang dilakukan YOLO-Z pada YOLOv5 dapat diaplikasikan.
-    \begin{figure}[ht]
+    \begin{figure}[H]
       \centering
       \includegraphics[scale=0.4]{figures/yoloz-cone.png}
       \caption{Contoh Objek \emph{Cone} yang Terlihat Jauh dari Kamera}

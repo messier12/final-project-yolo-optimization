@@ -2,32 +2,25 @@
 
 % Ubah bagian-bagian berikut dengan isi dari penutup
 
-\section{Kesimpulan}
+\section{Kesimpulan Sementara}
 \label{section:kesimpulan}
 
-Berdasarkan hasil pengujian yang \lipsum[1][1-3] sebagai berikut:
+Berdasarkan hasil pengujian yang dilakukan, dapat disimpulkan bahwa:
+Dari himpunan modifikasi-modifikasi yang diajukan pada penelitian ini,
+didapatkan kombinasi modifikasi yang paling optimal.
+Modifikasi tersebut penambahan augmentasi mosaik, rekalkulasi anchor, dan pemindahan koneksi neck-backbone.
+Dengan modifikasi itu, skor mAP@50 dari YOLOv7 meningkat sebanyak 14,09\%.
 
-\begin{enumerate}[nolistsep]
+\section{Diskusi}
+Modifikasi-modifikasi yang diaplikasikan pada penelitian ini hingga saat ini
+masih dibatasi pada modifikasi yang tidak secara signifikan mempengaruhi \emph{latency}.
+Beberapa modifikasi seperti melakukan partisi pada gambar, dan melakukan deteksi di
+tiap partisinya. Dengan metode ini, objek yang dipelajari akan terlihat lebih besar
+sehingga lebih mudah untuk dideteksi. Akan tetapi, latency pendeteksian untuk tiap gambar
+akan meningkat sebanyak jumlah partisi kali lipat. Untuk mengatasi hal tersebut,
+kita dapat melakukan down-scaling pada model yang digunakan. Modifikasi jenis ini
+perlu dicoba untuk menentukan jumlah partisi dan down-scaling model yang tepat
+untuk mempertahankan kecepatan deteksi yang \emph{real-time}.
 
-  \item Pembuatan \lipsum[2][1-3]
 
-  \item \lipsum[2][4-6]
 
-  \item \lipsum[2][7-10]
-
-\end{enumerate}
-
-\section{Saran}
-\label{chap:saran}
-
-Untuk pengembangan lebih lanjut pada \lipsum[1][1-3] antara lain:
-
-\begin{enumerate}[nolistsep]
-
-  \item Memperbaiki \lipsum[2][1-3]
-
-  \item \lipsum[2][4-6]
-
-  \item \lipsum[2][7-10]
-
-\end{enumerate}

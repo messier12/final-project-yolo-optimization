@@ -22,7 +22,22 @@
 \endgroup
 
 % Ubah paragraf berikut dengan abstrak dari tugas akhir dalam Bahasa Inggris
-\emph{In this research, we proposed \lipsum[1]}
+%\emph{In this research, we proposed \lipsum[1]}
+{
+\itshape
+In this research, we present an attempt to improve the capability of YOLOv7 to detect
+airborne objects. Airborne objects appear very small on cameras due to their distance
+to the camera. For that reason, YOLOv7 needs to be optimized to detect small objects.
+Several modification proposal was made and tested in this research. These modifications
+include changes in the architecture (Adding extra detection head, modifying feature-map
+source, and replacing detection head to a detached anchor-free head), and some bag-of-freebies
+applications (anchor recalculation, mosaic augmentation). At the current state, we found
+the combination of mosaic augmentation, anchor recalculation, and modifying feature-map
+source produces the greatest score in mAP, a 14.09\% increase compared to the plain
+YOLOv7 (mAP=0\%).
+}
 
 % Ubah kata-kata berikut dengan kata kunci dari tugas akhir dalam Bahasa Inggris
-\emph{Keywords}: \emph{Rocket}, \emph{Anti-gravity}, \emph{Energy}, \emph{Space}.
+%\emph{Keywords}: \emph{}, \emph{Anti-gravity}, \emph{Energy}, \emph{Space}.
+\noindent
+\textbf{Keywords: \emph{Small Object Detection, YOLOv7, Architecture Modification, Bag-of-Freebies Modification, Airborne Object}}
