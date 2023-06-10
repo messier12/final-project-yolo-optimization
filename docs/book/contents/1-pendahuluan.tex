@@ -1,5 +1,12 @@
 \chapter{PENDAHULUAN}
 \section{Latar Belakang}
+    \begin{figure} [H]
+        \centering
+        \includegraphics[scale=0.4]{figures/dataset-example-labeled.png}
+        \caption{Contoh Dataset Objek \emph{Airborne}}
+        \label{fig:airborne-object-example-1}
+    \end{figure}
+    \vspace{-2ex}
     Seiring berkembangnya teknologi \emph{autonomous vehicles}, terdapat banyak keinginan untuk mengaplikasikan teknologi tersebut di berbagai bidang.
     Salah satu aplikasi teknologi ini di bidang komersil adalah \emph{Amazon Prime Air}.
     \emph{Amazon Prime Air} memanfaatkan \emph{Autonomous Aerial Vehicle} (AAV) untuk melakukan pengantaran barang dari warehouse ke rumah kostumer secara \emph{autonomous} \parencite{prime_air}.
@@ -19,12 +26,6 @@
     Beberapa dataset kamera \emph{airborne} yang memiliki resolusi 20482448 pixel, objeknya dapat berukuran 4 (0.00008\% luas resolusi) hingga 1000 pixel (0.01\% luas resolusi) sehingga terlihat sangat kecil \parencite{aot_dataset}.
     Oleh karena itu, dibutuhkan suatu model yang dapat mendeteksi objek - objek yang sangat kecil sehingga dapat mendeteksi objek \emph{airborne}.
 
-    \begin{figure} [ht]
-        \centering
-        \includegraphics[scale=0.5]{figures/dataset-example-labeled.png}
-        \caption{Contoh Dataset Objek \emph{Airborne}}
-        \label{fig:airborne-object-example-1}
-    \end{figure}
 
     YOLOv7 merupakan model state-of-the-art untuk melakukan pendeteksian objek secara real-time.
     YOLOv7 memiliki akurasi tertinggi dari semua model pendeteksi objek dengan kecepatan deteksi 30 FPS (yang terpublikasi) pada GPU Nvidia V100.

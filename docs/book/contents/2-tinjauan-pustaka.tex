@@ -112,3 +112,9 @@
     exYOLO merupakan hasil modifikasi arsitektur YOLOv3 \parencite{exyolo}.
     Pada exYOLO, dilakukan modifikasi \emph{neck} dengan menambahkan suatu \emph{Receptive Field Block} sebelum penggabungan \emph{feature map} yang akan diupsampling.
     Modifikasi-modifikasi ini membuat exYOLO memiliki skor mAP yang lebih tinggi daripada YOLOv3 pada dataset PASCAL VOC 2007.
+
+  \subsection{Implementasi YOLOv4-tiny pada \emph{Autonomous Surface Vehicle}}
+  \textcite{barunastra} menggunakan model modifikasi YOLOv4-tiny pada \emph{Autonomous Surface Vehicle}(ASV) mereka.
+  YOLOv4-tiny sebenarnya hanya menggunakan 2 layer head, namun yang diimplementasikan pada ASV adalah model YOLOv4-tiny
+  yang ditambahkan 1 layer head lagi sehingga menggunakan total sebanyak 3 layer head. Perubahan ini memberikan peningkatan
+  pada skor mAP dan memberikan kemampuan modelnya untuk mendeteksi objek yang lebih jauh.

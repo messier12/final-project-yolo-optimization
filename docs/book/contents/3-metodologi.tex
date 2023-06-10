@@ -136,6 +136,17 @@
     Distribusi dataset training dan uji dapat dilihat pada tabel \ref{tbl:datasettraintest} sedangkan distribusi kelas dari dataset dapat dilihat pada Tabel \ref{tbl:datasetclasses}.
     \input{tables/dataset-dist.tex}
     \input{tables/dataset-class-dist.tex}
+    Kebanyakan \emph{bounding box} pada dataset berukuran sangat kecil.
+    Distribusi dari luas \emph{boudning box} dapat dilihat pada gambar \ref{fig:areadist}.
+    Perhatikan pada gambar tersebut, sumbu x menggunakan skala logaritmik.
+    Sebagai referensi, luas dari tiap frame itu sekitar $5\times10^16 px^2$.
+    \begin{figure}[H]
+      \centering
+      \includegraphics[scale=0.65]{figures/area-dist.png}
+      \caption{Penambahan \emph{Layer} Head pada YOLO}
+      \label{fig:areadist}
+    \end{figure}
+
   
   \subsection{Sampling Dataset}
     Karena jumlah dataset pada \textcite{aot_dataset} berukuran sangat besar, dan keterbatasan
