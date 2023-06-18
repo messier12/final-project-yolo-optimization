@@ -35,7 +35,8 @@
 \patchcmd{\cleardoublepage}{\hbox{}}{
   \thispagestyle{empty}
   \vspace*{\fill}
-  \begin{center}\textit{[Halaman ini sengaja dikosongkan]}\end{center}
+  %\begin{center}\textit{[Halaman ini sengaja dikosongkan]}\end{center}
+  \begin{center}\textit{[This page intentionally left blank]}\end{center}
   \vfill}{}{}
 
 % Pengaturan penomoran halaman
@@ -115,8 +116,8 @@
 \lstset{style=codestyle}
 
 % Label tabel dan gambar dalam bahasa indonesia
-\renewcommand{\figurename}{Gambar}
-\renewcommand{\tablename}{Tabel}
+%\renewcommand{\figurename}{Gambar}
+%\renewcommand{\tablename}{Tabel}
 
 % Pengaturan ukuran indentasi paragraf
 \setlength{\parindent}{2em}
@@ -130,6 +131,8 @@
 \usepackage{booktabs}
 \usepackage{float}
 \usepackage{url}
+\usepackage{subcaption}
+\usepackage{graphicx}
 %\newcolumntype{$}{>{\global\let\currentrowstyle\relax}}
 %
 %
