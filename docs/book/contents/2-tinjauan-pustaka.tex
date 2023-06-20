@@ -282,10 +282,10 @@
     \label{fig:yolozcone}
   \end{figure}
   YOLO-Z is a derivative architecture of YOLOv5r5.0.
-  YOLO-Z modified the backbone, neck, and number of anchors of the original YOLOv5 to 
+  This variant of YOLO modified the backbone, neck, and number of anchors of the original YOLOv5 to 
   enhance its capability of detecting small objects \parencite{yoloz}.
-  YOLO-Z changed backbone of YOLOv5r5.0 to a downscaled DenseNet.
-  The neck was also changed from FPN to biFPN on some YOLO-Z scales.
+  These changes are backbone change from YOLOv5r5.0 to a downscaled DenseNet,
+  neck change from FPN to biFPN on some YOLO-Z scales, and increasing the number of anchors used at each scale.
 
   YOLO-Z was aimed to be used in autonomous racing car. In this high speed environment, early detection
   of obstacle is crucial to plan for action. For that reason, the autonomous racing car must detect the cone-shaped obstacles
