@@ -1,119 +1,313 @@
-\chapter{HASIL DAN PEMBAHASAN}
+\chapter{EXPERIMENTS}
 
 % Ubah bagian-bagian berikut dengan isi dari pengujian dan analisis
 
-Pada bab ini, akan dipaparkan pengaruh modifikasi-modifikasi yang dilakukan pada YOLOv7.
+%Pada bab ini, akan dipaparkan pengaruh modifikasi-modifikasi yang dilakukan pada YOLOv7.
+\section{Baseline Performance}
+For comparison purposes, we first measure the baseline performance of YOLOv7 with all
+modification candidates from section \ref{section:modificationcandidates} stripped.
+We call this model as \verb|YOLOv7-plain|.
+After 300 epochs of training with batch-size 1 like in the experiment setup, we found that
+this model was unable to detect anything on the test set (a valid detection is detection with $IoU>0.5$ to groundtruth). 
+%Untuk mengukur pengaruh dari modifikasi-modifikasi yang dilakukan pada YOLOv7, maka
+%hal pertama yang harus dilakukan adalah mengukur performa YOLOv7 tanpa segala modifikasi
+%yang diajukan pada bab \ref{section:modificationcandidates}. Arsitektur YOLOv7 \emph{plain} 
+%ini di-\emph{train} pada 400 sampel data dari  \textcite{aot_dataset} dengan 300 epoch dan batch size 1.
+%Dengan aturan tersebut, ditemukan bahwa model \emph{plain} tidak mampu untuk mendeteksi
+%objek apapun pada dataset uji, dengan kriteria "terdeteksi" $IoU > 0.5$ (mAP@.5 = 0).
+%
+%Untuk keperluan komparasi dengan performa-performa dari modifikasi pada YOLOv7,
+%model \emph{plain} ini akan selanjutnya disebut sebagai \verb*|YOLOv7-plain|.
 
-\section{Performa Awal}
-Untuk mengukur pengaruh dari modifikasi-modifikasi yang dilakukan pada YOLOv7, maka
-hal pertama yang harus dilakukan adalah mengukur performa YOLOv7 tanpa segala modifikasi
-yang diajukan pada bab \ref{section:modificationcandidates}. Arsitektur YOLOv7 \emph{plain} 
-ini di-\emph{train} pada 400 sampel data dari  \textcite{aot_dataset} dengan 300 epoch dan batch size 1.
-Dengan aturan tersebut, ditemukan bahwa model \emph{plain} tidak mampu untuk mendeteksi
-objek apapun pada dataset uji, dengan kriteria "terdeteksi" $IoU > 0.5$ (mAP@.5 = 0).
-
-Untuk keperluan komparasi dengan performa-performa dari modifikasi pada YOLOv7,
-model \emph{plain} ini akan selanjutnya disebut sebagai \verb*|YOLOv7-plain|.
-
-\section{Pengaruh Augmentasi Mosaic dan Rekalkulasi Anchor}
+\section{Mosaic Augmentation and Anchor Recalculation}
 
 
-Terdapat 3 modifikasi yang diujikan pada bagian ini, yaitu \verb*|YOLOv7-plain| yang ditambahkan augmentasi mosaic,
-\verb*|YOLOv7-plain| yang direkalkulasi anchor, dan \verb*|YOLOv7-plain| yang ditambahkan augmentasi mosaic dan rekalkulasi anchor.
-\subsection{Augmentasi Mosaic}
-  Proses melakukan augmentasi mosaic cukup \emph{straightforward},
-  augmentasi ini dilakukan pada beberapa data training.
-  Contoh hasil augmentasi dapat dilihat pada gambar \ref{fig:mosaic-train}
+%Terdapat 3 modifikasi yang diujikan pada bagian ini, yaitu \verb*|YOLOv7-plain| yang ditambahkan augmentasi mosaic,
+%\verb*|YOLOv7-plain| yang direkalkulasi anchor, dan \verb*|YOLOv7-plain| yang ditambahkan augmentasi mosaic dan rekalkulasi anchor.
+In this section, we present the effect of mosaic augmentation and anchor recalulation on the $mAP@50$ score when applied
+independently and combinatively. For comparison purposes, we assigned names the models as \verb|YOLOv7-M|,
+\verb|YOLOv7-AR|, and \verb|YOLOv7-MAR|. These names correspond to \verb|YOLOv7-plain| with mosaic augmentation, \verb|YOLOv7-plain|
+with anchor recalculation, and \verb|YOLOv7-plain| with both mosaic augmentation and anchor recalculation, respectively.
+%\subsection{Augmentasi Mosaic}
+
+The process of applying mosaic augmentation to the dataset is pretty straightforward as YOLOv7's implementation code
+already provide the mosaic augmentation tool. A mosaic augmentation result example can be seen in Figure \ref{fig:mosaic-train}.
+  %Proses melakukan augmentasi mosaic cukup \emph{straightforward},
+  %augmentasi ini dilakukan pada beberapa data training.
+  %Contoh hasil augmentasi dapat dilihat pada gambar \ref{fig:mosaic-train}
   \begin{figure}[H]
     \centering
     \includegraphics[scale=0.4]{figures/mosaic-aug-2.png}
-    \caption{Contoh Augmentasi Mosaic pada Dataset Training}
+    \caption{An example of mosaic augmented image}
     \label{fig:mosaic-train}
   \end{figure}
 
   %, sedangkan untuk rekalkulasi anchor akan dibahas pada bagian berikut.
-\subsection{Rekalkulasi Anchor}
-  Rekalkulasi anchor dilakukan dengan mengklaster data training ke 9 centroid menggunakan algoritma k-means.
-  Sembilan centroid tersebut digunakan sebagai anchor, 3 untuk tiap head pada arsitektur YOLO (terdapat 3 head).
-  Persebaran anchor sebelum dan sesudah direkalkulasi dapat dilihat 
-  pada Tabel \ref{tbl:recalculated_anchor} dan Gambar \ref{fig:anchor-dist}
+%\subsection{Rekalkulasi Anchor}
+%Rekalkulasi anchor dilakukan dengan mengklaster data training ke 9 centroid menggunakan algoritma k-means.
+Anchor recalculation is done by clustering the training data's widths and heights to 9 centroid using k-means algorithm.
+However, due to the skewed distribution of the dataset, regular k-means (with $L^2$ Distance) actually fail to form 9 clusters.
+To fix this, we used a distance function
+\begin{equation} 
+  L = \sqrt{\ln^2{\frac{w_1}{w_2}} + \ln^2{\frac{h_1}{h_2}}}
+  \label{eq:logdistancefunc}
+\end{equation}
+Distance function in equation \ref{eq:logdistancefunc} was actually an $L^2$ distance but with log-transformed space.
+With this function, k-means was finally able to cluster the data into 9 centroids.
+These centroids are used by the head layers as anchors. Each head uses 3.
+The comparison of the original anchor and recalculated anchor can be seen in Table \ref{tbl:recalculated_anchor}
+and Figure \ref{fig:anchor-dist}.
+%Sembilan centroid tersebut digunakan sebagai anchor, 3 untuk tiap head pada arsitektur YOLO (terdapat 3 head).
+%Persebaran anchor sebelum dan sesudah direkalkulasi dapat dilihat 
+%pada Tabel \ref{tbl:recalculated_anchor} dan Gambar \ref{fig:anchor-dist}
 
+\begin{table}[H]
+  \centering
+  \captionof{table}{Anchor Points Before and After Recalculation}
+  \label{tbl:recalculated_anchor}
+  \vspace{-1ex}
   \input{tables/recalculated-anchor.tex}
-  \vspace{1ex}
-  \begin{figure}[H]
-    \centering
-    \includegraphics[width=\textwidth]{figures/anchor-dist-2.png}
-    \caption{Persebaran Anchor. Kiri: Anchor Lama. Kanan: Anchor Hasil Rekalkulasi}
-    \label{fig:anchor-dist}
-  \end{figure}
-
-  Jika kita memperhatikan persebaran anchor sebelum dan sesudah direkalkulasi pada Gambar \ref{fig:anchor-dist},
-  dapat kita lihat bahwa anchor hasil rekalkulasi lebih mencakup seluruh persebaran dataset daripada anchor lama.
-  8 dari 9 anchor lama bertempat di kuadran pertama dari garis median(garis putus-putus).
-  Hal ini berarti 8 anchor tersebut hanya mampu mendeteksi sekitar 25\% dari objek-objek pada dataset.
-  Sedangkan, anchor hasil rekalkulasi menempatkan anchor di setiap kuadran.
-
-
-
-\subsection{Performa Augmentasi Mosaik dan Rekalkulasi Anchor}
-  Performa dari tiap modifikasi dapat dilihat pada tabel \ref{tbl:mosaic_reanchor_performance}.
-  Pada tabel tersebut, terlihat bahwa YOLOv7 mampu untuk mendeteksi beberapa objek pada dataset uji ketika diberi 
-  augmentasi mosaic pada data train dan direkalkulasi anchornya.
-  \input{tables/mosaic-reanchor.tex}
-
-  Hanya modifikasi nomor 3 yang mampu melakukan deteksi, maka 
-  modifikasi tersebut dijadikan baseline untuk modifikasi-modifikasi lainnya.
-  Untuk mempermudah komparasi penambahan modifikasi-modifikasi selanjutnya,
-  maka model ini akan disebut sebagai \verb*|YOLOv7-base|.
-
-\section{Pengaruh Penggantian \emph{Box Loss Function}}
-Dengan menggunakan \verb*|YOLOv7-base| sebagai baseline, 
-Box Loss function dari YOLOv7 diganti menjadi EIoU.
-Telah juga dilakukan percobaan menggunakan convexciation pada EIoU.
-Hasil dari pengujian dapat dilihat pada Tabel \ref{tbl:loss_function_perf}
-
-\input{tables/loss-functions.tex}
-
-Ternyata, meskipun EIoU memiliki performa lebih baik daripada CIoU ketika diaplikasikan
-pada Faster-RCNN+ResNet50 dengan dataset VOC2007 dan COCO2017, EIoU tidak mampu untuk meningkatkan
-AP deteksi YOLOv7 pada dataset \textcite{aot_dataset}.
-
-\section{Pengaruh Perubahan Koneksi \emph{Neck-Backbone}}
-Untuk modifikasi ini, koneksi \emph{neck-backbone} yang diubah adalah
-koneksi layer neck yang memberikan feature pada \emph{head} pertama yang
-awalnya terkoneksi dengan skala 8 dari backbone, dipindahkan ke skala 4.
-Hal ini diilustrasikan pada Gambar \ref{fig:deeperconn}.
+\end{table}
+\vspace{1ex}
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=0.7\textwidth]{figures/deeperconn.png}
-  \caption{Modifikasi Koneksi Neck. Kiri : Sebelum. Kanan : Sesudah.}
-  \label{fig:deeperconn}
+  \includegraphics[width=\textwidth]{figures/anchor-dist-2.png}
+  \caption{Anchor Distribution on Dataset. Left: Original Anchor. Right: Recalulated Anchors}
+  \label{fig:anchor-dist}
 \end{figure}
-\input{tables/neck-backbone.tex}
-Perbandingan performa modifikasi ini dengan \verb*|YOLOv7-base| dapat dilihat pada tabel \ref{tbl:neck_backbone_perf}.
-Terlihat bahwa modifikasi ini berhasil meningkatkan skor mAP@50
-dari \verb*|YOLOv7-base| sebesar 2,98\%. Untuk mempermudah perbandingan dengan modifikasi lain, model hasil modifikasi
-ini akan disebut \verb*|YOLOv7-moveconnection|
+
+If we observe the distribution of anchors before and after recalculation in Figure \ref{fig:anchor-dist},
+we can see that indeed the recalculated anchors cover more of the dataset than the original.
+8 out of 9 of the original anchors are placed in the first quadrant of the median axis.
+It means that those 8 anchors are responsible for only 25\% of the dataset and leave the rest to 1 anchor.
+This is indeed very inefficient. In contrast, the recalulated anchors have a more balanced distribution with
+anchors distributed across each quadrant.
+
+
+%Jika kita memperhatikan persebaran anchor sebelum dan sesudah direkalkulasi pada Gambar \ref{fig:anchor-dist},
+%dapat kita lihat bahwa anchor hasil rekalkulasi lebih mencakup seluruh persebaran dataset daripada anchor lama.
+%8 dari 9 anchor lama bertempat di kuadran pertama dari garis median(garis putus-putus).
+%Hal ini berarti 8 anchor tersebut hanya mampu mendeteksi sekitar 25\% dari objek-objek pada dataset.
+%Sedangkan, anchor hasil rekalkulasi menempatkan anchor di setiap kuadran.
+
+
+
+\subsubsection{Performance}
+%The performance of the 3 models compared to \verb|YOLOv7-plain| can be seen in Table \ref{tbl:mosaic_reanchor_performance}.
+%We can see from the table that \verb|YOLOv7-plain| was only able to detect anything on the test set after applying both
+%mosaic augmentation and anchor recalculation. With those 2 modification, the model was able to achieve 11.2\% score at mAP@50.
+The performance of the three models, namely \verb|YOLOv7-M|, \verb|YOLOv7-AR|, and \verb|YOLOv7-MAR|, was compared to that of the baseline model YOLOv7-plain.
+The results are presented in Table \ref{tbl:mosaic_reanchor_performance}.
+It can be observed from the table that YOLOv7-plain alone was unable to detect any objects in the test set.
+However, after applying both mosaic augmentation and anchor recalculation, the model achieved a notable improvement with a score of 11.2\% at mAP@50. 
+
+\begin{table}[H]
+  \centering
+  \captionof{table}{Mosaic Augmentation and Anchor Recalculation Performance}
+  \label{tbl:mosaic_reanchor_performance}
+  \vspace{-1ex}
+  \input{tables/mosaic-reanchor-perf.tex}
+\end{table}
+
+Since the model \verb|YOLOv7-MAR| was the only model that was capable of detection in the test set,
+we henceforth establish this model as the baseline for further modification. Meaning, in the subsequent
+sections, any modifications mentioned should be presumed to be composed of mosaic augmentation and anchor recalculation,
+in addition to the respective modification that was applied, unless explicitly stated otherwise.
+
+  %Performa dari tiap modifikasi dapat dilihat pada tabel \ref{tbl:mosaic_reanchor_performance}.
+  %Pada tabel tersebut, terlihat bahwa YOLOv7 mampu untuk mendeteksi beberapa objek pada dataset uji ketika diberi 
+  %augmentasi mosaic pada data train dan direkalkulasi anchornya.
+  %\input{tables/mosaic-reanchor.tex}
+
+  %Hanya modifikasi nomor 3 yang mampu melakukan deteksi, maka 
+  %modifikasi tersebut dijadikan baseline untuk modifikasi-modifikasi lainnya.
+  %Untuk mempermudah komparasi penambahan modifikasi-modifikasi selanjutnya,
+  %maka model ini akan disebut sebagai \verb*|YOLOv7-base|.
+
+\section{Replacing Localization Loss to EIoU}
+%Dengan menggunakan \verb*|YOLOv7-base| sebagai baseline, 
+%Box Loss function dari YOLOv7 diganti menjadi EIoU.
+%Telah juga dilakukan percobaan menggunakan convexciation pada EIoU.
+%Hasil dari pengujian dapat dilihat pada Tabel \ref{tbl:loss_function_perf}
+In this section, we experimented with $EIoU$.
+We replaced the original $CIoU$ loss of YOLOv7 to pure $EIoU$ and convexcified version of $EIoU$.
+The convexciation was done by modifying the $EIoU$ loss from $-EIoU$ to $(1-EIoU)^2$ for better
+gradient dynamics during training.
+
+The performance of these modifications can be seen in Table \ref{tbl:loss_function_perf}
+
+\begin{table}[H]
+  \centering
+  \captionof{table}{EIoU Localization Loss Performance}
+  \label{tbl:loss_function_perf}
+  \vspace{-1ex}
+  \input{tables/loss-functions.tex}
+\end{table}
+
+Surprisingly, although $EIoU$ outperformed $CIoU$ when applied to networks like Faster-RCNN+ResNet and RetinaNet
+as \textcite{eiou} claimed, it performed worse when applied to YOLOv7 with \textcite{aot_dataset}.
+Even after convexciation, $CIoU$ still outperform $EIoU$ by 6.28\%.
+%Ternyata, meskipun EIoU memiliki performa lebih baik daripada CIoU ketika diaplikasikan
+%pada Faster-RCNN+ResNet50 dengan dataset VOC2007 dan COCO2017, EIoU tidak mampu untuk meningkatkan
+%AP deteksi YOLOv7 pada dataset \textcite{aot_dataset}.
+
+\section{Utilizing Earlier Feature Map Stage}
+For this modification, we reconfigured the source of the feature map by redirecting it from P3 to P2, as shown in Figure \ref{fig:deeperconn}.
+Specifically, we adjusted the routing on layer 66, changing it from 24 to 11. 
+Since the output of layer 11 is at a different scale compared to 24 (with a scaling factor of $2^{-2}$ and $2^{-3}$ respectively), 
+we modified the upsampling factor of layer 55 from 2 to 4 to ensure size compatibility with layer 11. 
+However, this change in upsampling disrupted the subsequent layers. 
+To solve this, we performed downsampling after layer 75 (connected to the head) by setting layer 77's stride to 2 and layer 79's stride to 4, 
+resolving the size mismatch in the subsequent layers.
+The complete configuration of the layers can be seen in the appendix. %TODO: refer appendix here
+
+%For this modification, we moved the source of feature map from P3 to P2 as seen on
+%Figure \ref{fig:deeperconn}.
+%We did this by changing the route on layer 66 from 24 to 11.
+%Since output of layer 11 is at different scale compared to 24 ($input*2^{-2}$ and $input*2^{-3}$ respectively),
+%we changed the upsampling factor of layer 55 from 2 to 4 so that it matches layer 11.
+%This upsampling however distrupts the subsequent layers. As such, we had to downsample 
+%the output after layer 75 (the one connected to head). By changing layer 77's stride to 2,
+%and layer 79's stride to 4, the subsequent layers' size mismatch is no longer.
+
+
+%Untuk modifikasi ini, koneksi \emph{neck-backbone} yang diubah adalah
+%koneksi layer neck yang memberikan feature pada \emph{head} pertama yang
+%awalnya terkoneksi dengan skala 8 dari backbone, dipindahkan ke skala 4.
+%Hal ini diilustrasikan pada Gambar \ref{fig:deeperconn}.
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[][][t]{0.4\textwidth}
+      \includegraphics[width=1\linewidth]{figures/deeperconn-before.png}
+      \caption{Before Rerouting}
+      \label{fig:deeperconn-before}
+    \end{subfigure}\hfill%\hspace{4em}
+    \begin{subfigure}[][][t]{0.4\textwidth}
+      \includegraphics[width=1\linewidth]{figures/deeperconn-after.png}
+      \caption{After Rerouting}
+      \label{fig:deeperconn-after}
+    \end{subfigure}
+    \caption{Modifying Connection to Earlier Feature Map Stage}
+    \label{fig:deeperconn}
+\end{figure}
+%\begin{figure}[H]
+%  \centering
+%  \includegraphics[width=0.7\textwidth]{figures/deeperconn.png}
+%  \caption{Modifikasi Koneksi Neck. Kiri : Sebelum. Kanan : Sesudah.}
+%  \label{fig:deeperconn}
+%\end{figure}
+
+As presented in Table \ref{tbl:neck_backbone_perf}, rerouting the source of 
+feature map to an earlier stage produce an improvement of 2.98\% compared to \verb*|YOLOv7-MAR|.
+
+\begin{table}[H]
+  \centering
+  \captionof{table}{Performance of The Rerouted Model}
+  \label{tbl:neck_backbone_perf}
+  \vspace{-1ex}
+  \input{tables/neck-backbone.tex}
+\end{table}
+
+%Perbandingan performa modifikasi ini dengan \verb*|YOLOv7-base| dapat dilihat pada tabel \ref{tbl:neck_backbone_perf}.
+%Terlihat bahwa modifikasi ini berhasil meningkatkan skor mAP@50
+%dari \verb*|YOLOv7-base| sebesar 2,98\%. Untuk mempermudah perbandingan dengan modifikasi lain, model hasil modifikasi
+%ini akan disebut \verb*|YOLOv7-moveconnection|
 \vspace{2ex}
 
-\section{Pengaruh Penambahan \emph{Head}}
-Untuk modifikasi ini, pada skala 4 backbone, dipasangkan suatu layer head tambahan.
-Ilustrasi penambahan layer ini dapat dilihat pada gambar \ref{fig:addinghead}.
+\section{Additional YOLO Detection Head}
+%Untuk modifikasi ini, pada skala 4 backbone, dipasangkan suatu layer head tambahan.
+%Ilustrasi penambahan layer ini dapat dilihat pada gambar \ref{fig:addinghead}.
+To add additional head layer, we utilized the feature map at the P2 scale of the network.
+We introduced an upsampling block after layer 75 and fused it with layer 11 at layer 79 by concatenation.
+To maintain the continuity of the network, we introduced a downsampling block that concludes at layer 87.
+The subsequent layers in the network retained their original structure, but with layer numbering shifted by 25
+as seen on Figure \ref{fig:addinghead}.
 \begin{figure}[H]
   \centering
-  \includegraphics[width=0.35\textwidth]{figures/addhead.png}
-  \caption{Penambahan Layer Head}
+  \includegraphics[width=0.35\textwidth]{figures/addheadn.png}
+  \caption{Model Architecture After Increasing The Head}
   \label{fig:addinghead}
 \end{figure}
 
-\input{tables/add-head.tex}
-Seperti yang dapat dilihat pada tabel \ref{tbl:addhead}, penambahan modifikasi ini memberi performa 
-yang lebih buruk dibandingkan \verb*|YOLOv7-base|. 
-Padahal, modifikasi penambahan layer head dan \verb*|YOLOv7-moveconnection| dua-duanya menggunakan fitur pada skala 4.
-Alasan untuk hal ini akan diinvestiagsi dengan melihat output dari tiap skala pada model penambahan head dan \verb*|YOLOv7-moveconnection|.
+\begin{table}[H]
+  \centering
+  \captionof{table}{Additional Head Performance}
+  \label{tbl:addhead}
+  \vspace{-1ex}
+  \input{tables/add-head.tex}
+\end{table}
 
-\section{Pengaruh Pengubahan \emph{Head} menjadi \emph{Anchor-Free}}
-Penggantian \emph{head} menjadi \emph{decoupled anchor-free head} membuat model tidak mampu mendeteksi apapun pada dataset uji (mAP=0\%).
-\input{tables/anchor-free-perf.tex}
+As depicted in Table \ref{tbl:addhead}, additional head layer hurt the performance of the model.
+This is counterintuitive. We had seen P2 feature map capable of increasing the mAP in previous section.
+If we look at the loss at validation set, we can see that \verb|YOLO-MAR + head| is 
+minimizing the localization loss more than \verb|YOLO-MAR + rerouting|.
+There are several reasons we thought of why this happened:
+\begin{enumerate}
+  \item The network was simply producing loose bounding boxes prediction which looks better in loss function
+  but fail when threshold criteria like in $mAP@50$ is introduced.
 
+  \item This is an effect of bad choice of hyperparameters.
+\end{enumerate}
+
+%Seperti yang dapat dilihat pada tabel \ref{tbl:addhead}, penambahan modifikasi ini memberi performa 
+%yang lebih buruk dibandingkan \verb*|YOLOv7-base|. 
+%Padahal, modifikasi penambahan layer head dan \verb*|YOLOv7-moveconnection| dua-duanya menggunakan fitur pada skala 4.
+%Alasan untuk hal ini akan diinvestiagsi dengan melihat output dari tiap skala pada model penambahan head dan \verb*|YOLOv7-moveconnection|.
+
+\section{Decoupled Anchor-free Head}
+%Penggantian \emph{head} menjadi \emph{decoupled anchor-free head} membuat model tidak mampu mendeteksi apapun pada dataset uji (mAP=0\%).
+We experimented with replacing the coupled YOLO head to of a decoupled anchor-free head.
+Upon replacing the head, we also replaced the label assigner from SimOTA to TAL.
+The performance of this modification is shown in Table \ref{tbl:anchorfree_perf}.
+
+\begin{table}[H]
+  \centering
+  \captionof{table}{Anchor-free Head Performance}
+  \label{tbl:anchorfree_perf}
+  \vspace{-1ex}
+  \input{tables/anchor-free-perf.tex}
+\end{table}
+
+
+\section{Partitioning Image}
+We trained the models using partitioned image of the original dataset.
+In inference, we expect to partition an image into 4 equal sized images, which will
+then be fed to the neural network. This way, the network will produce 4 independent
+output that we can combine to form the final inference.
+
+To generate partitioned data for training, we cropped image with size of $(W/2,H/2)$
+based on the location of the objects bounding boxes. Therefore, it can be guaranteed that each image has atleast
+an object except for negative class images.
+
+Since we are partitioning the image to a smaller size, we can finally use a smaller input size 
+to the neural network. We experimented by using 640 and 960 input size on some promising models.
+
+The performace is shown on Table \ref{tbl:partition-perf}.
+\verb|YOLOv7-MAR + anchor-free| with input size 960 produced the greatest mAP@50 score
+amongs other model.
+
+
+\begin{table}[H]
+  \centering
+  \captionof{table}{Anchor-free Head Performance}
+  \label{tbl:partition-perf}
+  \vspace{-1ex}
+  \input{tables/partition-perf.tex}
+\end{table}
+
+\section{Latency}
+In this section, the latency of the modifications is presented.
+The data obtained using computer with specification presented in section \ref{section:instrument}
+
+
+\begin{table}
+  \centering
+  \captionof{table}{Inference Speed of Modified Models}
+  \label{tbl:inference-speed}
+  \vspace{-1ex}
+  \begin{adjustbox}{width=\textwidth}
+  \input{tables/latency.tex}
+  \end{adjustbox}
+
+\end{table}

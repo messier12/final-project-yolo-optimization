@@ -112,6 +112,7 @@
   showstringspaces=false,
   upquote=true,
   tabsize=2,
+  gobble=4,
 }
 \lstset{style=codestyle}
 
@@ -135,6 +136,31 @@
 \usepackage{graphicx}
 \usepackage{svg}
 \usepackage{svgcolor}
+\usepackage{forest}
+\usepackage{adjustbox}
+%\usepackage{lmodern}
+%\usepackage{algorithm2e}
+
+
+
+%\lstnewenvironment{algorithm}[1][] %defines the algorithm listing environment
+%{   
+%    \refstepcounter{nalg} %increments algorithm number
+%    \captionsetup{labelformat=algocaption,labelsep=colon} %defines the caption setup for: it ises label format as the declared caption label above and makes label and caption text to be separated by a ':'
+%    \lstset{ %this is the stype
+%        mathescape=true,
+%        frame=tB,
+%        numbers=left, 
+%        numberstyle=\tiny,
+%        basicstyle=\scriptsize, 
+%        keywordstyle=\color{black}\bfseries\em,
+%        keywords={,input, output, return, datatype, function, in, if, else, foreach, while, begin, end, } %add the keywords you want, or load a language as Rubens explains in his comment above.
+%        numbers=left,
+%        xleftmargin=.04\textwidth,
+%        #1 % this is to add specific settings to an usage of this environment (for instnce, the caption and referable label)
+%    }
+%}
+%{}
 %\newcolumntype{$}{>{\global\let\currentrowstyle\relax}}
 %
 %

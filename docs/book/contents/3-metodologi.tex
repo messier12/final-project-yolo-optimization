@@ -242,18 +242,71 @@ The model that qualify for selection must be able to perform inference with spee
   %Decoupled head gives us 2 advantages. 
   %1) Reducing the amount of
 
+  \subsection{Partitioning Image}
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{figures/imagepartition.png}
+    \caption{An Image Partitioned to 4 Images}
+    \label{fig:imagepartition}
+  \end{figure}
+  Partitioning the image can significantly improve the accuracy of small object detection.
+  The partitioning process involves cropping the original image into smaller sections, thereby avoiding excessive downscaling of the image before feeding it into the neural network.
+  This approach allows the network to retain finer details and preserve the integrity of small objects, ultimately leading to more accurate detection results.
+  By breaking down the image into manageable segments, the network can focus on individual regions of interest and capture the features of small objects with greater precision. 
 
+  One challenge associated with partitioning images is the potential increase in inference latency.
+  When an image is partitioned into multiple sections, the neural network needs to perform separate detections on each partition.
+  As a result, the inference time is multiplied by the number of partitions.
+  For instance, if we divide an image into four parts, the network will have to carry out four separate detections, leading to a significant increase in latency. 
   %Pada YOLOX, \emph{coupled anchor head} seperti pada arsitektur YOLO pada umumnya diganti dengan \emph{decoupled anchor-free head} \parencite{yolox}.
   %Keuntungan dari model anchor-free adalah kita tidak perlu mendefinisikan \emph{anchor} sebelum melakukan training sehingga mengurangi beberapa proses
   %tuning heuristik seperti rekalkulasi anchor. Memakai \emph{head} yang anchor free juga memberi kompleksitas proses training dan pendekodean output model.
   %\cite{yolox} melaporkan peningkatan pada akurasi dan pengurangan parameter sehingga mempercepat lama deteksi.
   %Oleh karena hal-hal tersebut, mencoba memakai \emph{head anchor-free} di YOLOv7 baik untuk dicoba.
     
-    
-\section{Dataset}
+\section{Instruments}
+\label{section:instrument}
+To conduct this research, we will be using a computer with the following specification:
+\begin{itemize}[noitemsep,topsep=0pt,leftmargin=.1\textwidth,rightmargin=.1\textwidth]
+  \item CPU \hfill Intel® Core™ i5-9400F CPU @ 2.90GHz
+  \item GPU \hfill Nvidia Geforce RTX 2080 Ti
+  \begin{itemize}[noitemsep,topsep=0pt]
+    \item[] Memory \hfill 11 GB
+    \item[] CUDA Compute Capability \hfill 7.5
+  \end{itemize}
+  \item RAM \hfill 12 GB
+  \item Hard Drive Available Memory \hfill 1.3 TB
+  \item Operating System \hfill Ubuntu 20.04
+  \item Cuda Toolkit Version \hfill 11.7
+  \item PyTorch Version \hfill 1.13.1
+\end{itemize}
+
+\section{Pilot Test}
+To ensure the reliability of the instruments, and to find the instrument-induced constraint, we performed A
+pilot test.
+In this pilot test, we trained several YOLOv7 models with varying input sizes with a dummy dataset for 300 epochs.
+The dummy dataset have the same dimension as the \textcite{aot_dataset}.
+The results are presented in Table \ref{tbl:pilot}. 
+\begin{table}[H]
+  \centering
+  \captionof{table}{Pilot Test Training}
+  \label{tbl:pilot}
+  \vspace{-1ex}
+  \begin{adjustbox}{width=\textwidth}
+    \input{tables/pilot.tex}
+  \end{adjustbox}
+\end{table}
+
+From Table \ref{tbl:pilot}, we want to pick a baseline model to apply our modification.
+Since we want to persist the features of the $2048\times 2448$ px images, we pick the 
+largest input size the machine can handle but still able to give enough room for some 
+changes in architecture. For this reason, we picked YOLOv7 with input size 1600 and batch size 1
+as the baseline.
+
+\section{Dataset Preparation}
 \label{section:dataset}
 
-  \subsection{Source}
+  \subsection{Dataset Source}
   \label{section:datasetsource}
   Dataset containing annotated images of airborne objects can be obtained from \textcite{aot_dataset}.
   This dataset is hosted in an AWS S3 Bucket.
@@ -281,41 +334,112 @@ The model that qualify for selection must be able to perform inference with spee
   %Distribusi dari luas \emph{boudning box} dapat dilihat pada gambar \ref{fig:areadist}.
   %Perhatikan pada gambar tersebut, sumbu x menggunakan skala logaritmik.
   %Sebagai referensi, luas dari tiap frame itu sekitar $5\times10^16 px^2$.
-  %\begin{figure}[H]
-  %  \centering
-  %  \includegraphics[scale=0.65]{figures/area-dist.png}
-  %  \caption{Penambahan \emph{Layer} Head pada YOLO}
-  %  \label{fig:areadist}
-  %\end{figure}
+  If we look at the area (in $px$) distribution of the objects' bounding boxes, we will find
+  the histogram in Figure \ref{fig:areadist}. Take note that in that figure, the x-axis is 
+  using a logarithmic scale, which means the data is very right skewed.
+  The median of the data is $314 px$, while the 5th and 95th percentile are $36 px$ and $5061 px$ respectively.
 
-  
-  \subsection{Sampling Dataset}
-  As seen on section \ref{section:datasetsource}, The size of the dataset is massive.
-  Due to the limitation of computational resource, we will only able to sample some of them
-  for training and testing. We will sample in total 700 images from the dataset with splits
-  as shown in Table \ref{tbl:datasetsamplingdist}.
-  %Karena jumlah dataset pada \textcite{aot_dataset} berukuran sangat besar, dan keterbatasan
-  %\emph{computational resource}, hanya sebagian dari dataset tersebut akan digunakan untuk \emph{training} dan \emph{test}.
-  %Akan diambil total 700 gambar dari dataset dengan pembagian sesuai dengan Tabel \ref{tbl:datasetsamplingdist}
-  \begin{table}[H]
+  \begin{figure}[H]
     \centering
-    \captionof{table}{Distribusi Sampling Dataset}
-    \label{tbl:datasetsamplingdist}
-    \begin{tabular}{c c c c c c c}
-      \toprule[1.5pt]
-      Splits    &Total &\multicolumn{5}{c}{Classes Percentage}\\
-                        \cline{3-7}
-                &Images& Airplane & Helicopter & Bird & Drone & Negative\\
-      \midrule
-      Training  &400   &23.75\%   &23.75\%     &23.75\% &23.75\%       &5\%\\
-      \midrule
-      Validation&100   &20\%      &20\%        &20\%    &20\%          &20\%\\
-      \midrule
-      Test      &200   &20\%      &20\%        &20\%    &20\%          &20\%\\
-      \bottomrule[1.5pt]
-    \end{tabular}
-  \end{table}
+    \includegraphics[width=.8\textwidth]{figures/area-dist.png}
+    \caption{Distribution of Bounding Boxes' Area}
+    \label{fig:areadist}
+  \end{figure}
 
+  The distribution of objects position in the camera can be seen on Figure \ref{fig:objectheatmap}
+  Most of the objects are around the center of the image.
+
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=.8\textwidth]{figures/object-pos-dist.png}
+    \caption{Distribution of Bounding Boxes' Area \parencite{aot_docs}}
+    \label{fig:objectheatmap}
+  \end{figure}
+
+  The dataset is structured in the following manner:
+
+  \input{misc/dataset-tree.tex}
+  
+  And each labels JSON file is also structured like this:
+
+  \input{misc/dataset-label-tree.tex}
+  
+  Notice that the labels are structured entity based. This made the label convertion process
+  more complex. This topic will be discussed more in the next section.
+
+
+  \subsection{Dataset Sampling}
+  \label{section:datasetsampling}
+    \subsubsection{Sampling Distribution}
+    As seen on section \ref{section:datasetsource}, The size of the dataset is massive.
+    For this reason, we only downloaded the planned encounters from the AWS S3 Bucket which 
+    in total amounted to 1.1 TB. As this number is still too large
+    due to the limitation of computational resource, we will only sample some of them
+    for training and testing. We will sample in total 700 images from the dataset with splits
+    as shown in Table \ref{tbl:datasetsamplingdist}.
+    %Karena jumlah dataset pada \textcite{aot_dataset} berukuran sangat besar, dan keterbatasan
+    %\emph{computational resource}, hanya sebagian dari dataset tersebut akan digunakan untuk \emph{training} dan \emph{test}.
+    %Akan diambil total 700 gambar dari dataset dengan pembagian sesuai dengan Tabel \ref{tbl:datasetsamplingdist}
+    \begin{table}[H]
+      \centering
+      \captionof{table}{Distribusi Sampling Dataset}
+      \label{tbl:datasetsamplingdist}
+      \input{tables/dataset-sampling-dist.tex}
+    \end{table}
+    
+    \subsubsection{Sampling and Label Convertion Procedure}
+    Sampling the dataset was not straightforward. Due to how the \textcite{aot_dataset} files and labels was structured,
+    we had to make a sampling and converting procedure like the following:
+
+    \begin{enumerate}
+      \item Open all \verb|labels.json| file and load all entities into a single list called \verb*|entities|
+      \item Let \verb|Img2Boxes| be a dictionary with image names as key and list of bounding boxes in the image as value.
+      \item Let \verb|Cls2Img| be a dictionary with 4 class names as key (airplane, bird, etc) and set of image name that contain object of those classes as the value.
+      \item Populate \verb|Img2Boxes| and \verb|Cls2Img| in the following manner:
+      \begin{lstlisting}
+      For entity in entities:
+        Img2Boxes[entity.ImageName].append(entity.BoundingBox)
+        Cls2Img[entity.BoundingBox.class].append(entity.ImageName)
+      \end{lstlisting}
+      \item Calculate the total image needed for each class according to Table \ref{tbl:datasetsamplingdist}.\\
+            e.g. Total image needed for airplane class is $\frac{400\times 23.75+100\times 20+200\times 20}{100}$.
+      \item Distribute the images to train, valid and test.
+      \begin{lstlisting}
+      For class in list_of_classes:
+        Images[class] = Cls2Img[class].random_choice(TotalImageNeeded[class])
+      For class in list_of_classes[-1]: // except negative sample
+        addtotrain = images[class][:23.75/63.75*TotalImageNeeded[class]]
+        images[class] = images[class][23.75/63.75*TotalImageNeeded[class]:]
+        train.append(addtotrain)
+
+        do the same to valid and test
+      process the negative sample independently
+        
+
+      
+      \end{lstlisting}
+    
+      \item Convert \verb|train|, \verb|valid|, \verb|test| to darknet format.
+      \begin{lstlisting}
+      For img in train:
+        label = []
+        For boxes in Img2Boxes[img]
+          // to_darknet converts class xyxy to class x y w h normalized
+          label.append(to_darknet(boxes.BoundingBox))
+        copy(img, train_folder+img)
+        write(label, train_folder+img.with_suffix('.txt'))
+
+      repeat for valid and test
+      \end{lstlisting}
+
+    \end{enumerate}
+    %\begin{lstlisting}[caption={Test},mathescape,escapechar=\%]
+    %  //Calculate the total image needed for each class (Table %\ref{tbl:datasetsamplingdist}%)
+    %  TotalClassesPartition = [$\frac{400*23.75 + 100*20 + 200*20}{100}$].repeat(4) //for each class
+    %  TotalClassesPartition.append($\frac{400*5 + 100*20 + 200*20}{100}$) // for negative class
+
+
+    %\end{lstlisting}
   %Untuk membagi dataset agar terdistribusi seperti pada Tabel \ref{tbl:datasetsamplingdist}, akan digunakan algoritma seperti berikut:
   %\begin{algorithmic}
   %  \State $L_0 \gets$ List index gambar-gambar yang memiliki objek kelas pesawat
@@ -330,21 +454,6 @@ The model that qualify for selection must be able to perform inference with spee
 
   %\end{algorithmic}
 
-\section{Instruments}
-To conduct this research, we will be using a computer with the following specs:
-\begin{itemize}[noitemsep,topsep=0pt,leftmargin=.1\textwidth,rightmargin=.1\textwidth]
-  \item CPU \hfill Intel® Core™ i5-9400F CPU @ 2.90GHz
-  \item GPU \hfill Nvidia Geforce RTX 2080 Ti
-  \begin{itemize}[noitemsep,topsep=0pt]
-    \item[] Memory \hfill 11 GB
-    \item[] CUDA Compute Capability \hfill 7.5
-  \end{itemize}
-  \item RAM \hfill 12 GB
-  \item Hard Drive Available Memory \hfill 1.3 TB
-  \item Operating System \hfill Ubuntu 20.04
-  \item Cuda Toolkit Version \hfill 11.7
-  \item PyTorch Version \hfill 1.13.1
-\end{itemize}
 %\input{tables/specs.tex}
   %Untuk melaksanakan eksperimen ini, akan digunakan suatu komputer yang dilengkapi dengan
   %GPU Nvidia RTX 2080 Ti yang memiliki kapasitas 11GB VRAM. Oleh karena keterbatasan ini,
@@ -357,6 +466,12 @@ To conduct this research, we will be using a computer with the following specs:
   %Selain itu, jumlah dataset yang akan digunakan juga akan dibatasi menjadi 400 seperti pada subbab \ref{section:dataset} untuk menghemat waktu training.
   %Pada pilot test, ditemukan bahwa dibutuhkan sekitar 20 jam untuk men-\emph{train} model sebanyak 300 epoch pada dataset dengan 400 gambar jika menggunakan
   %GPU RTX 2080 Ti.
+
+%\section{Setting Up Experiment Environment}
+%
+%  \subsection{Training System}
+%  \subsection{Pilot Test}
+  %\subsection{Pilot Test}
 
 
 

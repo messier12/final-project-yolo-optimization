@@ -1,14 +1,8 @@
-\begin{table}[H]
-  \centering
-  \captionof{table}{Performa \emph{Anchor-free Head}}
-  \label{tbl:anchorfree_perf}
-  \vspace{-1ex}
-  \begin{tabular}{ l l c }
-    \toprule[1.5pt]
-    No & Modifikasi                                 &mAP@50 \\
-    \midrule
-    0  & \textbf{yolov7-base (anchor head)}                       & \textbf{11,2\%}\\
-    1  & \textbf{yolov7-base + (anchor-free head)}       & 0\%\\
-    \bottomrule[1.5pt]
-  \end{tabular}
-\end{table}
+\begin{tabular}{ l l c }
+  \toprule[1.5pt]
+  No & Model                                 &mAP@50 \\
+  \midrule
+  0  & \texttt{YOLOv7-MAR (anchor head)}        & \textbf{11.2\%}\\
+  1  & \texttt{YOLOv7-MAR + anchor-free head}       & 0\% Bug Fix Data Coming Up\\
+  \bottomrule[1.5pt]
+\end{tabular}

@@ -1,26 +1,36 @@
-\chapter{PENUTUP}
+\chapter{CONCLUSION}
 
 % Ubah bagian-bagian berikut dengan isi dari penutup
 
-\section{Kesimpulan Sementara}
-\label{section:kesimpulan}
+\section{Conclusion}
+\label{section:Conclusion}
 
-Berdasarkan hasil pengujian yang dilakukan, dapat disimpulkan bahwa:
-Dari himpunan modifikasi-modifikasi yang diajukan pada penelitian ini,
-didapatkan kombinasi modifikasi yang paling optimal.
-Modifikasi tersebut penambahan augmentasi mosaik, rekalkulasi anchor, dan pemindahan koneksi neck-backbone.
-Dengan modifikasi itu, skor mAP@50 dari YOLOv7 meningkat sebanyak 14,09\%.
+Based on the experiments conducted in previous chapter, we can conclude that:
+among the modification candidates proposed in this research, we found the combination
+of mosaic augmentation, anchor recalculation, and rerouting feature map from P3 to P2
+produced the greatest mAP@50 score 14.09\%. 
+Another improvement we made by partitioning in the input image and perform inference 
+on each of them independently. We find that a YOLOv7 model with mosaic augmentation,
+and replacement of head layer with decoupled anchor-free head gives out the greatest
+mAP@50 score of 46.18\%. 
+%Berdasarkan hasil pengujian yang dilakukan, dapat disimpulkan bahwa:
+%Dari himpunan modifikasi-modifikasi yang diajukan pada penelitian ini,
+%didapatkan kombinasi modifikasi yang paling optimal.
+%Modifikasi tersebut penambahan augmentasi mosaik, rekalkulasi anchor, dan pemindahan koneksi neck-backbone.
+%Dengan modifikasi itu, skor mAP@50 dari YOLOv7 meningkat sebanyak 14,09\%.
 
-\section{Diskusi}
-Modifikasi-modifikasi yang diaplikasikan pada penelitian ini hingga saat ini
-masih dibatasi pada modifikasi yang tidak secara signifikan mempengaruhi \emph{latency}.
-Beberapa modifikasi seperti melakukan partisi pada gambar, dan melakukan deteksi di
-tiap partisinya. Dengan metode ini, objek yang dipelajari akan terlihat lebih besar
-sehingga lebih mudah untuk dideteksi. Akan tetapi, latency pendeteksian untuk tiap gambar
-akan meningkat sebanyak jumlah partisi kali lipat. Untuk mengatasi hal tersebut,
-kita dapat melakukan down-scaling pada model yang digunakan. Modifikasi jenis ini
-perlu dicoba untuk menentukan jumlah partisi dan down-scaling model yang tepat
-untuk mempertahankan kecepatan deteksi yang \emph{real-time}.
+%\section{Discussion}
+%Modifikasi-modifikasi yang diaplikasikan pada penelitian ini hingga saat ini
+%masih dibatasi pada modifikasi yang tidak secara signifikan mempengaruhi \emph{latency}.
+%Beberapa modifikasi seperti melakukan partisi pada gambar, dan melakukan deteksi di
+%tiap partisinya. Dengan metode ini, objek yang dipelajari akan terlihat lebih besar
+%sehingga lebih mudah untuk dideteksi. Akan tetapi, latency pendeteksian untuk tiap gambar
+%akan meningkat sebanyak jumlah partisi kali lipat. Untuk mengatasi hal tersebut,
+%kita dapat melakukan down-scaling pada model yang digunakan. Modifikasi jenis ini
+%perlu dicoba untuk menentukan jumlah partisi dan down-scaling model yang tepat
+%untuk mempertahankan kecepatan deteksi yang \emph{real-time}.
+%\section{Discussion}
+%With greater computaational resource, this research could probably be better.
 
 
 
