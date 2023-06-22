@@ -271,10 +271,15 @@
   Due to the relaxed constraints, coarse label assignment to auxilary heads assigns more positive labels the auxilary heads' grids. 
   This way, the network will learn more to recall.
   On inference, this recall ability would be filtered by the lead head to produce accurate prediction.
+
   \subsubsection{Reparameterization}
   YOLOv7 utilized RepConv and YOLOR implicit layers in its network.
-  These 2 layers can be reparameterized after training to simplify the neural network, thereby reducing
+  These layers can be reparameterized after training to simplify the neural network, thereby reducing
   latency and memory usage but not hurting inference performance.
+
+  The reparameterization of YOLOR implicit layers can be done after training by computing
+  some mathematical simplification of the implicit layers.
+  %TODO: reparam equation here
     %YOLOv7 merupakan pendeteksi objek \emph{real time} dengan skor akurasi tertinggi pada dataset COCO di tahun 2022.
     %Pada YOLOv7, dilakukan beberapa perubahan untuk meningkatkan akurasi dan kecepatan deteksinya.
     %Perubahan-perubahan tersebut dilakukan pada arsitekturnya dan pada \emph{bag-of-freebies}-nya.
@@ -371,8 +376,17 @@
   %Oleh karena itu, untuk meningkatkan kemampuan mendeteksi objek kecil YOLOv7, beberapa modifikasi yang dilakukan YOLO-Z pada YOLOv5 dapat diaplikasikan.
 
   \subsection{exYOLO}
-  exYOLO is a modification of YOLOv3 \parencite{exyolo}.
-  exYOLO added a Receptive Field Block before feature-fusion in the neck to one of the feature scale.
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{figures/exyolo.png}
+    \caption{Architecture of exYOLO}
+    \label{fig:exyolo}
+  \end{figure}
+
+  exYOLO is a modification of YOLOv3 to detect small objects \parencite{exyolo}.
+  \textcite{exyolo} thought that the features of small objects in an image would disappear
+  after series stage of down-sampling in the neural network.
+  To solve this exYOLO added a feature enhancement before feature-fusion in the neck to one of the feature scale as seen in Figure \ref{fig:exyolo}.
   This change made exYOLO produce a higher mAP score on VOC2007 compared to its baseline YOLOv3.
     %exYOLO merupakan hasil modifikasi arsitektur YOLOv3 \parencite{exyolo}.
     %Pada exYOLO, dilakukan modifikasi \emph{neck} dengan menambahkan suatu \emph{Receptive Field Block} sebelum penggabungan \emph{feature map} yang akan diupsampling.
