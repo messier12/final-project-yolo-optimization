@@ -107,6 +107,73 @@
     and (3) predict the class of the object. These 3 loss functions that correspond to those objectives are called 
     objectness loss, box loss, and class loss respectively. To update the weights on training, the total loss is calculated as 
     the weighted sum of those 3 losses.
+    %\begin{equation}
+    %  L_{box} = \sum_{k=0}^{n}\sum_{i,j=0}^{N_k}\sum_{m=0}^{A_k} \mathbbm{1}_{k,i,j,m}^{obj} -IoU(gt(x), M(x)_{k,i,j,m})
+    %\end{equation}
+    In original YOLO, the loss functions were defined like the following.
+
+    For localization loss, it is described by equation \ref{eq:yolo-box-loss}.
+    \begin{equation}
+      L_{box} = \sum_{i=0}^{S^2} \sum_{j=0}^B \mathbbm{1}_{ij}^{obj} \left[(x_i - \hat{x}_i)^2 + (y_i - \hat{y}_i)^2 + (\sqrt{w_i}-\sqrt{\hat{w}_i})^2 + (\sqrt{h_i}-\sqrt{\hat{h}_i})^2\right] \\
+      \label{eq:yolo-box-loss}
+    \end{equation}
+    \begin{align*}
+    \text{Where}~S^2  &= \text{the total number of grid cells in the output,}\\
+    B &= \text{ the total number of anchor box per grid cells,}\\
+    \mathbbm{1}_{ij}^{obj} &= \begin{cases}
+                                1, & \text{if object present in grid}\\
+                                0, & \text{otherwise,}
+                              \end{cases} 
+                              \\
+    (x_i, y_i) &= \text{the predicted coordinates of the center of object i}\\
+    (\hat{x}_i, \hat{y}_i) &= \text{the ground truth coordinates of the center of object}\\
+    (w_i, h_i) &= \text{the predicted width and height of object i}\\
+    (\hat{w}_i, \hat{h}_i) &= \text{the ground truth width and height of object}
+      %\text{the indicator variable that has value 1 if object is present in the grid and 0 otherwise.}
+    \end{align*}
+    %$\mathbbm{1}_{ij}^{obj}$ is the indicator variable that has value 1 if object is present in the grid and 0 otherwise.
+    %$(x_i, y_i)$ and $(\hat{x}_i, \hat{y}_i)$ are the predicted and ground truth coordinates of the center of object $i$.
+    %$(w_i, h_i)$ and $(\hat{w}_i, \hat{h}_i)$ are the predicted and ground truth widths and heights of object $i$.
+    For objectness loss, described by equation \ref{eq:yolo-obj-loss}
+    \begin{equation}
+      L_{obj} = \sum_{i=0}^{S^2} \sum_{j=0}^B \mathbbm{1}_{ij}^{obj}(C_i - \hat{C}_i)^2  + \alpha \mathbbm{1}_{ij}^{noobj}(C_i - \hat{C}_i)^2
+      \label{eq:yolo-obj-loss}
+    \end{equation}
+    \begin{align*}
+    Where~\mathbbm{1}_i^{\text{noobj}} &=\begin{cases} 
+                                          1, & \text{if object assigned to anchor j}\\
+                                          0, & \text{otherwise} 
+                                         \end{cases}\\
+          (C_i,\hat{C}_i) &= \text{predicted and ground truth confidence score for objectness of anchor}
+    \end{align*}
+    %$(C_i, \hat{C}_i)$ are the predicted and ground truth confidence scores for objectness of anchor $i$,
+    And for class loss, described by \ref{eq:yolo-class-loss}
+    \begin{equation}
+      L_{class} = \sum_{i=0}^{S^2} \mathbbm{1}_{ij} \sum_{c \in classes} (p_i(c) - \hat{p}_i(c))^2
+      \label{eq:yolo-class-loss}
+    \end{equation}
+    Where $(p_i(c), \hat{p}_i(c))$ are the predicted and ground truth class probabilities for class $c$ for object $i$.
+
+    The three losses combined to the final loss function in equation \ref{eq:yolo-loss}
+    \begin{equation}
+      L = \lambda_{box}L_{box} + \lambda_{obj}L_{obj} + \lambda_{class}L_{class}
+      \label{eq:yolo-loss}
+    \end{equation}
+    \begin{align*}
+      Where~\lambda_{box} &= \text{the weight for localization,}\\
+      \lambda_{obj} &= \text{weight for objectness}\\
+      \lambda_{class} &= \text{weight for class}
+    \end{align*}
+    These 3 $\lambda$-s can be tuned to optimize the performance of a YOLO network.
+
+    %\begin{equation}
+    %  L_{box} = \sum_{i=0}^{S^2}\sum_{j=0}^B   \mathbbm{1}_{ij}^{obj} (x_i-\hat{x}_i)^2 + (y_i-\hat{y}_i)^2 + (\sqrt{w_i}-\sqrt{\hat{w}_i})^2 + (\sqrt{h_i}-\sqrt{\hat{h}_i})^2 
+    %\end{equation}
+      %L_{box} = \sum_{k=0}^{n}\sum_{i,j=0}^{N_k}\sum_{m=0}^{A_k} \mathbbm{1}_{k,i,j,m}^{obj} -IoU(gt(x), M(x)_{k,i,j,m})
+
+    %\begin{equation}
+    %  L_{box} = 1
+    %\end{equation}
 
   
       
