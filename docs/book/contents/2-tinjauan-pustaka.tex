@@ -199,17 +199,19 @@
   %    \label{fig:elan}
   %\end{figure}
   \begin{figure}[H]
-    \begin{subfigure}[c][][b]{.2\textwidth}
+    \centering
+    \begin{subfigure}[c][][c]{.4\textwidth}
         %%%\vspace{0pt}
         \includegraphics[width=1\linewidth]{figures/elan-block.png}
         \caption{ELAN block}
         \label{fig:elan-block}
-    \end{subfigure}\hfill%   
-    \begin{subfigure}[c][][c]{.75\textwidth}
+    \end{subfigure}
+
+    \begin{subfigure}[c][][c]{.9\textwidth}
         \includegraphics[width=1\linewidth]{figures/yolo-elan-blocks.png}
         \caption{First two ELAN blocks in YOLOv7}
         \label{fig:elan-yolo}
-    \end{subfigure}\hfill%
+    \end{subfigure}
 
     \caption{ELAN in YOLOv7}
     \label{fig:elan}
@@ -221,23 +223,24 @@
   ELAN is a convolutional neural network that was designed to extract features efficiently 
   by controlling the shortest longest gradient path in the network \parencite{elan}.
   This choice of backbone allows YOLOv7 to perform prediction more accurately despite having fewer number of parameters. 
-  Figure \ref{fig:elan-yolo} shows how ELAN block in Figure \ref{fig:elan-block} used in YOLOv7.
+  Figure \ref{fig:elan-yolo} shows how ELAN block in Figure \ref{fig:elan-block} implemented in YOLOv7.
 
   \subsubsection{Label Assignment Strategy and Auxilary Head}
   \begin{figure}[H]
       \centering
 
-      \begin{subfigure}[][][t]{0.3\textwidth}
+      \begin{subfigure}[][][t]{0.5\textwidth}
         \includegraphics[width=1\linewidth]{figures/auxilary-head.png}
         \caption{Auxliary heads attachment in YOLOv7}
         \label{fig:aux-head}
-      \end{subfigure}\hfill
-      \begin{subfigure}[][][t]{0.3\textwidth}
+      \end{subfigure}
+
+      \begin{subfigure}[][][t]{0.4\textwidth}
         \includegraphics[width=1\linewidth]{figures/lead-head-assigner.png}
         \caption{Lead guided label assignment}
         \label{fig:lead-head}
       \end{subfigure}\hfill
-      \begin{subfigure}[][][t]{0.3\textwidth}
+      \begin{subfigure}[][][t]{0.4\textwidth}
         \includegraphics[width=1\linewidth]{figures/coarse-to-fine.png}
         \caption{Coarse-to-fine lead guided label assignment}
         \label{fig:coarse-to-fine}
@@ -324,7 +327,7 @@
   \label{section:mosaic_study}
   \begin{figure}[H]
     \centering
-    \includegraphics[scale=0.6]{figures/mosaic-aug.png}
+    \includegraphics[width=0.5\textwidth]{figures/mosaic-aug.png}
     \caption{Four example of mosaic augmentation \parencite{yolov5}}
     \label{fig:mosaic}
   \end{figure}
