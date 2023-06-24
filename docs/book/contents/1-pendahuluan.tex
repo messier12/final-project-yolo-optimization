@@ -69,12 +69,12 @@
     these challenges. 
     \begin{figure} [H]
         \centering
-        \includegraphics[width=0.7\textwidth]{figures/yolov7-coco.png}
+        \includegraphics[width=0.75\textwidth]{figures/yolov7-coco.png}
         \caption{YOLOv7 performance on COCO dataset compared to other object detectors.}
         \label{fig:yolov7-coco}
     \end{figure}
 
-    Introducing YOLOv7, a state-of-the-art deep learning based real-time object detector \parencite{yolov7}.
+    Introducing YOLOv7, a state-of-the-art convolutional neural network based real-time object detector \parencite{yolov7}.
     At the time of the proposal for this research was made (November 2022),
     YOLOv7 outperform both in speed and accuracy of all known real-time object detectors 
     with inference speed in the range of 5-160 FPS. It also has the highest accuracy (56.8\% AP) among
@@ -131,7 +131,7 @@
     on YOLOv7 would not lose its real-time detection ability and is still reasonably computable/trainable.
     Otherwise, we can just run a Solomonoff induction on airborne object data and call the result a modification
     of YOLOv7. Thus, we state the following scopes for the problem.
-    \begin{itemize}[noitemsep,topsep=0pt]
+    \begin{itemize}%[noitemsep,topsep=0pt]
         \item YOLOv7 is used as the baseline for modifications. 
         \item The result of modification must be able to perform inference in real-time.
         \item The modified YOLOv7 must be trainable within a reasonable duration using the computational resource
