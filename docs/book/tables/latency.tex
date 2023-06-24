@@ -1,22 +1,22 @@
 \begin{tabular}{ l l c c c}
   \toprule[1.5pt]
-  No & Model                                       &   Input Size         &\multicolumn{2}{c}{Inference Speed}                   \\
-     &                                             &                      &Not Reparameterized  &  Reparameterized   \\
+  No & Model                                       &   Input Size         &\multicolumn{2}{c}{Inference Speed}          \\
+     &                                             &                      &                     & \footnotesize{YOLOR Reparameterized} \\
   \midrule
-  0  & \texttt{YOLOv7-MAR, plain, M, AR, EIoU}     &      1600            & 29.6 FPS            & TBA   \\
-  1  & \texttt{YOLOv7-MAR + rerouting}             &      1600            & 23.28 FPS           & TBA   \\
-  2  & \texttt{YOLOv7-MAR + more head}                 &      1600            & 15.91 FPS           & TBA   \\
-  3  & \texttt{YOLOv7-MAR + anchor-free}               &      1600            & TBA                 & TBA   \\
+  0  & \texttt{YOLOv7-MAR, plain, M, AR, EIoU}     &      1600            & 29.6 FPS            & 29.6 FPS   \\
+  1  & \texttt{YOLOv7-MAR + rerouting}             &      1600            & 23.28 FPS           & 23.02 FPS   \\
+  2  & \texttt{YOLOv7-MAR + more head}             &      1600            & 15.91 FPS           & 16.09 FPS   \\
+  3  & \texttt{YOLOv7-MAR + anchor-free}           &      1600            & TBA                 & TBA   \\
   \midrule
-  4  & \texttt{YOLOv7-MAR}                         &  Partition 4, 960    & TBA                 & TBA   \\
-  5  & \texttt{YOLOv7-MAR + rerouting}             &  Partition 4, 960    & TBA                 & TBA   \\
-  6  & \texttt{YOLOv7-MAR + more head}             &  Partition 4, 960    & TBA                 & TBA   \\
-  7  & \texttt{YOLOv7-M + anchor-free}           &  Partition 4, 960    & TBA                 & TBA   \\
+  4  & \texttt{YOLOv7-MAR}                         &  Partition 4, 960    & 72.45 FPS           & 73.75 FPS  \\
+  5  & \texttt{YOLOv7-MAR + rerouting}             &  Partition 4, 960    & 60.35 FPS           & 61.64 FPS  \\
+  6  & \texttt{YOLOv7-MAR + more head}             &  Partition 4, 960    & 40.7 FPS            & 41.8   \\
+  7  & \texttt{YOLOv7-M + anchor-free}             &  Partition 4, 960    & TBA                 & TBA   \\
   \midrule
   8  & \texttt{YOLOv7-MAR}                         &  Partition 4, 640    & TBA                 & TBA   \\
   9  & \texttt{YOLOv7-MAR + rerouting}             &  Partition 4, 640    & TBA                 & TBA   \\
   10 & \texttt{YOLOv7-MAR + more head}             &  Partition 4, 640    & TBA                 & TBA   \\
-  11 & \texttt{YOLOv7-M + anchor-free}           &  Partition 4, 640    & TBA                 & TBA   \\
+  11 & \texttt{YOLOv7-M + anchor-free}             &  Partition 4, 640    & TBA                 & TBA   \\
   %\midrule
   %   & Improvement                                 &              & \textbf{\textcolor{red}{-6\%}} &TBA\\
   \bottomrule[1.5pt]
