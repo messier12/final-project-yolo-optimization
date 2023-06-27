@@ -1,16 +1,18 @@
 \begin{tabular}{ l l c c c c}
   \toprule[1.5pt]
-  No & Model                                       &  Input Size   &Training Time (300 epochs)    &VRAM Usage & Average GPU Temperature \\
+  No & Model                                       &  Input Size   &Training Time                 &VRAM Usage & Average GPU             \\
+     &                                             &               &              (300 epochs)    &           &             Temperature \\
   \midrule
   0  & \texttt{YOLOv7}                             &     640       & 4.0h                         &4.5GB          &  82                     \\
   1  & \texttt{YOLOv7 batch-size=2}                &     640       & 2.5h                         &6.5GB          &  82                     \\
   2  & \texttt{YOLOv7}                             &     960       & 4.7h                         &6.5GB          &  84                     \\
-  3  & \texttt{YOLOv7}                             &     1600      & 20h                          &9.5GB          &   84                    \\
-  4  & \texttt{YOLOv7}                             &     2000      & N/A                          &Out of Memory  &                         \\
-  5  & \texttt{YOLOv7-d6}                          &     1600      &                              &10GB           &  85                     \\
-  6  & \texttt{YOLOv7-w6}                          &     1600      & N/A                          &10.5GB         &                         \\
-  7  & \texttt{YOLOv7-e6}                          &     1600      & N/A                          &Out of Memory  &                         \\
-  8  & \texttt{YOLOv7-e6e}                         &     1600      & N/A                          &Out of Memory  &                         \\
+  3  & \texttt{YOLOv7}                             &     1600      & 20h                          &9.0GB          &  84                     \\
+  3  & \texttt{YOLOv7 batch-size=2}                &     1600      & 20h                          &Out of Memory  &  85                     \\
+  4  & \texttt{YOLOv7}                             &     2000      & N/A                          &Out of Memory  &  N/A                    \\
+  5  & \texttt{YOLOv7-w6}                          &     1600      & N/A                          &10GB           &  85                     \\
+  6  & \texttt{YOLOv7-d6}                          &     1600      & N/A                          &Out of Memory  &  N/A                    \\
+  7  & \texttt{YOLOv7-e6}                          &     1600      & N/A                          &Out of Memory  &  N/A                    \\
+  8  & \texttt{YOLOv7-e6e}                         &     1600      & N/A                          &Out of Memory  &  N/A                    \\
   %\midrule
   %   & Improvement                                 &              & \textbf{\textcolor{red}{-6\%}} &TBA\\
   \bottomrule[1.5pt]

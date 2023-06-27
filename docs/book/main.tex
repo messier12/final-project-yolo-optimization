@@ -61,23 +61,23 @@
 \cleardoublepage
 
 % Kata pengantar
-%\input{misc/kata-pengantar.tex}
-%\cleardoublepage
+\input{misc/kata-pengantar.tex}
+\cleardoublepage
 
 % Daftar isi
-%\renewcommand*\contentsname{DAFTAR ISI}
+\renewcommand*\contentsname{TABLE OF CONTENTS}
 \addcontentsline{toc}{chapter}{\contentsname}
 \tableofcontents
 \cleardoublepage
 
 % Daftar gambar
-%\renewcommand*\listfigurename{DAFTAR GAMBAR}
+\renewcommand*\listfigurename{LIST OF FIGURES}
 \addcontentsline{toc}{chapter}{\listfigurename}
 \listoffigures
 \cleardoublepage
 
 % Daftar tabel
-%\renewcommand*\listtablename{DAFTAR TABEL}
+\renewcommand*\listtablename{LIST OF TABLES}
 \addcontentsline{toc}{chapter}{\listtablename}
 \listoftables
 \cleardoublepage
@@ -122,8 +122,10 @@
 \input{contents/appendix-2.tex}
 \end{appendices}
 
+\cleardoublepage
+
 % Biografi penulis
-%\input{misc/biografi-penulis.tex}
-%\cleardoublepage
+\input{misc/biografi-penulis.tex}
+\cleardoublepage
 
 \end{document}

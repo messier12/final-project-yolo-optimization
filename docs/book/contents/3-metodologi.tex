@@ -12,15 +12,17 @@
   %Tahap-tahap tersebut adalah Persiapan Dataset, Pembuatan \emph{Auto-trainer}, Pembuatan Konfigurasi Modifikasi, \emph{Training Model}, Analisis, dan Pemilihan Model Terbaik.
   %Urutan pengerjaan dari tahap-tahap ini dapat dilihat pada Gambar \ref{fig:metodologi}.
 To find the best model for detecting small objects, trial and error will be performed by
-adding or changing architecture, bag-of-specials, or bag-of-freebies of YOLOv7.
-These modifications will be tried out independently and combinatively.
+introducing modifications to YOLOv7. These modifications can include adding or changing 
+the architecture, bag-of-specials, or bag-of-freebies.
+These modifications will be tested both independently and in combination with others 
+to evaluate their impact on the model's performance.
 
-Every modification will be tested on its ability to detect airborne object.
+%Every modification will be tested on its ability to detect airborne object.
 The best model will be selected based on $mAP@50$ metric.
 This metric was chosen instead of $mAP@[50:95]$ because we don't expect for the model to be able to predict a tightly fit
-bounding boxes for small object and consider a loose 50\% coverage IoU is good enough.
+bounding boxes for small object and consider a loose 50\% coverage IoU is sufficient.
 
-The model searching method is comprised of six steps.
+The model searching method consist of six steps that need to be executed.
 These steps are dataset preparation, develop training system, create modification model configuration,
 training the model, analysis, and model selection. 
 Figure \ref{fig:methods} shows the order these steps will be executed.
@@ -61,17 +63,19 @@ Figure \ref{fig:methods} shows the order these steps will be executed.
 To conduct this research, we first have to prepare the dataset.
 First, the dataset will be downloaded from \textcite{aot_dataset}.
 Then, the labels of the dataset will be converted to darknet or COCO format.
-Next, the dataset will be sampled into training set, validation set, and test set.
+And finally, the dataset will be sampled into training set, validation set, and test set.
 The sampling will be done in a way that balances the number classes in each set so
 that there will be no dominating class during training.
   
 The next thing to do is to develop a training system.
 The purpose of this system is to make the training process easily conducted and monitored.
-This system will include features such as train fail notification, train queueing, and alert the user
-when the computer overheats.
+This system will include features such as train fail notification, train queuing, and 
+overheating alert.
 
-Moving on, we have model configuration creation. Here we will create a model configuration file based on the 
-modification that we want to try. The modification configurations will be made according to the modification
+Moving on to the next, we have model configuration creation. 
+Here we will create a model configuration file based on the 
+modification that we want to try. 
+The modification configurations will be made according to the modification
 candidates listed in section \ref{section:modificationcandidates}.
 
 The next step is to train the model.
@@ -79,9 +83,11 @@ The model configurations that was made in previous step will be built and traine
 In this step, the weights of the neural network, training history, and performance metrics will be generated for analysis.
 
 In the analysis step, we will analyze the performance of the modified YOLOv7.
-This step is done to find other candidate of modification that might work.
+This step is done to validate the result and to find other candidate of modification that might work.
 If such modification candidate was found, we will go back to create the model configuration, 
 and then train the modification.
+This iterative process allows for continuous refinement and enhancement of the 
+modifications capabilities for detecting small objects.%, ensuring a more reliable and effective object detection system.
 
 Finally, in the last step we will select the best model.
 We will select the model with the best performance among the modified YOLOv7 models.
@@ -113,7 +119,7 @@ The model that qualify for selection must be able to perform inference with spee
     %objek-objek yang ada pada gambar.
   In the implementation code of YOLOv7, the anchors provided was calculated based on COCO2017 dataset.
   We assume that the dataset distribution of airborne objects to be greatly different from COCO2017.
-  As such, the anchors must be recalculated for faster learning. This recalculation will be conducted
+  As such, the anchors must be recalculated for better learning. This recalculation will be conducted
   using k-means algorithm. One problem however is that k-means might fail to cluster the dataset into 
   the amount of anchors that we needed. To tackle this, we might have to cluster it in logarithmic coordinates. 
 
@@ -145,18 +151,18 @@ The model that qualify for selection must be able to perform inference with spee
   This value doesn't give any information whether the boxes are far apart (Figure \ref{fig:iou0far}) or 
   near but not intersecting (Figure \ref{fig:iou0near}).
   To solve this, loss involving $IoU$ are usually paired with some regularization terms.
-  For example \textcites{giou}{diou_ciou} proposed $GIoU$, $DIoU$, and $CIoU$.
+  For example \textcites{giou}{diou_ciou} proposed regularized $IoU$s named $GIoU$, $DIoU$, and $CIoU$.
   
   YOLOv7 itself is using $CIoU$ for its localization loss. $CIoU$ is just regular $IoU$
   that is paired with distance and box aspect ratio regularization terms.
   The problem of these kinds of regularized IoU is that when the boxes intersect, it does not
   behave like IoU anymore. $GIoU$, $DIoU$ and $CIoU$ have residue of their regularization when
-  the boxes intersect. Metrics used to evaluate object detection
+  the boxes intersect. Unfortunately, most metrics used to evaluate object detection
   algorithms depend on IoU (\textit{e.g.\ mAP}).
   For this reason \textcite{eiou} designed EIoU. The main appeal of EIoU
   is that it behave exactly like IoU when the boxes intersect and gives non-positive value when the
   boxes do not intersect.
-  By behaving exactly like IoU, it is hoped that the model would perform better on the metrics.
+  By behaving exactly like IoU, it is hoped that the model would perform better on the IoU-based metrics.
 
 
     %\emph{Extended} IoU (EIoU) merupakan salahsatu modifikasi dari
@@ -189,14 +195,15 @@ The model that qualify for selection must be able to perform inference with spee
     \label{fig:neckmoveback}
   \end{figure}
   In a deep neural network, the extracted feature/abstraction of the data become more prominent
-  as the input data passes through deeper layers. However, information loss also increases in the
-  deeper layer. For small object detection, information is crucial. There is a posibility the features
-  of small objects are lost as the data propagates through the network.
+  as the input data passes through deeper layers. However, so are the loss of information. 
+  For small object detection, every information in an image is crucial. 
+  There is a possibility that the features of small objects are lost as the data propagates through the network.
   
   If we view it in a data path network design perspective, the greater the length of the path from input
-  to output, the more information will be lost. Therefore, we propose to reroute the orignal connection from
+  to output, the more information will be lost. Therefore, we propose to reroute the original connection from
   backbone to the neck to an earlier stage of inference. For example, YOLOv7 take feature maps from P3, P4, and P5
   scales of the backbone, we can reroute the connection from P3 to P2 as shown in Figure \ref{fig:neckmoveback}.
+  The data path from input image to head routed to P2 is shorter than with P3.
   %Seperti pada penelitian-penelitian terkait di subbab \ref{section:relatedwork}, modifikasi \emph{neck} dapat dilakukan untuk meningkatkan akurasi pendeteksian objek kecil.
   %Modifikasi koneksi \emph{neck} ke \emph{backbone} dapat dilakukan dengan memindahkan sumber feature map untuk beberapa layer neck lebih jauh ke belakang seperti pada Gambar \ref{fig:neckmoveback}.
   %%Penambahan layer upsampling dapat membuat neural network untuk mendapatkan feature-map yang lebih detail sehingga dapat melakukan pendeteksian objek kecil dengan lebih baik.
@@ -212,17 +219,18 @@ The model that qualify for selection must be able to perform inference with spee
   An additional YOLO head means an extra stage of detection.
   With more stage of detection, the large variance of the objects in the dataset can be learned.
   This is especially good for \textcite{aot_dataset} where the area of the bounding boxes in the dataset
-  can be orders of magnitude apart (see section \ref{section:dataset}).
+  can be orders of magnitude apart as discussed in section \ref{section:dataset}.
   
   %%Penambahan YOLO head dapat membuat YOLOv7 melakukan deteksi pada skala yang lebih banyak.
   %%Hal ini akan berpengaruh pada kemampuan pendeteksian objek kecil.
   %%Dengan melakukan pendeteksian pada skala yang lebih banyak, YOLOv7 dapat mendeteksi objek yang besar maupun kecil.
   %Perhatikan bahwa penambahan YOLO Head akan diikuti dengan penambahan \emph{layer upsampling} pada \emph{neck} seperti di Gambar \ref{fig:addmorehead}.
 
-  \subsection{Replace YOLO Head to YOLOX's Decoupled Anchor-free Head}
+  \subsection{Replace YOLO Head to Decoupled Anchor-free Head}
   \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{figures/anchorfree-yolox.png}
+    \includegraphics[width=0.9\textwidth]{figures/anchorfree-yolox.png}
+    \caption*{Source: \textcite{yolox}}
     \caption{Decoupled Anchor-free Head in YOLOX compared to Coupled Head in mainstream YOLO}
     \label{fig:anchorfree}
   \end{figure}
@@ -249,25 +257,31 @@ The model that qualify for selection must be able to perform inference with spee
     \caption{An Image Partitioned to 4 Images}
     \label{fig:imagepartition}
   \end{figure}
-  Partitioning the image can significantly improve the accuracy of small object detection.
-  The partitioning process involves cropping the original image into smaller sections, thereby avoiding excessive downscaling of the image before feeding it into the neural network.
+  Partitioning the image has the potential to improve the accuracy of small object detection.
+  By partitioning images into multiple smaller images, the down scaling factor of image to neural network input size is reduced, thereby reducing the loss of information.
   This approach allows the network to retain finer details and preserve the integrity of small objects, ultimately leading to more accurate detection results.
-  By breaking down the image into manageable segments, the network can focus on individual regions of interest and capture the features of small objects with greater precision. 
+  %Partitioning the image has the potential to improve the accuracy of small object detection.
+  %The partitioning process involves cropping the original image into smaller sections, thereby avoiding excessive downscaling of the image before feeding it into the neural network.
+  %This approach allows the network to retain finer details and preserve the integrity of small objects, ultimately leading to more accurate detection results.
+  %By breaking down the image into manageable segments, the network can focus on individual regions of interest and capture the features of small objects with greater precision. 
 
-  One challenge associated with partitioning images is the potential increase in inference latency.
+  One challenge associated with partitioning image is the increase in inference latency.
   When an image is partitioned into multiple sections, the neural network needs to perform separate detections on each partition.
-  As a result, the inference time is multiplied by the number of partitions.
+  As a result, the total inference time is multiplied by the number of partitions.
   For instance, if we divide an image into four parts, the network will have to carry out four separate detections, leading to a significant increase in latency. 
+  Therefore, it is important to find the correct balance between the number of partition, and network input size.
+  %Fortunately, the input size of the neural network can be reduced to match more closely with the partitioned image size.
+  %This way, the inference time of 
   %Pada YOLOX, \emph{coupled anchor head} seperti pada arsitektur YOLO pada umumnya diganti dengan \emph{decoupled anchor-free head} \parencite{yolox}.
   %Keuntungan dari model anchor-free adalah kita tidak perlu mendefinisikan \emph{anchor} sebelum melakukan training sehingga mengurangi beberapa proses
   %tuning heuristik seperti rekalkulasi anchor. Memakai \emph{head} yang anchor free juga memberi kompleksitas proses training dan pendekodean output model.
   %\cite{yolox} melaporkan peningkatan pada akurasi dan pengurangan parameter sehingga mempercepat lama deteksi.
   %Oleh karena hal-hal tersebut, mencoba memakai \emph{head anchor-free} di YOLOv7 baik untuk dicoba.
     
-\section{Instruments}
+\section{Computational Resource}
 \label{section:instrument}
 To conduct this research, we will be using a computer with the following specification:
-\begin{itemize}[noitemsep,topsep=0pt,leftmargin=.1\textwidth,rightmargin=.1\textwidth]
+\begin{itemize}[noitemsep,leftmargin=.1\textwidth,rightmargin=.1\textwidth]
   \item CPU \hfill Intel® Core™ i5-9400F CPU @ 2.90GHz
   \item GPU \hfill Nvidia Geforce RTX 2080 Ti
   \begin{itemize}[noitemsep,topsep=0pt]
@@ -277,14 +291,14 @@ To conduct this research, we will be using a computer with the following specifi
   \item RAM \hfill 12 GB
   \item Hard Drive Available Memory \hfill 1.3 TB
   \item Operating System \hfill Ubuntu 20.04
-  \item Cuda Toolkit Version \hfill 11.7
+  \item CUDA Toolkit Version \hfill 11.7
   \item PyTorch Version \hfill 1.13.1
 \end{itemize}
 
 \section{Pilot Test}
-To ensure the reliability of the instruments, and to find the instrument-induced constraint, we performed A
+To ensure the reliability of the hardware, and to find the hardware-induced constraint, we performed A
 pilot test.
-In this pilot test, we trained several YOLOv7 models with varying input sizes with a dummy dataset for 300 epochs.
+In this pilot test, we trained several YOLOv7 models with varying input sizes on a dummy dataset for 300 epochs.
 The dummy dataset have the same dimension as the \textcite{aot_dataset}.
 The results are presented in Table \ref{tbl:pilot}. 
 \begin{table}[H]
@@ -298,22 +312,35 @@ The results are presented in Table \ref{tbl:pilot}.
 \end{table}
 
 From Table \ref{tbl:pilot}, we want to pick a baseline model to apply our modification.
-Since we want to persist the features of the $2048\times 2448$ px images, we pick the 
-largest input size the machine can handle but still able to give enough room for some 
-changes in architecture. For this reason, we picked YOLOv7 with input size 1600 and batch size 1
-as the baseline.
+Since we want to persist the features of the $2048\times 2448$ px images as much as possible, 
+we want to pick a model that has the largest input size but still able to give enough for some 
+changes in architecture. 
+For this reason, we picked YOLOv7 (entry number 3) with input size 1600 and batch size 1 as the baseline.
+This model can be trained in a reasonable time (20 hours) and enough spare room in the VRAM for architecture modifications.
+
 
 \section{Dataset Preparation}
 \label{section:dataset}
 
   \subsection{Dataset Source}
   \label{section:datasetsource}
-  Dataset containing annotated images of airborne objects can be obtained from \textcite{aot_dataset}.
-  This dataset is hosted in an AWS S3 Bucket.
+  Dataset containing annotated images of airborne objects can be obtained from \textcite{aot_dataset}
+  that was hosted in an AWS S3 Bucket.
   The dataset consist of several Unmanned Aerial Vehicle (UAV) flights' frame-by-frame camera capture.
-  There are 7 classes in the dataset but most there are 3 dominating classes.
-  The size of the dataset and its class distribution can be seen on Figure \ref{tbl:datasettraintest} and
-  \ref{tbl:datasetclasses} respectively.
+  The dataset is structured in the following manner:
+
+  \input{misc/dataset-tree.tex}
+
+  And each labels JSON file, \verb|labels.json| on each part of the data, is structured like the following:
+
+  \input{misc/dataset-label-tree.tex}
+
+  Notice that the labels are structured in an entity based manner. This made the label conversion process
+  more complex. Handling this labelling structure will be discussed more in the next section.
+
+  There are 7 classes in the dataset, but there are 3 dominating classes.
+  The size of the dataset and its class distribution can be seen on Table \ref{tbl:datasettraintest} and
+  \ref{tbl:datasetclasses}.
   %Dataset untuk objek-objek \emph{airborne} didapatkan dari \textcite{aot_dataset} dan dihost pada suatu server AWS S3 Bucket.
   %Dataset ini berisi video-video monokromatik penerbangan UAV.
   %Terdapat 4 kelas pada dataset ini yaitu pesawat, helikopter, burung, dan \emph{other}.
@@ -326,7 +353,7 @@ as the baseline.
   \end{table}
   \begin{table}[H]
     \centering
-    \captionof{table}{Dataset' Objects Classes Distribution}
+    \captionof{table}{Dataset Objects' Classes Distribution}
     \label{tbl:datasetclasses}
     \input{tables/dataset-class-dist.tex}
   \end{table}
@@ -335,9 +362,9 @@ as the baseline.
   %Perhatikan pada gambar tersebut, sumbu x menggunakan skala logaritmik.
   %Sebagai referensi, luas dari tiap frame itu sekitar $5\times10^16 px^2$.
   If we look at the area (in $px$) distribution of the objects' bounding boxes, we will find
-  the histogram in Figure \ref{fig:areadist}. Take note that in that figure, the x-axis is 
-  using a logarithmic scale, which means the data is very right skewed.
-  The median of the data is $314 px$, while the 5th and 95th percentile are $36 px$ and $5061 px$ respectively.
+  the histogram in Figure \ref{fig:areadist}. Take note that in the figure, the x-axis is 
+  using in logarithmic scale, which means the true data is very right skewed.
+  The median of the areas is $314 px$, while the 5th and 95th percentile are $36 px$ and $5061 px$, three orders of magnitude difference.
 
   \begin{figure}[H]
     \centering
@@ -345,27 +372,27 @@ as the baseline.
     \caption{Distribution of Bounding Boxes' Area}
     \label{fig:areadist}
   \end{figure}
-
-  The distribution of objects position in the camera can be seen on Figure \ref{fig:objectheatmap}
-  Most of the objects are around the center of the image.
+  The widths and heights of the objects themselves are distributed in this way:
 
   \begin{figure}[H]
     \centering
-    \includegraphics[width=.8\textwidth]{figures/object-pos-dist.png}
-    \caption{Distribution of Bounding Boxes' Area \parencite{aot_docs}}
+    \includegraphics[width=.7\textwidth]{figures/hw-dist2.png}
+    \caption{Distribution of Bounding Boxes' Widths and Heights}
+    \label{fig:hwdist}
+  \end{figure}
+
+  The distribution of objects position in the camera can be seen on Figure \ref{fig:objectheatmap}.
+  We can see that most of the objects are around the center of the image.
+
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=.7\textwidth]{figures/object-pos-dist.png}
+    \caption*{Source: \textcite{aot_dataset}}
+    \caption{Distribution of Objects' Position}
     \label{fig:objectheatmap}
   \end{figure}
 
-  The dataset is structured in the following manner:
 
-  \input{misc/dataset-tree.tex}
-  
-  And each labels JSON file is also structured like this:
-
-  \input{misc/dataset-label-tree.tex}
-  
-  Notice that the labels are structured entity based. This made the label convertion process
-  more complex. This topic will be discussed more in the next section.
 
 
   \subsection{Dataset Sampling}
@@ -387,7 +414,7 @@ as the baseline.
       \input{tables/dataset-sampling-dist.tex}
     \end{table}
     
-    \subsubsection{Sampling and Label Convertion Procedure}
+    \subsubsection{Sampling and Label Conversion Procedure}
     Sampling the dataset was not straightforward. Due to how the \textcite{aot_dataset} files and labels was structured,
     we had to make a sampling and converting procedure like the following:
 

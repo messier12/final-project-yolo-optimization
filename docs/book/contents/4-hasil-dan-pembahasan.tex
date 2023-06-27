@@ -81,7 +81,7 @@ If we observe the distribution of anchors before and after recalculation in Figu
 we can see that indeed the recalculated anchors cover more of the dataset than the original.
 8 out of 9 of the original anchors are placed in the first quadrant of the median axis.
 It means that those 8 anchors are responsible for only 25\% of the dataset and leave the rest to 1 anchor.
-This is indeed very inefficient. In contrast, the recalulated anchors have a more balanced distribution with
+This is very inefficient. In contrast, the recalculated anchors have a more balanced distribution with
 anchors distributed across each quadrant.
 
 
@@ -261,6 +261,10 @@ We experimented with replacing the coupled YOLO head to of a decoupled anchor-fr
 Upon replacing the head, we also replaced the label assigner from SimOTA to TAL.
 The performance of this modification is shown in Table \ref{tbl:anchorfree_perf}.
 
+The model was initially unable to converge due to numerical instability caused by having the objects becoming too small upon downscaling.
+After stabilizing the loss function to handle these cases as shown in \ref{appendix:numerical-stabilization}, 
+this modification was able to improve the mAP score by 21.78\%.
+
 \begin{table}[H]
   \centering
   \captionof{table}{Anchor-free Head Performance}
@@ -298,10 +302,12 @@ amongs other model.
 
 \section{Latency}
 In this section, the latency of the modifications is presented.
-The data obtained using computer with specification presented in section \ref{section:instrument}
+The data obtained using computer with specification presented in section \ref{section:instrument}.
+Table \ref{tbl:inference-speed} shows that all the partition 4 models have $> 40$ FPS inference speed.
+This means that they are able to perform at $>10$ FPS even without batching to detect a full image, making them all valid candidate for the best model.
 
 
-\begin{table}
+\begin{table}[H]
   \centering
   \captionof{table}{Inference Speed of Modified Models}
   \label{tbl:inference-speed}
@@ -311,3 +317,4 @@ The data obtained using computer with specification presented in section \ref{se
   \end{adjustbox}
 
 \end{table}
+
