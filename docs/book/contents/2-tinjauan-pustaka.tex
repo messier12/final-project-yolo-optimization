@@ -4,31 +4,55 @@
 
   Object detection is a fundamental task in computer vision.
   It is a task that have 2 objective, localization and classification.
-  Localization is about determining the spatial properties of an object, e.g. by
-  enclosing them in bounding boxes. Classification is about determining the class of
-  objects if they are animal, human, necromancer, or anything in the set of classes.
+  Localization is about determining the spatial properties of an object in an image. E.g. by
+  enclosing objects in bounding boxes, determining which part of the image is an object and which part is not. 
+  On the other hand, classification is about determining the class of
+  objects. An object detection algorithm has to determine the label of an object whether
+  they are an animal, human, necromancer, or anything in the set of classes.
 
   To measure how well an object detection algorithm or model perform, computer vision
   researchers defined metrics to measure how fit a model prediction to an object
   and to measure how well the model perform across all objects. Example of those metrics are IoU and mAP.
+  
+  %\lipsum[1-6]
+
+
 
   \subsubsection{Intersection Over Union (IoU)}
-   \begin{figure}[H]
-        \centering
-        \includegraphics[width=0.5\textwidth]{figures/inter-union.png}
-        \caption{Intersection and Union of 2 Bounding Boxes}
-        \label{fig:inter-union}
-    \end{figure}
+
+
   Intersection over union (IoU) is a widely used metrics to determine how fit a predicted bounding box against the true bounding box.
   It is done by calculating the area of the intersection between the predicted and dividing it by the area of the
   union of those 2 boxes. 
-  
-  The IoU of 2 bounding boxes A and B can be calculated using the following way:
-  \begin{itemize}
-    \item Calculate the area of intersection of A and B. 
+  This way, IoU is robust to objects of different sizes and aspect ratio. 
 
+  Bounding box of an object can be large, small, wide, or tall.
+  Since IoU consider the intersection of bounding boxes in relation to the union,
+  IoU provides a normalized measure of the fitness of boxes, making it robust 
+  to the bounding boxes size. For example, if 2 boxes A and B intersect, there would be
+  three possible cases, A fits B perfectly, A is inside B or vice versa, and some of A in B or vice versa as shown in Figure \ref{fig:intersections-iou}.
+  When bounding box A fits B perfectly, the value of IoU would be 1 as the area of intersection is the same as the area of union.
+  For the case where a bounding box is inside another, IoU can lower the score if the enclosed box's size is smaller compared to
+  the enclosing box due to the normalization by the union area.
+  For the case when the boxes partly intersect, the area of intersection and area of union would be suboptimal, leading to a lower IoU score. 
+  We can say that the intersection part of the IoU provide a score for the bounding boxes position similarities and the 
+  union provide score for size similarities.
+
+    \begin{figure}[p]
+        \centering
+        \includegraphics[width=0.9\textwidth]{figures/iou-intersect.png}
+        \caption{Three Cases of Bounding Boxes Intersection}
+        \label{fig:intersections-iou}
+    \end{figure}
+  
+  
+  %The IoU of 2 bounding boxes A and B can be calculated using the following way:
+  To calculate the IoU of two bounding boxes A and B, the area of intersection and union must first
+  be calculated. The following shows the process of calculating IoU.
+  \begin{itemize}[topsep=0pt]
+    \item Calculate the area of intersection of A and B. 
     Let $(x_A,y_A)$ and $(x_B,y_B)$ be coordinates of the center of the boxes A and B respectively,
-    and let $(w_A,h_A)$ and $(w_B,h_B)$ be widths and heights of boxes A and B.
+    and let $(w_A,h_A)$ and $(w_B,h_B)$ be widths and heights of boxes A and B, as demonstrated in Figure \ref{fig:inter-union}.
 
     The calculation for the area of intersection can be done like this:
     \begin{align*}
@@ -38,21 +62,32 @@
       h_{\text{{inter}}} &= \min(y_A + h_A, y_B + h_B) - y_{\text{{inter}}} \\
       \text{Area}_{\text{inter}} &= w_{\text{{inter}}} \times h_{\text{{inter}}}
     \end{align*}
+
     \item Calculate the area of union.
 
     From set theory, we know that $|A \cup B| =|A| + |B| - |A \cap B| $.
-    This also applies when calculating the area of union.
+    This equation also applies on calculating the area of union.
+
     \begin{align*}
       \text{Area}_{union} &= \text{Area}_A + \text{Area}_B - \text{Area}_{\text{inter}}\\
       \text{Area}_{union} &= w_A\times h_A + w_B\times h_B  - \text{Area}_{\text{inter}}
     \end{align*}
-    \item Finaly, calculate IoU
+
+    \item Finally, calculate IoU
+
     \begin{equation}
       IoU = \frac{\text{Area}_{\text{inter}}}{\text{Area}_{\text{union}}}
     \end{equation}
   \end{itemize} 
+   \begin{figure}[p]
+        \centering
+        \includegraphics[width=0.8\textwidth]{figures/inter-union.png}
+        \caption{Intersection and Union of 2 Bounding Boxes}
+        \label{fig:inter-union}
+    \end{figure}
+  
 
-  \subsubsection{Mean Average Percision (mAP)}
+  \subsubsection{Mean Average Precision (mAP)}
   Average Precision (AP) is a popular metrics used to measure the capability of an object detection model
   for a given dataset. The main advantage of using AP are its ability to capture the precision recall
   tradeoff and its independence towards confidence threshold. AP has these 2 advantage as an effect of the way 
@@ -84,11 +119,11 @@
     \label{eq:pr}
   \end{equation}
   Using equation \ref{eq:pr}, $PR$ points in Figure \ref{fig:pr-curve} can be generated using $0 \leq \tau \leq 1$
-  \begin{figure}[H]
+  \begin{figure}[p]
         \centering
-        \includegraphics[width=0.6\textwidth]{figures/pr-curve.png}
+        \includegraphics[width=0.8\textwidth]{figures/pr-curve.png}
         \vspace{-1ex}
-        \caption*{Source: \textcite{map-hui}}
+        \caption*{Source: \textcite{map-hui} under CC BY 4.0}
         \vspace{-1ex}
         \caption{PR Points Generated by Varying $\tau$}
         \label{fig:pr-curve}
@@ -96,19 +131,18 @@
   Before calculating the AP however, the curve in Figure \ref{fig:pr-curve} is usually interpolated using Equation \ref{eq:pr-inter},
   which relies on Equation \ref{eq:pr-functionization} that transformed $PR$ curve to a functional relation of R to P.
   The interpolated curve can be seen on \ref{fig:pr-interp}
-
   \begin{align}
     \label{eq:pr-inter}
     p_{inter}(r) &= \max_{\bar{r}>r} p(\bar{r})\\
     \label{eq:pr-functionization}
-    \text{Where}~p(\bar{r}) &= \max \left\{p : \forall (r,p) \in \{PR(\tau) , 0\leq\tau\leq 1\}, r=\bar{r}\right\}%\text{precision given recall value in Figure \ref{fig:pr-curve}}
+    \text{Where}~p(\bar{r}) &= \max \left\{p : \forall (r,p) \in \{PR(\tau) : 0\leq\tau\leq 1\}\ \land r=\bar{r}\right\}%\text{precision given recall value in Figure \ref{fig:pr-curve}}
   \end{align}
 
-  \begin{figure}[H]
+  \begin{figure}[p]
         \centering
-        \includegraphics[width=0.6\textwidth]{figures/pr-interp.png}
+        \includegraphics[width=0.8\textwidth]{figures/pr-interp.png}
         \vspace{-1ex}
-        \caption*{Source: \textcite{map-hui}}
+        \caption*{Source: \textcite{map-hui} under CC BY 4.0}
         \vspace{-1ex}
         \caption{PR Curve Interpolated}
         \label{fig:pr-interp}
@@ -168,9 +202,9 @@
     %Sebagai contoh, salah satu varian YOLO, YOLO-Z menggunakan DenseNet sebagai \emph{backbone}-nya sedangkan arsitektur YOLO dasarnya, YOLOv5 menggunakan \emph{backbone} YOLOv5v7.0 \parencite{yoloz}.
     \subsubsection{The Neck}
   
-    \begin{figure}[H]
+    \begin{figure}
         \centering
-        \includegraphics[scale=0.6]{figures/yolo-architecture-rough.png}
+        \includegraphics[scale=0.55]{figures/yolo-architecture-rough.png}
         \caption{Feature Pyramid Network in YOLOv3}
         \label{fig:yolofpn}
     \end{figure}
@@ -208,13 +242,7 @@
 
   
     \subsubsection{The Head and The Anchors}
-    \begin{figure}[H]
-        \centering
-        \includegraphics[width=0.5\textwidth]{figures/anchorbox.png}
-        \caption*{Source: \textcite{yolov3}}
-        \caption{Head layer predict anchor box and its offsets from lattice of the feature grid }
-        \label{fig:anchorbox}
-    \end{figure}
+
     The head is where the object detection happens. Extracted and enhanced features of the image is fed to the head 
     in multiple different scales. For each scale, the head will predict a box for each $N_k \times N_k$
     lattice point on feature map's grid. In total, each layer will output a tensor with size
@@ -231,6 +259,14 @@
     Using anchor boxes allows the neural network to converge more quickly because it provides
     a prior knowledge of the dataset before training.
     
+    \begin{figure}[t]
+        \centering
+        \includegraphics[width=0.45\textwidth]{figures/anchor.pdf}
+        \caption{Head Layer Prediction for Anchor Box and Its Offsets from Lattice of The Feature Grid }
+        \label{fig:anchorbox}
+        %\vspace{-3ex}
+    \end{figure}
+
     %The way it works is that, there will be a preset of detection boxes.
     %Arsitektur famili YOLO yang dipublikasikan setelah YOLOv2 terus menggunakan \emph{anchor box} untuk melakukan deteksi \parencites{yolov2}{yolov3}{yolov4}{scaledyolov4}{yolov5}{yolor}{yolov7}.
     %\emph{Anchor boxes} merupakan beberapa \emph{Bounding Box} yang telah terdefinisikan. 
@@ -252,7 +288,6 @@
     %  L_{box} = \sum_{k=0}^{n}\sum_{i,j=0}^{N_k}\sum_{m=0}^{A_k} \mathbbm{1}_{k,i,j,m}^{obj} -IoU(gt(x), M(x)_{k,i,j,m})
     %\end{equation}
     In original YOLO, the loss functions were defined like the following.
-
     For localization loss, it is described by equation \ref{eq:yolo-box-loss}.
     \begin{equation}
       L_{box} = \sum_{i=0}^{S^2} \sum_{j=0}^B \mathbbm{1}_{ij}^{obj} \left[(x_i - \hat{x}_i)^2 + (y_i - \hat{y}_i)^2 + (\sqrt{w_i}-\sqrt{\hat{w}_i})^2 + (\sqrt{h_i}-\sqrt{\hat{h}_i})^2\right] \\
@@ -285,7 +320,8 @@
                                           1, & \text{if object assigned to anchor j}\\
                                           0, & \text{otherwise} 
                                          \end{cases}\\
-          (C_i,\hat{C}_i) &= \text{predicted and ground truth confidence score for objectness of anchor}
+          (C_i,\hat{C}_i) &= \text{predicted and ground truth confidence score for objectness of anchor}\\
+          \alpha &= \text{weight to punish false positives}
     \end{align*}
     %$(C_i, \hat{C}_i)$ are the predicted and ground truth confidence scores for objectness of anchor $i$,
     And for class loss, described by \ref{eq:yolo-class-loss}
@@ -320,7 +356,7 @@
       
   \subsection{YOLOv7}
   As said in section \ref{section:background}, YOLOv7 is the state-of-the-art real-time object detector.
-  It was made by the authors of YOLOv4, and by the time it was published (july 2022), it surpassed all 
+  It was made by the authors of YOLOv4, and by the time it was published (July 2022), it surpassed all 
   known real-time object detectors both in speed and accuracy. To achieve this, YOLOv7 implemented some new
   changes and addition to the neural network. 
   \subsubsection{Backbone}
@@ -339,19 +375,19 @@
   %    \caption{ELAN in YOLOv7}
   %    \label{fig:elan}
   %\end{figure}
-  \begin{figure}[H]
+  \begin{figure}[p]
     \centering
-    \begin{subfigure}[c][][c]{.9\textwidth}
+    \begin{subfigure}[b]{.5\textwidth}
         \centering
         %%%\vspace{0pt}
-        \includegraphics[width=.35\linewidth]{figures/elan-block.png}
+        \includegraphics[width=.8\linewidth]{figures/elan-block.png}
         \caption*{Source: \textcite{yolov7}}
         \caption{ELAN block}
         \label{fig:elan-block}
-    \end{subfigure}
-
-    \begin{subfigure}[c][][c]{.9\textwidth}
-        \includegraphics[width=1\linewidth]{figures/yolo-elan-blocks.png}
+    \end{subfigure}%
+    \begin{subfigure}[b]{.5\textwidth}
+        \centering
+        \includegraphics[width=.8\linewidth]{figures/yolo-elan-blocks-90.png}
         \caption{First two ELAN blocks in YOLOv7}
         \label{fig:elan-yolo}
     \end{subfigure}
@@ -365,39 +401,23 @@
   ELAN is a convolutional neural network that was designed to extract features efficiently 
   by controlling the shortest longest gradient path in the network \parencite{elan}.
   This choice of backbone allows YOLOv7 to perform prediction more accurately despite having fewer number of parameters. 
+
   Figure \ref{fig:elan-yolo} shows how ELAN block in Figure \ref{fig:elan-block} implemented in YOLOv7.
+  %After 3 convolution, the [640x640x3] input  propagate through the first ELAN block. Then, it's dimension was downsampled.
+  First, the $640\times 640\times 3$ input $x$ propagate through 3 convolution layers, down-sampling the dimension to $160\times 160$ and increased the channels to $128$.
+  Then it encounter the first ELAN block. ELAN block did not change the dimension, but it doubled the number of channels, making the dimension of $x$ to be $160\times 160\times 256$.
+  Before propagating $x$ to the next ELAN layer however, $x$ is down-sampled to $80\times 80\times 256$ using max-pooling and convolution layers. 
+  Prior to each ELAN layers in the backbone, the feature will be down-sampled in its width and height dimension by half.
 
   \subsubsection{Label Assignment Strategy and Auxiliary Head}
-  \begin{figure}[H]
-      \centering
 
-      \begin{subfigure}[][][t]{0.5\textwidth}
-        \includegraphics[width=1\linewidth]{figures/auxilary-head.png}
-        \caption{Auxliary heads attachment in YOLOv7}
-        \label{fig:aux-head}
-      \end{subfigure}
-
-      \begin{subfigure}[][][t]{0.4\textwidth}
-        \includegraphics[width=1\linewidth]{figures/lead-head-assigner.png}
-        \caption{Lead guided label assignment}
-        \label{fig:lead-head}
-      \end{subfigure}\hfill
-      \begin{subfigure}[][][t]{0.4\textwidth}
-        \includegraphics[width=1\linewidth]{figures/coarse-to-fine.png}
-        \caption{Coarse-to-fine lead guided label assignment}
-        \label{fig:coarse-to-fine}
-      \end{subfigure}
-      \caption*{Source: \textcite{yolov7}}
-      \caption{YOLOv7 Label Assignment Strategy with Auxilary Heads}
-      \label{fig:labelassigner}
-  \end{figure}
   SimOTA, first introduced in YOLOX, is an algorithm to approximate Optimal Transport Assignment (OTA)
   in a faster way. \textcite{yolox} introduced SimOTA in YOLOX because OTA was deemed too slow to compute
   as it was increasing the training time by 25\%. YOLOv7 also implemented SimOTA for its dynamic label assigner.
 
   YOLOv7 deep supervised its training process by attaching auxiliary heads to its neural network
   as seen on Figure \ref{fig:aux-head}.
-  These auxiliary heads is only used on training, on inference, they are removed from the neural network
+  These auxiliary heads are only used on training, on inference, they are removed from the neural network
   to improve latency, only the lead head is kept. There is a problem however with assigning labels
   to the auxiliary and lead heads. Most object detection networks that utilizes auxiliary heads have 2
   independent label assigners, one for auxiliary heads and one for lead heads. YOLOv7 done things differently.
@@ -415,23 +435,52 @@
   \textcite{yolov7} find that coarse-to-fine
   label assignment produces the greatest AP scores.
 
+  \begin{figure}[t!]
+      \centering
+
+      \begin{subfigure}[][][t]{\textwidth}
+        \centering
+        \includegraphics[width=.33\linewidth]{figures/auxilary-head.png}
+        \caption{Auxiliary heads attachment in YOLOv7}
+        \label{fig:aux-head}
+      \end{subfigure}
+
+      \begin{subfigure}[][][t]{0.49\textwidth}
+        \centering
+        \includegraphics[width=.66\linewidth]{figures/lead-head-assigner.png}
+        \caption{Lead guided label assignment}
+        \label{fig:lead-head}
+      \end{subfigure}
+      \begin{subfigure}[][][t]{0.49\textwidth}
+        \centering
+        \includegraphics[width=.66\linewidth]{figures/coarse-to-fine.png}
+        \caption{Coarse-to-fine lead guided label assignment}
+        \label{fig:coarse-to-fine}
+      \end{subfigure}
+      \caption*{Source: \textcite{yolov7} with permission (see Appendix \ref{appendix:license})} %TODO: ADD APPENDIX REFERENCE
+      \caption{YOLOv7 Label Assignment Strategy with Auxilary Heads}
+      \label{fig:labelassigner}
+  \end{figure}
 
   \subsubsection{Reparameterization}
   YOLOv7 utilized RepConv and YOLOR implicit layers in its network.
   In addition to that, YOLOv7 also uses Convolution-BatchNorm layer.
   These layers can be reparameterized after training to simplify the neural network, thereby reducing
-  latency and memory usage but not hurting inference performance.
+  latency and memory usage but not hurting inference performance. 
 
   The reparameterization of these layers can be done after training by computing
-  some mathematical simplification of the implicit layers.
-  For combination of YOLOR\textsuperscript{+}--Convolution--YOLOR\textsuperscript{+} layers, it can be reparameterized like the following.
+  some mathematical simplification of some layer combination.
+  These combinations of layers are YOLOR\textsuperscript{+}--Convolution--YOLOR\textsuperscript{+}, 
+  YOLOR*--Convolution--YOLOR*, and Convolution-BatchNorm.
+
+  For combination of layers YOLOR\textsuperscript{+}--Convolution--YOLOR\textsuperscript{+} layers, it can be reparameterized like the following.
   \begin{align*}
     x_{n+1} &= W(x_{n}+g_1(z_1)) + b + g_2(z_2)\\
     &= W(x_{n}) + (W(g_1(z_1)) + b + g_2(z_2))\\
     &= W(x_{n}) + b'
   \end{align*}
-  Observe that the reparameterization combined 3 layers into a single convolution layer with bias. Then, For combination of
-  YOLOR*--Convolution--YOLOR* layers:
+  Observe that the reparameterization combined 3 layers into a single convolution layer with bias. 
+  Then, For combination of YOLOR*--Convolution--YOLOR* layers:
   \begin{align*}
     x_{n+1} &= (W(g_1(z_1)x_n)+b)g_2(z_2)\\
     &= g_2(z_2)g_1(z_1)W(x_n) + b g_2(z_2)\\
@@ -499,10 +548,10 @@
 
   \subsection{Mosaic Augmentation}
   \label{section:mosaic_study}
-  \begin{figure}[H]
+  \begin{figure}[t]
     \centering
     \includegraphics[width=0.5\textwidth]{figures/mosaic-aug.png}
-    \caption*{Source: \textcite{mosaic}}
+    \caption*{Source: \textcite{mosaic} under CC BY 4.0}
     \caption{Four example of mosaic augmentation}
     \label{fig:mosaic}
   \end{figure}
@@ -526,53 +575,9 @@
 \section{Related Works}
 \label{section:relatedwork}
 
-  \subsection{YOLO-Z}
-  \begin{figure}[H]
-    \centering
-    \includegraphics[width=.7\textwidth]{figures/yoloz-result.png}
-    \caption*{Source: \textcite{yoloz}}
-    \caption{Small objects in the image. Comparison of YOLOZ-S and YOLOv5-S. YOLOv5-S was not able to detect the circled objects.}
-    \label{fig:yolozcone}
-  \end{figure}
-  YOLO-Z is a derivative architecture of YOLOv5r5.0.
-  This variant of YOLO modified the backbone, neck, and number of anchors of the original YOLOv5 to 
-  enhance its capability of detecting small objects \parencite{yoloz}.
-  These changes are backbone change from YOLOv5r5.0 to a downscaled DenseNet,
-  neck change from FPN to biFPN on some YOLO-Z scales, and increasing the number of anchors used at each scale.
-
-  YOLO-Z was aimed to be used in autonomous racing car. In this high speed environment, early detection
-  of obstacle is crucial to plan for action. For that reason, the autonomous racing car must detect the cone-shaped obstacles
-  that are far away from it. Since objects that are far away appear small on image captured by camera, YOLO-Z was designed with
-  purpose of small object detection.
-  %YOLO-Z merupakan arsitektur famili YOLO yang modifikasi dari YOLOv5 \parencite{yoloz}.
-  %Modifikasi-modifikasi yang dilakukan meliputi pergantian \emph{backbone}, \emph{neck}, dan jumlah \emph{anchor}
-  %\emph{Backbone} dari YOLOv5r5.0 menjadi DenseNet yang di-\emph{downscale}.
-  %\emph{Neck} dari YOLO-Z juga diganti dari PanNet menjadi FPN dan biFPN tergatung pada \emph{scale} YOLO-Z yang digunakan.
-
-  %Modifikasi pada YOLO-Z didesain untuk mendeteksi objek kecil untuk tujuan melakukan deteksi \emph{cone} yang nampak jauh pada lintasan \emph{autonomous racing} secara \emph{real time} (lihat Gambar \ref{fig:yolozcone}).
-  %Modifikasi-modifikasi dibuktikan dapat meningkatkan kemampuan pendeteksian objek kecil \parencite{yoloz}.
-  %Oleh karena itu, untuk meningkatkan kemampuan mendeteksi objek kecil YOLOv7, beberapa modifikasi yang dilakukan YOLO-Z pada YOLOv5 dapat diaplikasikan.
-
-  \subsection{exYOLO}
-  \begin{figure}[H]
-    \centering
-    \includegraphics[width=0.8\textwidth]{figures/exyolo.png}
-    \caption*{Source: \textcite{exyolo}}
-    \caption{Architecture of exYOLO}
-    \label{fig:exyolo}
-  \end{figure}
-
-  exYOLO is a modification of YOLOv3 to detect small objects \parencite{exyolo}.
-  \textcite{exyolo} thought that the features of small objects in an image would disappear
-  after series stage of down-sampling in the neural network.
-  To solve this, exYOLO added a feature enhancement before feature-fusion in the neck to one of the feature scale as seen in Figure \ref{fig:exyolo}.
-  This change made exYOLO produce a higher mAP score on VOC2007 compared to its baseline YOLOv3.
-    %exYOLO merupakan hasil modifikasi arsitektur YOLOv3 \parencite{exyolo}.
-    %Pada exYOLO, dilakukan modifikasi \emph{neck} dengan menambahkan suatu \emph{Receptive Field Block} sebelum penggabungan \emph{feature map} yang akan diupsampling.
-    %Modifikasi-modifikasi ini membuat exYOLO memiliki skor mAP yang lebih tinggi daripada YOLOv3 pada dataset PASCAL VOC 2007.
-
   \subsection{YOLOv4-tiny with added head}%Implementasi YOLOv4-tiny pada \emph{Autonomous Surface Vehicle}}
-  \begin{figure}[H]
+
+  \begin{figure}[p]
     \hfill%
     \begin{subfigure}[c][][c]{.45\textwidth}
         \includegraphics[width=1\linewidth]{figures/yolov4barun-regular.png}
@@ -591,12 +596,60 @@
 
   \textcite{barunastra} used YOLOv4-tiny as their Autonomous Surface Vehicle (ASV) object detector due to the computational
   device constraint.
-  To detect objects that were atleast 30 meters away from the ASV, they applied a modification of YOLOv4-tiny, which was YOLOv4-tiny
+  To detect objects that were at least 30 meters away from the ASV, they applied a modification of YOLOv4-tiny, which was YOLOv4-tiny
   but with additional head layer. The original YOLOv4-tiny only had 2 head layers, thus was only predicting in 2 scales.
   An addition of head layer allows it to predict in 3 scales. Using this modification, the network was able to detect small object
-  better and raised the overall mAP score by 4\% without significantly reducing latency.
+  better (as seen on Figure \ref{fig:barun}) and raised the overall mAP score by 4\% without significantly reducing latency.
 
   %\textcite{barunastra} menggunakan model modifikasi YOLOv4-tiny pada \emph{Autonomous Surface Vehicle}(ASV) mereka.
   %YOLOv4-tiny sebenarnya hanya menggunakan 2 layer head, namun yang diimplementasikan pada ASV adalah model YOLOv4-tiny
   %yang ditambahkan 1 layer head lagi sehingga menggunakan total sebanyak 3 layer head. Perubahan ini memberikan peningkatan
   %pada skor mAP dan memberikan kemampuan modelnya untuk mendeteksi objek yang lebih jauh.
+
+
+
+  \subsection{exYOLO}
+  \begin{figure}[p]
+    \centering
+    \includegraphics[width=0.8\textwidth]{figures/exyolo.png}
+    \caption*{Source: \textcite{exyolo} under CC BY-NC-ND 4.0 (see Appendix \ref{appendix:license})}
+    \caption{Architecture of exYOLO}
+    \label{fig:exyolo}
+  \end{figure}
+
+  exYOLO is a modification of YOLOv3 to detect small objects \parencite{exyolo}.
+  \textcite{exyolo} thought that the features of small objects in an image would disappear
+  after series stage of down-sampling in the neural network.
+  To solve this, exYOLO added a feature enhancement before feature-fusion in the neck to one of the feature scale as seen in Figure \ref{fig:exyolo}.
+  This change made exYOLO produce a higher mAP score on VOC2007 compared to its baseline YOLOv3.
+    %exYOLO merupakan hasil modifikasi arsitektur YOLOv3 \parencite{exyolo}.
+    %Pada exYOLO, dilakukan modifikasi \emph{neck} dengan menambahkan suatu \emph{Receptive Field Block} sebelum penggabungan \emph{feature map} yang akan diupsampling.
+    %Modifikasi-modifikasi ini membuat exYOLO memiliki skor mAP yang lebih tinggi daripada YOLOv3 pada dataset PASCAL VOC 2007.
+
+  \subsection{YOLO-Z}
+  \begin{figure}
+    \centering
+    \includegraphics[width=.7\textwidth]{figures/yoloz-result.png}
+    \caption*{Source: \textcite{yoloz} with permission (see Appendix \ref{appendix:license})}
+    \caption{Small objects in the image. Comparison of YOLOZ-S and YOLOv5-S. YOLOv5-S was not able to detect the circled objects.}
+    \label{fig:yolozcone}
+  \end{figure}
+  YOLO-Z is a derivative architecture of YOLOv5r5.0.
+  This variant of YOLO modified the backbone, neck, and number of anchors of the original YOLOv5 to 
+  enhance its capability of detecting small objects \parencite{yoloz}.
+  These changes are backbone change from YOLOv5r5.0 to a down-scaled DenseNet,
+  neck change from FPN to biFPN on some YOLO-Z scales, and increasing the number of anchors used at each scale.
+  These changes successfully improve the small object detection capability as seen on figure \ref{fig:yolozcone}.
+
+  YOLO-Z was aimed to be used in autonomous racing car. In this high speed environment, early detection
+  of obstacle is crucial to plan for action. For that reason, the autonomous racing car must detect the cone-shaped obstacles
+  that are far away from it. Since objects that are far away appear small on image captured by camera, YOLO-Z was designed with
+  purpose of small object detection.
+  %YOLO-Z merupakan arsitektur famili YOLO yang modifikasi dari YOLOv5 \parencite{yoloz}.
+  %Modifikasi-modifikasi yang dilakukan meliputi pergantian \emph{backbone}, \emph{neck}, dan jumlah \emph{anchor}
+  %\emph{Backbone} dari YOLOv5r5.0 menjadi DenseNet yang di-\emph{downscale}.
+  %\emph{Neck} dari YOLO-Z juga diganti dari PanNet menjadi FPN dan biFPN tergatung pada \emph{scale} YOLO-Z yang digunakan.
+
+  %Modifikasi pada YOLO-Z didesain untuk mendeteksi objek kecil untuk tujuan melakukan deteksi \emph{cone} yang nampak jauh pada lintasan \emph{autonomous racing} secara \emph{real time} (lihat Gambar \ref{fig:yolozcone}).
+  %Modifikasi-modifikasi dibuktikan dapat meningkatkan kemampuan pendeteksian objek kecil \parencite{yoloz}.
+  %Oleh karena itu, untuk meningkatkan kemampuan mendeteksi objek kecil YOLOv7, beberapa modifikasi yang dilakukan YOLO-Z pada YOLOv5 dapat diaplikasikan.

@@ -1,10 +1,11 @@
 \chapter{INTRODUCTION}
 \section{Background}
 \label{section:background}
-    \begin{figure} [H]
+
+    \begin{figure}[b!] 
         \centering
-        \includegraphics[width=0.5\textwidth]{figures/dataset-example-labeled.png}
-        \caption*{Source: \textcite{aot_dataset}}
+        \includegraphics[width=0.4\textwidth]{figures/dataset-example-labeled.png}
+        \caption*{Source: \textcite{aot_dataset} under CDLA-Permissive 1.0}
         \caption{An example of airborne object dataset}
         \label{fig:airborne-object-example-1}
     \end{figure}
@@ -68,17 +69,21 @@
     model can craft itself feature kernels that can extract the objects in an image, despite being subjected
     to complex outdoor environment. For this reason, deep learning models gained prominence in addressing
     these challenges. 
-    \begin{figure} [H]
+    
+    \begin{figure}[t]
         \centering
         \includegraphics[width=0.75\textwidth]{figures/yolov7-coco.png}
+        \caption*{Source: \textcite{yolov7} with permission (see Appendix \ref{appendix:license})}
         \caption{YOLOv7 performance on COCO dataset compared to other object detectors.}
         \label{fig:yolov7-coco}
+
+        %\caption*{with permission (see Appendix \ref{appendix:license})}
     \end{figure}
 
     Introducing YOLOv7, a state-of-the-art convolutional neural network based real-time object detector \parencite{yolov7}.
     At the time of the proposal for this research was made (November 2022),
     YOLOv7 outperform both in speed and accuracy of all known real-time object detectors 
-    with inference speed in the range of 5-160 FPS. It also has the highest accuracy (56.8\% AP) among
+    with inference speed in the range of 5-160 FPS as seen on Figure \ref{fig:yolov7-coco}. It also has the highest accuracy (56.8\% AP) among
     object detectors with inference speed greater than 30 FPS on a V100 GPU. The capabilities of this cutting-edge architecture
     makes it well-suited for AAV computer vision system. However, all the performance metrics of YOLOv7
     mentioned before are obtained by training the model using COCO 2017 dataset. A dataset which 
@@ -91,7 +96,6 @@
     YOLOv7's bag-of-freebies, bag-of-specials, and network architecture. Then we benchmarked the
     modified models against the \textcite{aot_dataset}, and picked the model with the highest AP score
     that can perform inference in real-time.
-
     %For this to work, the computer vision algorithm must be able to be executed
     %in a real-time scenario, but also must be accurate enough 
 

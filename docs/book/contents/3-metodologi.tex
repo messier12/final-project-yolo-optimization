@@ -27,7 +27,7 @@ These steps are dataset preparation, develop training system, create modificatio
 training the model, analysis, and model selection. 
 Figure \ref{fig:methods} shows the order these steps will be executed.
 
-\begin{figure}[H]
+\begin{figure}
   \centering
   \small
   \includegraphics[width=.9\textwidth]{figures/methods.pdf}
@@ -124,7 +124,7 @@ The model that qualify for selection must be able to perform inference with spee
   the amount of anchors that we needed. To tackle this, we might have to cluster it in logarithmic coordinates. 
 
   \subsection{Replacing Localization Loss to Extended IoU}
-  \begin{figure}[H]
+  \begin{figure}
       \centering
       \begin{subfigure}[][][t]{0.3\textwidth}
         \includegraphics[width=1\linewidth]{figures/iounot0.png}
@@ -188,7 +188,7 @@ The model that qualify for selection must be able to perform inference with spee
     %  \label{fig:neckaddupsampling}
     %\end{figure}
 
-  \begin{figure}[H]
+  \begin{figure}
     \centering
     \includegraphics[width=.9\textwidth]{figures/neck-move-back.pdf}
     \caption{Rerouting Neck Connection to Earlier Stage}
@@ -210,7 +210,7 @@ The model that qualify for selection must be able to perform inference with spee
   %Pemindahan sumber feature map ke belakang dapat dilakukan untuk mengantisipasi fitur objek kecil yang bisa saja hilang ketika layer neural network semakin dalam.
   %Dengan memindahkannya lebih ke belakang, YOLOv7 akan melakukan deteksi dengan memanfaatkan fitur yang abstraksi yang lebih rendah tetapi sedikit informasi yang hilang.
   \subsection{Additional YOLO Head}
-  \begin{figure}[H]
+  \begin{figure}[!t]
     \centering
     \includegraphics[width=.9\textwidth]{figures/addmorehead.pdf}
     \caption{Adding an Extra Head Layer}
@@ -227,11 +227,11 @@ The model that qualify for selection must be able to perform inference with spee
   %Perhatikan bahwa penambahan YOLO Head akan diikuti dengan penambahan \emph{layer upsampling} pada \emph{neck} seperti di Gambar \ref{fig:addmorehead}.
 
   \subsection{Replace YOLO Head to Decoupled Anchor-free Head}
-  \begin{figure}[H]
+  \begin{figure}[p]
     \centering
-    \includegraphics[width=0.9\textwidth]{figures/anchorfree-yolox.png}
-    \caption*{Source: \textcite{yolox}}
-    \caption{Decoupled Anchor-free Head in YOLOX compared to Coupled Head in mainstream YOLO}
+    \includegraphics[width=0.9\textwidth]{figures/decoupled-anchorfree.pdf}
+    \caption*{Prediction for Classes and Boxes are decoupled unlike original YOLO head}
+    \caption{Decoupled Anchor-free Head}
     \label{fig:anchorfree}
   \end{figure}
 
@@ -251,14 +251,14 @@ The model that qualify for selection must be able to perform inference with spee
   %1) Reducing the amount of
 
   \subsection{Partitioning Image}
-  \begin{figure}[H]
+  \begin{figure}[p]
     \centering
     \includegraphics[width=0.9\textwidth]{figures/imagepartition.png}
     \caption{An Image Partitioned to 4 Images}
     \label{fig:imagepartition}
   \end{figure}
   Partitioning the image has the potential to improve the accuracy of small object detection.
-  By partitioning images into multiple smaller images, the down scaling factor of image to neural network input size is reduced, thereby reducing the loss of information.
+  By partitioning images into multiple smaller images like shown in Figure \ref{fig:imagepartition}, the down scaling factor of image to neural network input size is reduced, thereby reducing the loss of information.
   This approach allows the network to retain finer details and preserve the integrity of small objects, ultimately leading to more accurate detection results.
   %Partitioning the image has the potential to improve the accuracy of small object detection.
   %The partitioning process involves cropping the original image into smaller sections, thereby avoiding excessive downscaling of the image before feeding it into the neural network.
@@ -281,7 +281,7 @@ The model that qualify for selection must be able to perform inference with spee
 \section{Computational Resource}
 \label{section:instrument}
 To conduct this research, we will be using a computer with the following specification:
-\begin{itemize}[noitemsep,leftmargin=.1\textwidth,rightmargin=.1\textwidth]
+\begin{itemize}[itemsep=1pt,leftmargin=.1\textwidth,rightmargin=.1\textwidth]
   \item CPU \hfill Intel® Core™ i5-9400F CPU @ 2.90GHz
   \item GPU \hfill Nvidia Geforce RTX 2080 Ti
   \begin{itemize}[noitemsep,topsep=0pt]
@@ -301,7 +301,7 @@ pilot test.
 In this pilot test, we trained several YOLOv7 models with varying input sizes on a dummy dataset for 300 epochs.
 The dummy dataset have the same dimension as the \textcite{aot_dataset}.
 The results are presented in Table \ref{tbl:pilot}. 
-\begin{table}[H]
+\begin{table}[b]
   \centering
   \captionof{table}{Pilot Test Training}
   \label{tbl:pilot}
@@ -338,20 +338,21 @@ This model can be trained in a reasonable time (20 hours) and enough spare room 
   Notice that the labels are structured in an entity based manner. This made the label conversion process
   more complex. Handling this labelling structure will be discussed more in the next section.
 
+  \subsubsection{Dataset Statistics}
   There are 7 classes in the dataset, but there are 3 dominating classes.
   The size of the dataset and its class distribution can be seen on Table \ref{tbl:datasettraintest} and
-  \ref{tbl:datasetclasses}.
+  \ref{tbl:datasetclasses}. In total, the dataset is a 13.4 TB images of 3.39 million objects.
   %Dataset untuk objek-objek \emph{airborne} didapatkan dari \textcite{aot_dataset} dan dihost pada suatu server AWS S3 Bucket.
   %Dataset ini berisi video-video monokromatik penerbangan UAV.
   %Terdapat 4 kelas pada dataset ini yaitu pesawat, helikopter, burung, dan \emph{other}.
   %Distribusi dataset training dan uji dapat dilihat pada tabel \ref{tbl:datasettraintest} sedangkan distribusi kelas dari dataset dapat dilihat pada Tabel \ref{tbl:datasetclasses}.
-  \begin{table}[H]
+  \begin{table}
     \centering
     \captionof{table}{Original Dataset Splits}
     \label{tbl:datasettraintest}
     \input{tables/dataset-dist.tex}
   \end{table}
-  \begin{table}[H]
+  \begin{table}
     \centering
     \captionof{table}{Dataset Objects' Classes Distribution}
     \label{tbl:datasetclasses}
@@ -361,33 +362,34 @@ This model can be trained in a reasonable time (20 hours) and enough spare room 
   %Distribusi dari luas \emph{boudning box} dapat dilihat pada gambar \ref{fig:areadist}.
   %Perhatikan pada gambar tersebut, sumbu x menggunakan skala logaritmik.
   %Sebagai referensi, luas dari tiap frame itu sekitar $5\times10^16 px^2$.
+
   If we look at the area (in $px$) distribution of the objects' bounding boxes, we will find
   the histogram in Figure \ref{fig:areadist}. Take note that in the figure, the x-axis is 
   using in logarithmic scale, which means the true data is very right skewed.
   The median of the areas is $314 px$, while the 5th and 95th percentile are $36 px$ and $5061 px$, three orders of magnitude difference.
 
-  \begin{figure}[H]
+
+  The widths and heights of the objects themselves are distributed in a way shown in Figure \ref{fig:hwdist}:
+  The figure uses logarithmic scale for x and y, and the dashed lines represent the median for x and y axis.
+  Meanwhile, The distribution of objects position in the camera can be seen on Figure \ref{fig:objectheatmap}.
+  We can see that most of the objects are around the center of the image.
+
+  \begin{figure}[p]
     \centering
-    \includegraphics[width=.8\textwidth]{figures/area-dist.png}
+    \includegraphics[width=.5\textwidth]{figures/area-dist.png}
     \caption{Distribution of Bounding Boxes' Area}
     \label{fig:areadist}
   \end{figure}
-  The widths and heights of the objects themselves are distributed in this way:
-
-  \begin{figure}[H]
+  \begin{figure}[p]
     \centering
-    \includegraphics[width=.7\textwidth]{figures/hw-dist2.png}
+    \includegraphics[width=.5\textwidth]{figures/hw-dist2.png}
     \caption{Distribution of Bounding Boxes' Widths and Heights}
     \label{fig:hwdist}
   \end{figure}
-
-  The distribution of objects position in the camera can be seen on Figure \ref{fig:objectheatmap}.
-  We can see that most of the objects are around the center of the image.
-
-  \begin{figure}[H]
+  \begin{figure}[p]
     \centering
-    \includegraphics[width=.7\textwidth]{figures/object-pos-dist.png}
-    \caption*{Source: \textcite{aot_dataset}}
+    \includegraphics[width=.5\textwidth]{figures/object-pos-dist.png}
+    \caption*{Source: \textcite{aot_dataset} under CDLA-Permissive 1.0}
     \caption{Distribution of Objects' Position}
     \label{fig:objectheatmap}
   \end{figure}
@@ -407,9 +409,9 @@ This model can be trained in a reasonable time (20 hours) and enough spare room 
     %Karena jumlah dataset pada \textcite{aot_dataset} berukuran sangat besar, dan keterbatasan
     %\emph{computational resource}, hanya sebagian dari dataset tersebut akan digunakan untuk \emph{training} dan \emph{test}.
     %Akan diambil total 700 gambar dari dataset dengan pembagian sesuai dengan Tabel \ref{tbl:datasetsamplingdist}
-    \begin{table}[H]
+    \begin{table}
       \centering
-      \captionof{table}{Distribusi Sampling Dataset}
+      \captionof{table}{Dataset Sampling Distribution}
       \label{tbl:datasetsamplingdist}
       \input{tables/dataset-sampling-dist.tex}
     \end{table}
@@ -434,6 +436,7 @@ This model can be trained in a reasonable time (20 hours) and enough spare room 
       \begin{lstlisting}
       For class in list_of_classes:
         Images[class] = Cls2Img[class].random_choice(TotalImageNeeded[class])
+
       For class in list_of_classes[-1]: // except negative sample
         addtotrain = images[class][:23.75/63.75*TotalImageNeeded[class]]
         images[class] = images[class][23.75/63.75*TotalImageNeeded[class]:]
@@ -453,12 +456,13 @@ This model can be trained in a reasonable time (20 hours) and enough spare room 
         For boxes in Img2Boxes[img]
           // to_darknet converts class xyxy to class x y w h normalized
           label.append(to_darknet(boxes.BoundingBox))
+
         copy(img, train_folder+img)
         write(label, train_folder+img.with_suffix('.txt'))
 
-      repeat for valid and test
-      \end{lstlisting}
 
+      repeat this for valid and test
+      \end{lstlisting}
     \end{enumerate}
     %\begin{lstlisting}[caption={Test},mathescape,escapechar=\%]
     %  //Calculate the total image needed for each class (Table %\ref{tbl:datasetsamplingdist}%)

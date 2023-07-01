@@ -35,7 +35,7 @@ already provide the mosaic augmentation tool. A mosaic augmentation result examp
   %Proses melakukan augmentasi mosaic cukup \emph{straightforward},
   %augmentasi ini dilakukan pada beberapa data training.
   %Contoh hasil augmentasi dapat dilihat pada gambar \ref{fig:mosaic-train}
-  \begin{figure}[H]
+  \begin{figure}
     \centering
     \includegraphics[scale=0.4]{figures/mosaic-aug-2.png}
     \caption{An example of mosaic augmented image}
@@ -46,7 +46,7 @@ already provide the mosaic augmentation tool. A mosaic augmentation result examp
 %\subsection{Rekalkulasi Anchor}
 %Rekalkulasi anchor dilakukan dengan mengklaster data training ke 9 centroid menggunakan algoritma k-means.
 Anchor recalculation is done by clustering the training data's widths and heights to 9 centroid using k-means algorithm.
-However, due to the skewed distribution of the dataset, regular k-means (with $L^2$ Distance) actually fail to form 9 clusters.
+However, due to the skewed distribution of the dataset, regular k-means (with $L^2$ Distance) actually failed to form 9 clusters.
 To fix this, we used a distance function
 \begin{equation} 
   L = \sqrt{\ln^2{\frac{w_1}{w_2}} + \ln^2{\frac{h_1}{h_2}}}
@@ -61,7 +61,7 @@ and Figure \ref{fig:anchor-dist}.
 %Persebaran anchor sebelum dan sesudah direkalkulasi dapat dilihat 
 %pada Tabel \ref{tbl:recalculated_anchor} dan Gambar \ref{fig:anchor-dist}
 
-\begin{table}[H]
+\begin{table}
   \centering
   \captionof{table}{Anchor Points Before and After Recalculation}
   \label{tbl:recalculated_anchor}
@@ -70,7 +70,7 @@ and Figure \ref{fig:anchor-dist}.
 \end{table}
 \vspace{1ex}
 
-\begin{figure}[H]
+\begin{figure}
   \centering
   \includegraphics[width=\textwidth]{figures/anchor-dist-2.png}
   \caption{Anchor Distribution on Dataset. Left: Original Anchor. Right: Recalulated Anchors}
@@ -102,7 +102,7 @@ The results are presented in Table \ref{tbl:mosaic_reanchor_performance}.
 It can be observed from the table that YOLOv7-plain alone was unable to detect any objects in the test set.
 However, after applying both mosaic augmentation and anchor recalculation, the model achieved a notable improvement with a score of 11.2\% at mAP@50. 
 
-\begin{table}[H]
+\begin{table}
   \centering
   \captionof{table}{Mosaic Augmentation and Anchor Recalculation Performance}
   \label{tbl:mosaic_reanchor_performance}
@@ -137,7 +137,7 @@ gradient dynamics during training.
 
 The performance of these modifications can be seen in Table \ref{tbl:loss_function_perf}
 
-\begin{table}[H]
+\begin{table}[b]
   \centering
   \captionof{table}{EIoU Localization Loss Performance}
   \label{tbl:loss_function_perf}
@@ -176,10 +176,11 @@ The complete configuration of the layers can be seen in the appendix. %TODO: ref
 %koneksi layer neck yang memberikan feature pada \emph{head} pertama yang
 %awalnya terkoneksi dengan skala 8 dari backbone, dipindahkan ke skala 4.
 %Hal ini diilustrasikan pada Gambar \ref{fig:deeperconn}.
-\begin{figure}[H]
+\begin{figure}
     \centering
-    \begin{subfigure}[][][t]{0.4\textwidth}
+    \begin{subfigure}[][][b]{0.4\textwidth}
       \includegraphics[width=1\linewidth]{figures/deeperconn-before.png}
+      \caption*{Source: \textcite{yolov7} with permission (see Appendix \ref{appendix:license})}
       \caption{Before Rerouting}
       \label{fig:deeperconn-before}
     \end{subfigure}\hfill%\hspace{4em}
@@ -201,7 +202,7 @@ The complete configuration of the layers can be seen in the appendix. %TODO: ref
 As presented in Table \ref{tbl:neck_backbone_perf}, rerouting the source of 
 feature map to an earlier stage produce an improvement of 2.98\% compared to \verb*|YOLOv7-MAR|.
 
-\begin{table}[H]
+\begin{table}
   \centering
   \captionof{table}{Performance of The Rerouted Model}
   \label{tbl:neck_backbone_perf}
@@ -223,14 +224,14 @@ We introduced an upsampling block after layer 75 and fused it with layer 11 at l
 To maintain the continuity of the network, we introduced a downsampling block that concludes at layer 87.
 The subsequent layers in the network retained their original structure, but with layer numbering shifted by 25
 as seen on Figure \ref{fig:addinghead}.
-\begin{figure}[H]
+\begin{figure}
   \centering
   \includegraphics[width=0.35\textwidth]{figures/addheadn.png}
   \caption{Model Architecture After Increasing The Head}
   \label{fig:addinghead}
 \end{figure}
 
-\begin{table}[H]
+\begin{table}
   \centering
   \captionof{table}{Additional Head Performance}
   \label{tbl:addhead}
@@ -265,7 +266,7 @@ The model was initially unable to converge due to numerical instability caused b
 After stabilizing the loss function to handle these cases as shown in \ref{appendix:numerical-stabilization}, 
 this modification was able to improve the mAP score by 21.78\%.
 
-\begin{table}[H]
+\begin{table}
   \centering
   \captionof{table}{Anchor-free Head Performance}
   \label{tbl:anchorfree_perf}
@@ -292,9 +293,9 @@ The performace is shown on Table \ref{tbl:partition-perf}.
 amongs other model.
 
 
-\begin{table}[H]
+\begin{table}
   \centering
-  \captionof{table}{Anchor-free Head Performance}
+  \captionof{table}{Partitioning Image Performance}
   \label{tbl:partition-perf}
   \vspace{-1ex}
   \input{tables/partition-perf.tex}
@@ -307,7 +308,7 @@ Table \ref{tbl:inference-speed} shows that all the partition 4 models have $> 40
 This means that they are able to perform at $>10$ FPS even without batching to detect a full image, making them all valid candidate for the best model.
 
 
-\begin{table}[H]
+\begin{table}
   \centering
   \captionof{table}{Inference Speed of Modified Models}
   \label{tbl:inference-speed}

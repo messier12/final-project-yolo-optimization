@@ -5,6 +5,7 @@
 % Pengaturan ukuran teks dan bentuk halaman dua sisi
 \documentclass[12pt,twoside]{report}
 \usepackage{itss}
+\usepackage{layout}
 
 \input{variables.tex}
 
@@ -14,7 +15,7 @@
 \addbibresource{misc/bibliography.bib}
 
 % Isi keseluruhan dokumen
-\begin{document}
+\begin{document}\layout
 
 
 % Sampul luar Bahasa Indonesia
@@ -119,7 +120,10 @@
 
 \begin{appendices}
 \input{contents/appendix-1.tex}
+\cleardoublepage
 \input{contents/appendix-2.tex}
+\cleardoublepage
+\input{contents/appendix-3.tex}
 \end{appendices}
 
 \cleardoublepage
