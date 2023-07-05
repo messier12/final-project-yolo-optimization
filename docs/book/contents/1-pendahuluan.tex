@@ -119,15 +119,22 @@
     %\begin{itemize}
     %    \item Apa solusi yang dapat diaplikasikan pada YOLOv7 agar kemampuan deteksi objek \emph{airborne}-nya dapat dioptimalisasi?
     %\end{itemize}
-    YOLOv7 is not an object detection model specifically designed to detect small objects or airborne objects.
-    Therefore, this research ask the following question.
-    \begin{itemize}
-        \item What modification can be done to YOLOv7 to improve its abilities in detecting airborne objects?
-    \end{itemize}
+    In this research, our primary focus will be on the modifications of YOLOv7 to enhance its ability in detecting airborne objects.
+    Rather than aiming for the ultimate solution for detecting airborne objects, our objective is to explore potential modification to YOLOv7 that can improve its performance in small object detection. 
+    Therefore, the problem statement of this research is as follows:
+
+    What specific modifications can be implemented on YOLOv7 to optimize its abilities in detecting airborne objects?
+    %YOLOv7 is not an object detection model specifically designed to detect small objects or airborne objects.
+    %Therefore, this research ask the following question.
+    %\begin{itemize}
+    %    \item What modification can be done to YOLOv7 to improve its abilities in detecting airborne objects?
+    %\end{itemize}
 
 \section{Purpose}
-    The purpose of this research is to find modifications of YOLOv7 that would improve its ability in detecting airborne objects.
+    %The purpose of this research is to find modifications of YOLOv7 that would improve its ability in detecting airborne objects.
     %Adapun tujuan dari tugas akhir ini adalah untuk menemukan solusi untuk mengoptimisasi kemampuan YOLOv7 mendeteksi objek airborne.
+    The purpose of this research is to identify and propose practical improvements to YOLOv7 that can improve its ability in detecting airborne objects. 
+    This research seeks to contribute to the improvement of YOLOv7 in the context of airborne object detection, ultimately leading to more reliable and efficient detection capabilities in relevant applications such as SAA systems.
 
 \section{Problem Scope}
     % superintelligent AGI
@@ -137,10 +144,10 @@
     Otherwise, we can just run a Solomonoff induction on airborne object data and call the result a modification
     of YOLOv7. Thus, we state the following scopes for the problem.
     \begin{itemize}%[noitemsep,topsep=0pt]
-        \item YOLOv7 is used as the baseline for modifications. 
-        \item The result of modification must be able to perform inference in real-time.
-        \item The modified YOLOv7 must be trainable within a reasonable duration using the computational resource
-        available, which is a computer which uses consumer GPU Nvidia RTX 2080 Ti.
+        \item YOLOv7 is used as the basis for modifications. 
+        \item The result of modification must be able to perform inference in real-time with consumer-level GPU.
+        \item The modified YOLOv7 is subject to computational resource constraint. The modified model must be trainable within a reasonable duration using the computational resource
+        available.%, which is a computer which uses consumer GPU Nvidia RTX 2080 Ti.
     \end{itemize}
     %Optimisasi kemampuan deteksi objek kecil hanya akan dilakukan dengan memodifikasi YOLOv7.
     %Modifikasi yang diaplikasikan tidak boleh menyebabkan YOLOv7 untuk tidak dapat melakukan pendeteksian secara \emph{real time}.

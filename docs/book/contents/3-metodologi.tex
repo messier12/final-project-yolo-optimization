@@ -289,16 +289,16 @@ To conduct this research, we will be using a computer with the following specifi
     \item[] CUDA Compute Capability \hfill 7.5
   \end{itemize}
   \item RAM \hfill 12 GB
-  \item Hard Drive Available Memory \hfill 1.3 TB
+  \item Hard Drive Available Space \hfill 1.3 TB
   \item Operating System \hfill Ubuntu 20.04
   \item CUDA Toolkit Version \hfill 11.7
   \item PyTorch Version \hfill 1.13.1
 \end{itemize}
 
 \section{Pilot Test}
-To ensure the reliability of the hardware, and to find the hardware-induced constraint, we performed A
+To ensure the reliability of the computational resource, and to find the resource-induced constraint, we performed A
 pilot test.
-In this pilot test, we trained several YOLOv7 models with varying input sizes on a dummy dataset for 300 epochs.
+In this pilot test, we trained several YOLOv7 models with varying input sizes on 400 images from dummy dataset for 300 epochs.
 The dummy dataset have the same dimension as the \textcite{aot_dataset}.
 The results are presented in Table \ref{tbl:pilot}. 
 \begin{table}[b]

@@ -24,18 +24,32 @@
 % Ubah paragraf berikut dengan abstrak dari tugas akhir dalam Bahasa Inggris
 %\emph{In this research, we proposed \lipsum[1]}
 {
-\itshape
-In this research, we present an attempt to improve the capability of YOLOv7 to detect
-airborne objects. Airborne objects appear very small on cameras due to their distance
-to the camera. For that reason, YOLOv7 needs to be optimized to detect small objects.
-Several modification proposal was made and tested in this research. These modifications
-include changes in the architecture (Adding extra detection head, modifying feature-map
-source, and replacing detection head to a detached anchor-free head), and some bag-of-freebies
-applications (anchor recalculation, mosaic augmentation). At the current state, we found
-the combination of mosaic augmentation, anchor recalculation, and modifying feature-map
-source produces the greatest score in mAP, a 14.09\% increase compared to the plain
-YOLOv7 (mAP=0\%).
+  \itshape
+  In this research, we present an attempt to improve the detection capability of YOLOv7 for airborne objects. 
+  Airborne objects appear considerably small in camera images when they are located at a considerable distance from the camera. 
+  However, due to their high speed of movement, it is crucial to detect them while they are still far away. 
+  Therefore, to effectively detect these objects, YOLOv7 needs to be optimized for small objects.
+  To address this challenge, we proposed several modifications that include changes in the architecture (adding an extra detection head, modifying the feature-map source, and replacing the detection head with a detached anchor-free head), application of bag-of-freebies techniques (anchor recalculation and mosaic augmentation), and change in the inference process (partitioning the image and performing inference on each partition).
+  Through comprehensive experimentation, we have discovered that the combination of replacing the detection head with a detached anchor-free head, and performing inference on partitions yields the most promising results, with a significant increase in mean average precision (mAP) of 46.18\% while still maintaining real-time inference speed (greater than 10 FPS).
+  This improvement is notably higher compared to the unmodified plain YOLOv7, which achieved an mAP score of 0\%.
 }
+%{
+%\itshape
+%In this research, we present an attempt to improve the capability of YOLOv7 to detect
+%airborne objects. Airborne objects appear very small on cameras when they have large distance
+%from the camera. However, they also move really fast, making it important to detect them while they are still far away. 
+%For that reason, YOLOv7 needs to be optimized to detect small objects.
+%Several modification proposals was made and tested in this research. These modifications
+%include changes in the architecture (Adding extra detection head, modifying feature-map
+%source, and replacing detection head to a detached anchor-free head), some bag-of-freebies
+%applications (anchor recalculation, mosaic augmentation), and changes in the way the neural network perform inference (partition the image and do inference on each partition). 
+%We found that the combination of replacing detection head to detached anchor-free head and performing inference on partitions
+%produce a model with the greatest mAP score 46.18\% that still maintains inference speed in real-time (> 10 FPS). 
+%This increase is significantly higher compared to YOLOv7 plain without any modifications applied that yield mAP of 0\%.
+%%mosaic augmentation, anchor recalculation, and modifying feature-map
+%%source produces the greatest score in mAP, a 14.09\% increase compared to the plain
+%%YOLOv7 (mAP=0\%).
+%}
 
 % Ubah kata-kata berikut dengan kata kunci dari tugas akhir dalam Bahasa Inggris
 %\emph{Keywords}: \emph{}, \emph{Anti-gravity}, \emph{Energy}, \emph{Space}.

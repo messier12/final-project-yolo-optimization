@@ -180,7 +180,6 @@ The complete configuration of the layers can be seen in the appendix. %TODO: ref
     \centering
     \begin{subfigure}[][][b]{0.4\textwidth}
       \includegraphics[width=1\linewidth]{figures/deeperconn-before.png}
-      \caption*{Source: \textcite{yolov7} with permission (see Appendix \ref{appendix:license})}
       \caption{Before Rerouting}
       \label{fig:deeperconn-before}
     \end{subfigure}\hfill%\hspace{4em}
@@ -189,6 +188,7 @@ The complete configuration of the layers can be seen in the appendix. %TODO: ref
       \caption{After Rerouting}
       \label{fig:deeperconn-after}
     \end{subfigure}
+    \caption*{Adapted from: \textcite{yolov7} with permission (see Appendix \ref{appendix:license})}
     \caption{Modifying Connection to Earlier Feature Map Stage}
     \label{fig:deeperconn}
 \end{figure}
@@ -263,7 +263,7 @@ Upon replacing the head, we also replaced the label assigner from SimOTA to TAL.
 The performance of this modification is shown in Table \ref{tbl:anchorfree_perf}.
 
 The model was initially unable to converge due to numerical instability caused by having the objects becoming too small upon downscaling.
-After stabilizing the loss function to handle these cases as shown in \ref{appendix:numerical-stabilization}, 
+After stabilizing the loss function to handle these cases as shown in Appendix \ref{appendix:numerical-stabilization}, 
 this modification was able to improve the mAP score by 21.78\%.
 
 \begin{table}
@@ -276,24 +276,118 @@ this modification was able to improve the mAP score by 21.78\%.
 
 
 \section{Partitioning Image}
+{
+\begin{figure}[p]
+  \centering
+  \includegraphics[height=0.33\textheight]{figures/crop_strat_source.png}
+  \caption{Example Image Source for Cropping}
+  \label{fig:crop-source}
+\end{figure}
+\begin{figure}[p]
+  \centering
+  \begin{subfigure}[][][t]{0.3\textwidth}
+      \includegraphics[width=1\linewidth]{figures/crop_strat_illegal1.png}
+  \end{subfigure}
+  \begin{subfigure}[][][t]{0.3\textwidth}
+      \includegraphics[width=1\linewidth]{figures/crop_strat_illegal2.png}
+  \end{subfigure}
+  \begin{subfigure}[][][t]{0.3\textwidth}
+      \includegraphics[width=1\linewidth]{figures/crop_strat_illegal3.png}
+  \end{subfigure}
+  \caption{Cropping without Strategy (Random Center)}
+  \label{fig:crop-illegal}
+\end{figure}
+\begin{figure}[p]
+  \centering
+  \begin{subfigure}[][][t]{0.3\textwidth}
+      \includegraphics[width=1\linewidth]{figures/crop_strat_legal1.png}
+  \end{subfigure}
+  \begin{subfigure}[][][t]{0.3\textwidth}
+      \includegraphics[width=1\linewidth]{figures/crop_strat_legal2.png}
+  \end{subfigure}
+  \begin{subfigure}[][][t]{0.3\textwidth}
+      \includegraphics[width=1\linewidth]{figures/crop_strat_legal3.png}
+  \end{subfigure}
+  \caption{Cropping with Strategy}
+  %\caption*{Cropping Strategy Guarantees the Existence of The Object}
+  \label{fig:crop-legal}
+\end{figure}
+}
 We trained the models using partitioned image of the original dataset.
 In inference, we expect to partition an image into 4 equal sized images, which will
 then be fed to the neural network. This way, the network will produce 4 independent
 output that we can combine to form the final inference.
 
 To generate partitioned data for training, we cropped image with size of $(W/2,H/2)$
-based on the location of the objects bounding boxes. Therefore, it can be guaranteed that each image has atleast
+based on the location of the objects bounding boxes. Therefore, it can be guaranteed that each image has at least
 an object except for negative class images.
+The procedure for this is described in the following:
+\begin{itemize}[topsep=0pt]
+  \item Open all images and their labels which consist of list of objects in it.
+  \item For each object in an image, define a crop area with the following way:
+  \begin{itemize}
+    \item First, define the width and height of crop as a vector $\overrightarrow{crop_{wh}}$
+    \item Then, we wanted to find a lower bound and upper bound for the x and y value that the crop center can be placed such that
+    it would not cut object bounding box and not out of the boundary of the image itself. For example, for cropping the 
+    image in Figure \ref{fig:crop-source}, we wanted to ensure the result would not be like in Figure \ref{fig:crop-illegal}.
+    So, for the lower bound, we have:
+      \begin{equation}
+        \overrightarrow{crop_{lb}} = \max\left (\frac{\overrightarrow{c_{wh}}}{2} - \frac{\overrightarrow{crop_{wh}}}{2}, \frac{\overrightarrow{crop_{wh}}}{2} - \overrightarrow{c_{xy}}\right )
+        \label{eq:partition-lb}
+      \end{equation}
+      \begin{align*}
+        \text{Where}~c_{wh} &= \text{the width and height of the object's bounding box}\\
+        c_{xy} &= \text{the center of the object's bounding box}\\
+        \max(\vec{a},\vec{b}) &= \begin{pmatrix}\max(a.x,b.x) \\ \max(a.y,b.y)\end{pmatrix}  
+      \end{align*}
+    And for the upper bound:
+      \begin{equation}
+        \overrightarrow{crop_{ub}} = \max\left (\frac{\overrightarrow{crop_{wh}}}{2} - \frac{\overrightarrow{c_{wh}}}{2}  , 1 - \frac{\overrightarrow{crop_{wh}}}{2} - \overrightarrow{c_{xy}}\right )
+        \label{eq:partition-ub}
+      \end{equation}
+    \item Finally, Equation \ref{eq:partition-lb} and \ref{eq:partition-ub} can be used to compute a randomized but constrained center point of the crop area
+    by combining them to the following equation:
+    \begin{equation}
+      \overrightarrow{crop_{xy}} = \text{diag}(R)(\overrightarrow{crop_{ub}} - \overrightarrow{crop_lb}) + \overrightarrow{crop_{lb}} + \overrightarrow{c_{xy}}
+    \end{equation}
+    \begin{align*}
+      \text{Where}~R &= \text{a random vector with value of its element is within $(0,1)$}\\
+      \text{diag}(R) &= \text{a function that convert a vector $R$ to a diagonal matrix with elements of}\\ &\text{ R as its diagonal}\\
+    \end{align*}
+  \end{itemize}
+  \item After the cropping area has been defined, the bounding boxes' values must also be converted to the cropped perspective.
+  These conversions were done like the following:
+  \begin{align}
+    \overrightarrow{\hat{c}_{xy}} &= \overrightarrow{c_{xy}} - (\overrightarrow{crop_{xy}} - \frac{\overrightarrow{crop_{wh}}}{2})\\
+    \overrightarrow{\hat{c}_{wh}} &= \frac{\overrightarrow{c_{wh}}}{\overrightarrow{crop_{wh}}} \label{eq:partition-wh-conversion}
+  \end{align}
+  Where the division operation in Equation \ref{eq:partition-wh-conversion} is an element-wise division, meaning the x component of the numerator is divided by the x component of the denominator, likewise for y component.
+\end{itemize}
+By following this procedure, it is ensured that the cropping for training image would be like in Figure \ref{fig:crop-legal} and not like Figure \ref{fig:crop-illegal}.
+Without using this strategy, the resulting partitioned image for training would have a significant increase in negative class that could reduce the neural network recall ability.
 
-Since we are partitioning the image to a smaller size, we can finally use a smaller input size 
-to the neural network. We experimented by using 640 and 960 input size on some promising models.
+The procedure so far only consider for the case when the objects are about $crop_{wh}$ away from each other.
+If the objects are within $crop_{wh}$ from each other, we redefined the $c_{xy}$ and $c_{wh}$ to be the smallest box
+that bounds every object in the image. Redefinition is done in the following way:
+\begin{align}
+  \text{Let}~B &= \text{set bounding boxes in an image} \nonumber \\
+  c_{tl}.x &= \min \{c^*_{tl}.x : \forall\ c^* \in B\} \nonumber \\
+  c_{tl}.y &= \min \{c^*_{tl}.y : \forall\ c^* \in B\}\nonumber \\
+  c_{br}.x &= \max \{c^*_{br}.x : \forall\ c^* \in B\}\nonumber \\
+  c_{br}.y &= \max \{c^*_{br}.y : \forall\ c^* \in B\}\nonumber \\
+  c_{xy} &= \frac{c_{br}+c_{tl}}{2} \label{eq:partition-newcxy}\\
+  c_{wh} &= c_{br}-c_{tl} \label{eq:partition-newcwh}
+\end{align}
 
-The performace is shown on Table \ref{tbl:partition-perf}.
+Since the image were partitioned to a  smaller size, we were finally able to use a smaller input size 
+for the neural network. We experimented by using 640 and 960 input size on some previous modifications.
+The performance is shown on Table \ref{tbl:partition-perf}.
 \verb|YOLOv7-MAR + anchor-free| with input size 960 produced the greatest mAP@50 score
-amongs other model.
+amongst other model when partitioned to 4.
 
 
-\begin{table}
+
+\begin{table}[b]
   \centering
   \captionof{table}{Partitioning Image Performance}
   \label{tbl:partition-perf}

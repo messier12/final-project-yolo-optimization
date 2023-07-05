@@ -8,20 +8,32 @@
   enclosing objects in bounding boxes, determining which part of the image is an object and which part is not. 
   On the other hand, classification is about determining the class of
   objects. An object detection algorithm has to determine the label of an object whether
-  they are an animal, human, necromancer, or anything in the set of classes.
+  they are an animal, human, necromancer, or something else in the set of classes.
 
   To measure how well an object detection algorithm or model perform, computer vision
   researchers defined metrics to measure how fit a model prediction to an object
-  and to measure how well the model perform across all objects. Example of those metrics are IoU and mAP.
+  and to measure how well the model perform across all objects. Example of those metrics are Intersection Over Union (IoU) and Mean Average Precision (mAP).
   
   %\lipsum[1-6]
 
 
 
-  \subsubsection{Intersection Over Union (IoU)}
+  \subsubsection{Intersection Over Union}
+   \begin{figure}[p]
+        \centering
+        \includegraphics[width=0.9\textwidth]{figures/iou-intersect.png}
+        \caption{Three Cases of Bounding Boxes Intersection}
+        \label{fig:intersections-iou}
+    \end{figure}
+    \begin{figure}[p]
+        \centering
+        \includegraphics[width=0.8\textwidth]{figures/inter-union.png}
+        \caption{Intersection and Union of 2 Bounding Boxes}
+        \label{fig:inter-union}
+    \end{figure}
+  
 
-
-  Intersection over union (IoU) is a widely used metrics to determine how fit a predicted bounding box against the true bounding box.
+  IoU is a widely used metrics to determine how fit a predicted bounding box against the true bounding box.
   It is done by calculating the area of the intersection between the predicted and dividing it by the area of the
   union of those 2 boxes. 
   This way, IoU is robust to objects of different sizes and aspect ratio. 
@@ -38,13 +50,7 @@
   We can say that the intersection part of the IoU provide a score for the bounding boxes position similarities and the 
   union provide score for size similarities.
 
-    \begin{figure}[p]
-        \centering
-        \includegraphics[width=0.9\textwidth]{figures/iou-intersect.png}
-        \caption{Three Cases of Bounding Boxes Intersection}
-        \label{fig:intersections-iou}
-    \end{figure}
-  
+ 
   
   %The IoU of 2 bounding boxes A and B can be calculated using the following way:
   To calculate the IoU of two bounding boxes A and B, the area of intersection and union must first
@@ -79,15 +85,10 @@
       IoU = \frac{\text{Area}_{\text{inter}}}{\text{Area}_{\text{union}}}
     \end{equation}
   \end{itemize} 
-   \begin{figure}[p]
-        \centering
-        \includegraphics[width=0.8\textwidth]{figures/inter-union.png}
-        \caption{Intersection and Union of 2 Bounding Boxes}
-        \label{fig:inter-union}
-    \end{figure}
+
   
 
-  \subsubsection{Mean Average Precision (mAP)}
+  \subsubsection{Mean Average Precision}
   Average Precision (AP) is a popular metrics used to measure the capability of an object detection model
   for a given dataset. The main advantage of using AP are its ability to capture the precision recall
   tradeoff and its independence towards confidence threshold. AP has these 2 advantage as an effect of the way 
@@ -524,8 +525,10 @@
   \subsection{Anchor Recalculation}
   \label{section:anchor_recalc_study}
   Anchor recalculation is a common method of introducing prior distribution of the dataset to an anchor-based object
-  detection networks. Most of the time, anchors provided by pretrained YOLO weights are optimized for the common metrics
-  dataset such as COCO2017 or VOC2012. Thus, recalculating anchor can help the neural network learn faster.
+  detection networks. Thus, recalculating anchor can help the neural network learn faster.
+  Most of the time, anchors provided by pretrained YOLO weights are optimized for the common metric
+  dataset such as COCO2017 or VOC2012. 
+  Therefore, recalculating anchors in a specific dataset can improve the neural network ability.
 
   There are multiple ways of recalculating anchors. Some of them can be performed before training or during training.
   Most of pre-training anchor recalculation method involves with clustering the anchors to the dataset. This is done by
