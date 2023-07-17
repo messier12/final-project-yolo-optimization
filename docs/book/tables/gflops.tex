@@ -1,0 +1,22 @@
+\begin{tabular}{ l l c c c}
+  \toprule[1.5pt]
+  No & Model                                       &   Input Size         & GFLOPs (\~MAC$\times$2)         \\
+  \midrule
+  0  & \texttt{YOLOv7-MAR, plain, M, AR, EIoU}     &      1600            & 552.11   \\ 
+  1  & \texttt{YOLOv7-MAR + rerouting}             &      1600            & 692.02   \\
+  2  & \texttt{YOLOv7-MAR + more head}             &      1600            & 627.25   \\
+  3  & \texttt{YOLOv7-MAR + anchor-free}           &      1600            & 1374.47  \\ 
+  \midrule
+  4  & \texttt{YOLOv7-MAR, plain, M, AR, EIoU}     &      960             & 205.07  \\
+  5  & \texttt{YOLOv7-MAR + rerouting}             &      960             & 257.03   \\
+  6  & \texttt{YOLOv7-MAR + more head}             &      960             & 232.98    \\
+  7  & \texttt{YOLOv7-M + anchor-free}             &      960             & 510.53  \\
+  \midrule
+  8  & \texttt{YOLOv7-MAR}                         &      640             & 89.39   \\
+  9  & \texttt{YOLOv7-MAR + rerouting}             &      640             & 112.04   \\
+  10 & \texttt{YOLOv7-MAR + more head}             &      640             & 101.55   \\
+  11 & \texttt{YOLOv7-M + anchor-free}             &      640             & 222.53   \\
+  %\midrule
+  %   & Improvement                                 &              & \textbf{\textcolor{red}{-6\%}} &TBA\\
+  \bottomrule[1.5pt]
+\end{tabular}

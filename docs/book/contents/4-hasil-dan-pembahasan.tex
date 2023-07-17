@@ -371,12 +371,12 @@ If the objects are within $crop_{wh}$ from each other, we redefined the $c_{xy}$
 that bounds every object in the image. Redefinition is done in the following way:
 \begin{align}
   \text{Let}~B &= \text{set bounding boxes in an image} \nonumber \\
-  c_{tl}.x &= \min \{c^*_{tl}.x : \forall\ c^* \in B\} \nonumber \\
-  c_{tl}.y &= \min \{c^*_{tl}.y : \forall\ c^* \in B\}\nonumber \\
-  c_{br}.x &= \max \{c^*_{br}.x : \forall\ c^* \in B\}\nonumber \\
-  c_{br}.y &= \max \{c^*_{br}.y : \forall\ c^* \in B\}\nonumber \\
-  c_{xy} &= \frac{c_{br}+c_{tl}}{2} \label{eq:partition-newcxy}\\
-  c_{wh} &= c_{br}-c_{tl} \label{eq:partition-newcwh}
+  c_{tl}.x &= \min \ \{c^*_{tl}.x : \forall\ c^* \in B\} \nonumber \\
+  c_{tl}.y &= \min \ \{c^*_{tl}.y : \forall\ c^* \in B\}\nonumber \\
+  c_{br}.x &= \max \ \{c^*_{br}.x : \forall\ c^* \in B\}\nonumber \\
+  c_{br}.y &= \max \ \{c^*_{br}.y : \forall\ c^* \in B\}\nonumber \\
+  \overrightarrow{c_{xy}} &= \frac{\overrightarrow{c_{br}}+\overrightarrow{c_{tl}}}{2} \label{eq:partition-newcxy}\\
+  \overrightarrow{c_{wh}} &= \overrightarrow{c_{br}}-\overrightarrow{c_{tl}} \label{eq:partition-newcwh}
 \end{align}
 
 Since the image were partitioned to a  smaller size, we were finally able to use a smaller input size 
@@ -396,11 +396,16 @@ amongst other model when partitioned to 4.
 \end{table}
 
 \section{Latency}
-In this section, the latency of the modifications is presented.
+In this section, the latency of the modifications that involved architectural changes is presented.
 The data obtained using computer with specification presented in section \ref{section:instrument}.
 Table \ref{tbl:inference-speed} shows that all the partition 4 models have $> 40$ FPS inference speed.
 This means that they are able to perform at $>10$ FPS even without batching to detect a full image, making them all valid candidate for the best model.
 
+As additional information, the total floating point operations (FLOPs) for each architecture modification can be seen in Table \ref{tbl:flops}.
+The values are calculated using THOP profiling tool in a hardware with Fused Multiply Addition (FMA) instructions, thus it counted Multiply-Accumulate (MAC) instead of the true FLOPs.
+Therefore, to find the FLOPs, output of THOP must be multiplied by 2 ($FLOPs = MAC \times 2$).
+%To fin should be about
+%2 times the output of THOP ($FLOPs = MAC \times 2$).
 
 \begin{table}
   \centering
@@ -410,6 +415,74 @@ This means that they are able to perform at $>10$ FPS even without batching to d
   \begin{adjustbox}{width=\textwidth}
   \input{tables/latency.tex}
   \end{adjustbox}
-
+\end{table}
+\begin{table}
+  \centering
+  \captionof{table}{Floating Point Operations For a Single Inference}
+  \label{tbl:flops}
+  \vspace{-1ex}
+  \begin{adjustbox}{width=.8\textwidth}
+  \input{tables/gflops.tex}
+  \end{adjustbox}
 \end{table}
 
+\section{Model Selection}
+Since all the modified models qualify for model selection as shown in Table \ref{tbl:inference-speed},
+we only have to pick the model that has the largest mAP.
+From Table \ref{tbl:mosaic_reanchor_performance}, \ref{tbl:loss_function_perf}, \ref{tbl:neck_backbone_perf}, \ref{tbl:addhead}, \ref{tbl:anchorfree_perf}, and \ref{tbl:partition-perf},
+we found that \texttt{YOLOv7-M + anchor-free + Partition4} with input size 960 to have the largest
+mAP score that is 46.18\%.
+
+An example of detection result from this model can be seen on Figure \ref{fig:inference-out}.
+As shown in the figure, the model was able to localize and classify the helicopter when it was still very far away.
+
+\begin{figure}[btp]
+  \centering
+  \begin{subfigure}{\textwidth}
+    \centering
+    \includegraphics[width = .45\linewidth]{figures/best-1.png}
+  \end{subfigure}
+  \vspace{1ex}
+
+  \begin{subfigure}{.45\textwidth}
+    \centering
+    \includegraphics[width = \linewidth]{figures/best-2.png}
+  \end{subfigure}\hspace{1ex}
+  \begin{subfigure}{.45\textwidth}
+    \centering
+    \includegraphics[width = \linewidth]{figures/best-3.png}
+  \end{subfigure}
+  \caption{Example Prediction Result of The Selected Best Model}
+  \label{fig:inference-out}
+\end{figure}
+\section{Exploratory Analysis: Low Resolution/Pixel Density Images}
+The dataset we used to train and benchmark so far have $2048\times 2448$ resolution.
+This means that it is highly probable that the small objects are recognizable if we zoom in the image.
+But what about objects that are not recognizable even after zooming?
+In this section, we would like to experiment with low resolution or low pixel density input.
+The purpose of this experiment is to find out the performance of the selected best modified YOLOv7 models against
+bad quality image. We want to find out its ability to predict vague looking objects.
+
+For the experiment, we purposely select some images from \textcite{mva2023} that has hard to recognize airborne objects in it, even after zooming.
+These images will first converted into grayscale to make it similar with the training dataset that was obtained from \textcite{aot_dataset}.
+\textcite{mva2023} images quality are different compared to \textcite{aot_dataset}.
+Although it has higher pixel resolution, \textcite{mva2023} images' pixel density is subpar compared to \textcite{aot_dataset}.
+Observe Figure \ref{fig:mva}, the object is almost not recognizable even after zooming due to low pixel density, different from Figure \ref{fig:airborne-object-example-1} introduced in section \ref{section:background}.
+
+After running these low pixel density images with the best modified YOLOv7 model, we found that the model was unable to correctly detect the airborne objects in them.
+The model did not detect any airborne objects on most images. On some rare cases, the model was able to localize the airborne object but unable to classify it to the proper class.
+One example for such cases is the image in Figure \ref{fig:mva}. The model was able to localize the birds properly, but classify them as airplane.
+We also tried to crop the images so that it would have the same resolution as \textcite{aot_dataset}, but the result remain the same.
+
+This experiment is an evidence that the model was unable to perform inference on low detail quality image.
+However, this outcome might be caused by the training data significantly different to \textcite{mva2023} rather than the fault of the model itself.
+The model was trained on dataset where all the images was taken from the same or similar camera that produce high pixel density images.
+It is possible that inclusion of bad quality image in the dataset would improve the model ability to perform detection on low pixel density images.
+
+\begin{figure}[btp]
+  \centering
+  \includegraphics[height=0.6\textwidth]{figures/mva.png}
+  \caption*{Source: \textcite{mva2023}, permissible under copyright license (see Appendix \ref{appendix:license})}
+  \caption{Example Low Pixel Density Image in \textcite{mva2023}}
+  \label{fig:mva}
+\end{figure}

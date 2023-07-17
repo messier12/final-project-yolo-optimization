@@ -31,7 +31,7 @@
   Therefore, to effectively detect these objects, YOLOv7 needs to be optimized for small objects.
   To address this challenge, we proposed several modifications that include changes in the architecture (adding an extra detection head, modifying the feature-map source, and replacing the detection head with a detached anchor-free head), application of bag-of-freebies techniques (anchor recalculation and mosaic augmentation), and change in the inference process (partitioning the image and performing inference on each partition).
   Through comprehensive experimentation, we have discovered that the combination of replacing the detection head with a detached anchor-free head, and performing inference on partitions yields the most promising results, with a significant increase in mean average precision (mAP) of 46.18\% while still maintaining real-time inference speed (greater than 10 FPS).
-  This improvement is notably higher compared to the unmodified plain YOLOv7, which achieved an mAP score of 0\%.
+  This improvement is notably higher compared to the unmodified plain YOLOv7, which achieved a mAP score of 0\%.
 }
 %{
 %\itshape

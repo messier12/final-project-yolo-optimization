@@ -5,9 +5,9 @@
 \section{Conclusion}
 \label{section:conclusion}
 
-Based on the experiments conducted in previous chapter, it can be observed that some modification
+Based on the experiments conducted in previous chapter, it can be observed that some specific modification
 can improve YOLOv7 ability on detecting airborne objects, while others have negligible or even negative effect.
-We found that:
+In conclusion, we found that:
 \begin{itemize}[noitemsep,topsep=0pt]
   \item YOLOv7 was only able to perform detection on airborne objects after adding mosaic augmentation to the training data and recalculated its anchor to fit the data.
   This modification improved the mAP score from 0 to 11.2\%.
@@ -18,11 +18,16 @@ We found that:
   \item Applying image partition to all model greatly improve their detection performance. The greatest performance after applying image partition
   came from anchor-free head modification which produced 46.18\% mAP, a 13.2\% improvement compared to without partition.
 \end{itemize}
-
-In conclusion, amongst the proposed modifications applied to YOLOv7, we found that applying image partition, and replacing
+Amongst all the proposed modifications applied to YOLOv7, we also found that applying image partition, and replacing
 head to a decoupled anchor free head performed the best on detecting airborne objects, while still able to perform inference in real-time.
 
 
+With this, we have explored different ways to improve the detection of airborne objects with YOLOv7.
+However, there are still more things we can try in the future to make it even better.
+One idea is to use attention mechanisms, which help the model focus on important features related to airborne objects.
+We could also investigate transfer learning and domain adaptation to leverage existing knowledge and adapt the model to specific situations.
+To handle low pixel density data, we could introduce subpixel convolutions instead of pyramid upsampling when increasing the dimension of features.
+Overall, there are still many opportunities for further research and enhancements that could be done in optimizing YOLOv7 airborne object detection.
 %\section{Discussion}
 
 %Based on the experiments conducted in previous chapter, we can conclude that:

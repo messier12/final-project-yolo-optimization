@@ -18,3 +18,5 @@
 .vscode/*
 groundtruth.json
 valid_encounters_maxRange700_maxGap3_minEncLen30.json
+docs/book/figures/backup-figures/*
+*/backup-figures/*
