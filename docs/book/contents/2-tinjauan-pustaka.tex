@@ -186,10 +186,87 @@
   %to learn feature kernels automatically. With the usage of deep learning, object detection task
   %had significant advancement in terms of accuracy and efficiency.
 
-%  \subsection{Deep Learning}
-%  \subsubsection{Neural Network}
-%  Neural Network are computational models that drew inspiration from how neural network in brain works.
-%  \subsubsection{Gradient Descent}
+  \subsection{Deep Learning}
+  \subsubsection{Neural Network}
+  Neural Network are computational models that drew inspiration from how neural network in brain works.
+  It imitates a simplification model of human brain which consist of large number of simple computational block (neuron)
+  that are connected to each other, but able to carry out complex computation \parencite{mltheorytoalgo}. 
+
+  A neural network can be described as directed graph where each node of the graph is a neuron and the edges are the link between the neurons.
+  Each neuron will take the weighted sum of the output of other neurons that are connected it via incoming edge, and will output a value that would be an input to another neuron.
+  We can describe a neural network with a graph $G = (V,E)$ and a weight function $w : E \rightarrow \mathbb{R}$, where each node is modeled as activation function $\sigma : \mathbb{R} \rightarrow \mathbb{R}$.
+
+  To simplify explanation here like how \textcite{mltheorytoalgo} did, we assume the neural network form a feed-forward neural network (DAG structure) and is organized in layers.
+  We can say that each node in $V$ can be decomposed as a union non-empty disjoint subsets of nodes, $V = \coprod_{t=0}^T V_t$, such that
+  every edge in $E$ connect some node in $V_{t-1}$ to $V_t$ for $t\in [T]$.
+
+  We call $V_0$, the first layer of the neural network as the input layer. It has $n_0+1$ nodes where $n_0$ is the dimensionality of input space.
+  For every $i$ in $[n_0]$, the output of neuron $i$ is just $x_i$, the values of input vector $\vec{x}$. The last neuron in $V_0$ is a constant neuron that always outputs 1.
+  We denote $v_{t,i}$ to be the $i$-th neuron of the $t$-th layer and $o_{t,i}(\vec{x})$ as the output of that neuron when the neural network is fed with input vector $\vec{x}$.
+
+  Now we can perform the neural network calculation in layer-by-layer manner.
+  Let $a_{t+1,j}(\vec{x})$ be the input to $v_{t+1,j}$ when the network is fed with $\vec{x}$.
+  We can calculate $a$ with the following:
+  \begin{equation}
+    a_{t+1,j}(\vec{x}) = \sum_{r : (v_{t,r}, v_{t+1,j}) \in E} w((v_{t,r}, v_{t+1,j}))o_{t,r}(\vec{x}),
+    \label{eq:forward-equation}
+  \end{equation}
+  and $o$ can be calculated with:
+  \begin{equation}
+    o_{t+1,j}(\vec{x}) = \sigma(a_{t+1,j}(\vec{x}))
+    \label{eq:forward-activation}
+  \end{equation}
+
+  Equation \ref{eq:forward-equation} shows how the input of the neuron in the next layer is the weighted sum of the neurons in the previous layer that is connected to that neuron.
+  The weighted sum are regulated according to $w$, and Equation \ref{eq:forward-activation} shows how the output of a neuron $v_{t+1,j}$ is only the application of activation function $\sigma$ on its input.
+
+  The layers beside the input layer $V_0$ and output layer $V_T$ are often called hidden layers.
+  $T$, the number of layers in the neural network, sometimes referred to as the depth of the network, hence the name deep learning.
+  $|V|$ is called the size of the network and $\max_t |V_t|$ is called the width of the network.
+  
+  An illustration of the layers in a neural network can be seen on Figure \ref{fig:neuralnets}
+  The illustrated neural network has a depth of 2, size of 10, and width of 4.
+
+  \begin{figure}
+      \centering
+      \includegraphics[width=.9\textwidth]{figures/neuralnets.png}
+      \caption{Illustration of neural network with $T=2$}
+      \label{fig:neuralnets}
+  \end{figure}
+
+  \subsubsection{Neural Network as Hypothesis Class}
+  Previously, we have specified a neural network architecture using $V$, $E$, and $\sigma$.
+  This architecture is a hypothesis class or model class that consist of functions $h_{V,E,\sigma,w} : \mathbb{R}^{|V_0|-1} \rightarrow \mathbb{R}^{|V_T|}$.
+  With $V$, $E$, and $\sigma$ fixed, we can define the hypothesis class of the neural network architecture by:
+  \begin{equation}
+    \mathcal{H}_{V,E,\sigma} = \{h_{V,E,\sigma,w} : w \text{ is a mapping of } E \rightarrow \mathbb{R} \}
+    \label{eq:nn-hypot-class}
+  \end{equation}
+
+  Equation \ref{eq:nn-hypot-class} means that to find a model in the hypothesis class $\mathcal{H}$, we can do so by specifying the
+  weights of the edges $w$.
+  
+  \subsubsection{Neural Network Learning}
+  The learning of a neural network is the searching for the best hypothesis/model from hypothesis class $\mathcal{H}$.
+  To find a model in $\mathcal{H}_{V,E,\sigma}$ with a low risk over the data by tuning $w$, we can apply
+  some heuristic search approach by stochastic gradient descent (SGD).
+  %For simpler explanation, $\sigma$ is assumed to be sigmoid function.
+
+  We can think of the weight function $w$ as a vector $\vec{w} in \mathbb{R}^|E|$.
+  If $n=|V_0|-1$ the number of input neurons and $k=|V_T|$ the number of output neurons,
+  we can call a hypothesis defined by $\vec{w}$ in the hypothesis class to be a function $h_{\vec{w}} : \mathbb{R}^n \rightarrow \mathbb{R}^k$.
+  Let $\Delta(h_{\vec{w}}(\vec{x}),\vec{y}) $ be the loss of predicting $h_{\vec{w}}(\vec{x})$ when the target label is $\vec{y}$.
+  The risk of the network over data distribution $\mathcal{D}$ can be defined as:
+  \begin{equation}
+    L_{\mathcal{D}}(\vec{w}) = \mathop{{}\mathbb{E}}_{(\vec{x},\vec{y}) \sim \mathcal{D}} [\Delta(h_{\vec{w}}(\vec{x}),\vec{y})]
+    \label{eq:risk}
+  \end{equation}
+
+  Now, we can use SGD to do empirical risk minimization (ERM) according to risk in Equation \ref{eq:risk}.
+  The ERM can be done by setting the $\vec{w}$ to be a random vector, and perform SGD with the data.
+  The gradients of each element in $\vec{w}$ however does not have a closed form. Instead, it is calculated using backpropagation.
+  Sometimes it is also useful to add regularization term to the risk equation, that is, we try to minimize
+  $L_{\mathcal{D}} + \frac{\lambda}{2} ||\vec{w}||^2$ for better result.
 
 
   \subsection{YOLO Family Architecture}
