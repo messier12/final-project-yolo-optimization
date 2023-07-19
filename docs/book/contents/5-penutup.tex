@@ -8,7 +8,7 @@
 Based on the experiments conducted in previous chapter, it can be observed that some specific modification
 can improve YOLOv7 ability on detecting airborne objects, while others have negligible or even negative effect.
 In conclusion, we found that:
-\begin{itemize}[noitemsep,topsep=0pt]
+\begin{enumerate}[noitemsep,topsep=0pt]
   \item YOLOv7 was only able to perform detection on airborne objects after adding mosaic augmentation to the training data and recalculated its anchor to fit the data.
   This modification improved the mAP score from 0 to 11.2\%.
   \item EIoU, even with its convexication technique, was not able to outperform YOLOv7's original CIoU. It produced only 4.92\% in mAP score.
@@ -17,7 +17,7 @@ In conclusion, we found that:
   \item Replacing head to a decoupled anchor free head greatly improve the detection capability.
   \item Applying image partition to all model greatly improve their detection performance. The greatest performance after applying image partition
   came from anchor-free head modification which produced 46.18\% mAP, a 13.2\% improvement compared to without partition.
-\end{itemize}
+\end{enumerate}
 Amongst all the proposed modifications applied to YOLOv7, we also found that applying image partition, and replacing
 head to a decoupled anchor free head performed the best on detecting airborne objects, while still able to perform inference in real-time.
 

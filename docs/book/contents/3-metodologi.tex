@@ -64,8 +64,8 @@ To conduct this research, we first have to prepare the dataset.
 First, the dataset will be downloaded from \textcite{aot_dataset}.
 Then, the labels of the dataset will be converted to darknet or COCO format.
 And finally, the dataset will be sampled into training set, validation set, and test set.
-The sampling will be done in a way that balances the number classes in each set so
-that there will be no dominating class during training.
+%The sampling will be done in a way that balances the number classes in each set so
+%that there will be no dominating class during training.
   
 The next thing to do is to develop a training system.
 The purpose of this system is to make the training process easily conducted and monitored.
@@ -101,6 +101,7 @@ The model that qualify for selection must be able to perform inference with spee
 
 \section{Modification Candidates}
 \label{section:modificationcandidates}
+In this section, the modification candidates that would be tried is explained.
   \subsection{Mosaic Augmentation}
   As discussed in section \ref{section:mosaic_study}, mosaic augmentation was able to increase the detection accuracy of small objects
   on many object detection neural networks. For this reason, we will experiment by training YOLOv7 with and without  mosaic augmentation.
@@ -280,20 +281,27 @@ The model that qualify for selection must be able to perform inference with spee
     
 \section{Computational Resource}
 \label{section:instrument}
-To conduct this research, we will be using a computer with the following specification:
-\begin{itemize}[itemsep=1pt,leftmargin=.1\textwidth,rightmargin=.1\textwidth]
-  \item CPU \hfill Intel® Core™ i5-9400F CPU @ 2.90GHz
-  \item GPU \hfill Nvidia Geforce RTX 2080 Ti
-  \begin{itemize}[noitemsep,topsep=0pt]
-    \item[] Memory \hfill 11 GB
-    \item[] CUDA Compute Capability \hfill 7.5
-  \end{itemize}
-  \item RAM \hfill 12 GB
-  \item Hard Drive Available Space \hfill 1.3 TB
-  \item Operating System \hfill Ubuntu 20.04
-  \item CUDA Toolkit Version \hfill 11.7
-  \item PyTorch Version \hfill 1.13.1
-\end{itemize}
+To conduct this research, we will be using a computer with the specification shown in Table \ref{tbl:specs}.
+\begin{table}[h!]
+  \centering
+  \captionof{table}{Computer Specification}
+  \label{tbl:specs}
+  \input{tables/specs.tex}
+
+\end{table}
+%\begin{itemize}[itemsep=1pt,leftmargin=.1\textwidth,rightmargin=.1\textwidth]
+%  \item CPU \hfill Intel® Core™ i5-9400F CPU @ 2.90GHz
+%  \item GPU \hfill Nvidia Geforce RTX 2080 Ti
+%  \begin{itemize}[noitemsep,topsep=0pt]
+%    \item[] Memory \hfill 11 GB
+%    \item[] CUDA Compute Capability \hfill 7.5
+%  \end{itemize}
+%  \item RAM \hfill 12 GB
+%  \item Hard Drive Available Space \hfill 1.3 TB
+%  \item Operating System \hfill Ubuntu 20.04
+%  \item CUDA Toolkit Version \hfill 11.7
+%  \item PyTorch Version \hfill 1.13.1
+%\end{itemize}
 
 \section{Pilot Test}
 To ensure the reliability of the computational resource, and to find the resource-induced constraint, we performed A
@@ -321,22 +329,38 @@ This model can be trained in a reasonable time (20 hours) and enough spare room 
 
 \section{Dataset Preparation}
 \label{section:dataset}
+The overview of the dataset that will be used in experiment and the procedure of preparing the data for experiment are shown in this section.
 
   \subsection{Dataset Source}
   \label{section:datasetsource}
   Dataset containing annotated images of airborne objects can be obtained from \textcite{aot_dataset}
   that was hosted in an AWS S3 Bucket.
   The dataset consist of several Unmanned Aerial Vehicle (UAV) flights' frame-by-frame camera capture.
-  The dataset is structured in the following manner:
-
-  \input{misc/dataset-tree.tex}
-
-  And each labels JSON file, \verb|labels.json| on each part of the data, is structured like the following:
-
-  \input{misc/dataset-label-tree.tex}
+  The dataset images is structured like the file tree shown in Figure \ref{fig:filestructure}.
+  For the labels, it is stored in a JSON file
+ \verb|labels.json| on each part of the data. The label JSON structure is shown in Figure \ref{fig:labelstructure}.
+  %\input{misc/dataset-tree.tex}
+  %\input{misc/dataset-label-tree.tex}
 
   Notice that the labels are structured in an entity based manner. This made the label conversion process
   more complex. Handling this labelling structure will be discussed more in the next section.
+  \begin{figure}
+    \centering
+    \begin{subfigure}[][][t]{.57\textwidth}
+      \fbox{\includegraphics[width=.99\linewidth]{figures/filestructure.png}}
+      \label{fig:filestructure}
+      \caption{Dataset File Structure}
+    \end{subfigure}\hfill
+    \begin{subfigure}[][][t]{.37\textwidth}
+      \fbox{\includegraphics[width=.99\linewidth]{figures/labelstructure.png}}
+      \label{fig:labelstructure}
+
+      \caption{Dataset Labels Structure}
+    \end{subfigure}
+
+    \label{datasetstructure}
+    \caption{File Structure and Label Structure of \textcite{aot_dataset}}
+  \end{figure}
 
   \subsubsection{Dataset Statistics}
   There are 7 classes in the dataset, but there are 3 dominating classes.
@@ -363,6 +387,29 @@ This model can be trained in a reasonable time (20 hours) and enough spare room 
   %Perhatikan pada gambar tersebut, sumbu x menggunakan skala logaritmik.
   %Sebagai referensi, luas dari tiap frame itu sekitar $5\times10^16 px^2$.
 
+  \begin{figure}
+    \centering
+    \includegraphics[width=.8\textwidth]{figures/area-dist.png}
+    \caption{Distribution of Bounding Boxes' Area}
+    \label{fig:areadist}
+  \end{figure}
+
+
+  \begin{figure}
+    \centering
+    \includegraphics[width=.7\textwidth]{figures/hw-dist.png}
+    \caption{Distribution of Bounding Boxes' Widths and Heights}
+    \label{fig:hwdist}
+  \end{figure}
+  \begin{figure}
+    \centering
+    \includegraphics[width=.7\textwidth]{figures/object-pos-dist.png}
+    \caption*{Source: \textcite{aot_dataset} under CDLA-Permissive 1.0}
+    \vspace{-1ex}
+    \caption{Distribution of Objects' Position}
+    \label{fig:objectheatmap}
+  \end{figure}
+
   If we look at the area (in $px$) distribution of the objects' bounding boxes, we will find
   the histogram in Figure \ref{fig:areadist}. Take note that in the figure, the x-axis is 
   using in logarithmic scale, which means the true data is very right skewed.
@@ -374,34 +421,15 @@ This model can be trained in a reasonable time (20 hours) and enough spare room 
   Meanwhile, The distribution of objects position in the camera can be seen on Figure \ref{fig:objectheatmap}.
   We can see that most of the objects are around the center of the image.
 
-  \begin{figure}[p]
-    \centering
-    \includegraphics[width=.5\textwidth]{figures/area-dist.png}
-    \caption{Distribution of Bounding Boxes' Area}
-    \label{fig:areadist}
-  \end{figure}
-  \begin{figure}[p]
-    \centering
-    \includegraphics[width=.5\textwidth]{figures/hw-dist.png}
-    \caption{Distribution of Bounding Boxes' Widths and Heights}
-    \label{fig:hwdist}
-  \end{figure}
-  \begin{figure}[p]
-    \centering
-    \includegraphics[width=.5\textwidth]{figures/object-pos-dist.png}
-    \caption*{Source: \textcite{aot_dataset} under CDLA-Permissive 1.0}
-    \vspace{-1ex}
-    \caption{Distribution of Objects' Position}
-    \label{fig:objectheatmap}
-  \end{figure}
 
 
 
 
   \subsection{Dataset Sampling}
   \label{section:datasetsampling}
+  This subsection will show how the dataset is sampled and prepared for experient. 
     \subsubsection{Sampling Distribution}
-    As seen on section \ref{section:datasetsource}, The size of the dataset is massive.
+    As discussed in section \ref{section:datasetsource}, The size of the dataset is massive.
     For this reason, we only downloaded the planned encounters from the AWS S3 Bucket which 
     in total amounted to 1.1 TB. As this number is still too large
     due to the limitation of computational resource, we will only sample some of them

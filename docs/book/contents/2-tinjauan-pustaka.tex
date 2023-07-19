@@ -1,7 +1,7 @@
 \chapter{LITERATURE REVIEW}
 \section{Theoretical Basis}
+In this section, the underlying theoretical foundation and conceptual framework for this research will be explained.
   \subsection{Object Detection Task}
-
   Object detection is a fundamental task in computer vision.
   It is a task that have 2 objective, localization and classification.
   Localization is about determining the spatial properties of an object in an image. E.g. by
@@ -73,7 +73,7 @@
   %The IoU of 2 bounding boxes A and B can be calculated using the following way:
   To calculate the IoU of two bounding boxes A and B, the area of intersection and union must first
   be calculated. The following shows the process of calculating IoU.
-  \begin{itemize}[topsep=0pt]
+  \begin{enumerate}[topsep=0pt]
     \item Calculate the area of intersection of A and B. 
     Let $(x_A,y_A)$ and $(x_B,y_B)$ be coordinates of the center of the boxes A and B respectively,
     and let $(w_A,h_A)$ and $(w_B,h_B)$ be widths and heights of boxes A and B, as demonstrated in Figure \ref{fig:inter-union}.
@@ -102,7 +102,7 @@
     \begin{equation}
       IoU = \frac{\text{Area}_{\text{inter}}}{\text{Area}_{\text{union}}}
     \end{equation}
-  \end{itemize} 
+  \end{enumerate} 
 
   
 
@@ -186,12 +186,12 @@
   %to learn feature kernels automatically. With the usage of deep learning, object detection task
   %had significant advancement in terms of accuracy and efficiency.
 
-  \subsection{Deep Learning}
-  \subsubsection{Neural Network}
+  \subsection{Neural Network}
   Neural Network are computational models that drew inspiration from how neural network in brain works.
   It imitates a simplification model of human brain which consist of large number of simple computational block (neuron)
   that are connected to each other, but able to carry out complex computation \parencite{mltheorytoalgo}. 
 
+  \subsubsection{Mathematically Modeling Neural Network}
   A neural network can be described as directed graph where each node of the graph is a neuron and the edges are the link between the neurons.
   Each neuron will take the weighted sum of the output of other neurons that are connected it via incoming edge, and will output a value that would be an input to another neuron.
   We can describe a neural network with a graph $G = (V,E)$ and a weight function $w : E \rightarrow \mathbb{R}$, where each node is modeled as activation function $\sigma : \mathbb{R} \rightarrow \mathbb{R}$.
@@ -252,11 +252,11 @@
   some heuristic search approach by stochastic gradient descent (SGD).
   %For simpler explanation, $\sigma$ is assumed to be sigmoid function.
 
-  We can think of the weight function $w$ as a vector $\vec{w} in \mathbb{R}^|E|$.
+  We can think of the weight function $w$ as a vector $\vec{w}$ in $\mathbb{R}^{|E|}$.
   If $n=|V_0|-1$ the number of input neurons and $k=|V_T|$ the number of output neurons,
   we can call a hypothesis defined by $\vec{w}$ in the hypothesis class to be a function $h_{\vec{w}} : \mathbb{R}^n \rightarrow \mathbb{R}^k$.
   Let $\Delta(h_{\vec{w}}(\vec{x}),\vec{y}) $ be the loss of predicting $h_{\vec{w}}(\vec{x})$ when the target label is $\vec{y}$.
-  The risk of the network over data distribution $\mathcal{D}$ can be defined as:
+  The risk of the network over data distribution $\mathcal{D}$ can be defined as in Equation \ref{eq:risk}:
   \begin{equation}
     L_{\mathcal{D}}(\vec{w}) = \mathop{{}\mathbb{E}}_{(\vec{x},\vec{y}) \sim \mathcal{D}} [\Delta(h_{\vec{w}}(\vec{x}),\vec{y})]
     \label{eq:risk}
@@ -681,6 +681,7 @@
 
 \section{Related Works}
 \label{section:relatedwork}
+In this section, we explore several previous works that has similar objective to this research, that is improving YOLO models to detect small objects.
 
   \subsection{Barunastra ITS' YOLOv4-tiny with added head}%Implementasi YOLOv4-tiny pada \emph{Autonomous Surface Vehicle}}
 

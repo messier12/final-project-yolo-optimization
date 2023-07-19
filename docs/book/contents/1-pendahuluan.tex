@@ -145,12 +145,12 @@
     on YOLOv7 would not lose its real-time detection ability and is still reasonably computable/trainable.
     Otherwise, we can just run a Solomonoff induction on airborne object data and call the result a modification
     of YOLOv7. Thus, we state the following scopes for the problem.
-    \begin{itemize}%[noitemsep,topsep=0pt]
+    \begin{enumerate}%[noitemsep,topsep=0pt]
         \item YOLOv7 is used as the basis for modifications. 
         \item The result of modification must be able to perform inference in real-time with consumer-level GPU.
         \item The modified YOLOv7 is subject to computational resource constraint. The modified model must be trainable within a reasonable duration using the computational resource
         available.%, which is a computer which uses consumer GPU Nvidia RTX 2080 Ti.
-    \end{itemize}
+    \end{enumerate}
     %Optimisasi kemampuan deteksi objek kecil hanya akan dilakukan dengan memodifikasi YOLOv7.
     %Modifikasi yang diaplikasikan tidak boleh menyebabkan YOLOv7 untuk tidak dapat melakukan pendeteksian secara \emph{real time}.
     %Target pengaplikasian model ini adalah untuk AAV dengan \emph{computational resource} yang terbatas sehingga model hasil modifikasi harus cukup ringan untuk hal tersebut.

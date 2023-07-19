@@ -32,6 +32,7 @@ with anchor recalculation, and \verb|YOLOv7-plain| with both mosaic augmentation
 
 The process of applying mosaic augmentation to the dataset is pretty straightforward as YOLOv7's implementation code
 already provide the mosaic augmentation tool. A mosaic augmentation result example can be seen in Figure \ref{fig:mosaic-train}.
+Four images with the labels in numeric form is combined and resized.
   %Proses melakukan augmentasi mosaic cukup \emph{straightforward},
   %augmentasi ini dilakukan pada beberapa data training.
   %Contoh hasil augmentasi dapat dilihat pada gambar \ref{fig:mosaic-train}
@@ -134,7 +135,6 @@ In this section, we experimented with $EIoU$.
 We replaced the original $CIoU$ loss of YOLOv7 to pure $EIoU$ and convexcified version of $EIoU$.
 The convexciation was done by modifying the $EIoU$ loss from $-EIoU$ to $(1-EIoU)^2$ for better
 gradient dynamics during training.
-
 The performance of these modifications can be seen in Table \ref{tbl:loss_function_perf}
 
 \begin{table}[b]
@@ -279,21 +279,25 @@ this modification was able to improve the mAP score by 21.78\%.
 {
 \begin{figure}[p]
   \centering
-  \includegraphics[height=0.33\textheight]{figures/crop_strat_source.png}
+  \includegraphics[height=0.25\textheight]{figures/crop_strat_source.png}
   \caption{Example Image Source for Cropping}
   \label{fig:crop-source}
 \end{figure}
 \begin{figure}[p]
   \centering
-  \begin{subfigure}[][][t]{0.3\textwidth}
-      \includegraphics[width=1\linewidth]{figures/crop_strat_illegal1.png}
+  \begin{subfigure}[][][t]{0.31\textwidth}
+      \fbox{\includegraphics[width=1\linewidth]{figures/crop_strat_illegal1.png}}
+      \caption{Object Only Partially Present in Crop Area}
+  \end{subfigure}\hfill
+  \begin{subfigure}[][][t]{0.31\textwidth}
+      \fbox{\includegraphics[width=1\linewidth]{figures/crop_strat_illegal2.png}}
+      \caption{Object Not Present in Crop Area}
+  \end{subfigure}\hfill
+  \begin{subfigure}[][][t]{0.31\textwidth}
+      \fbox{\includegraphics[width=1\linewidth]{figures/crop_strat_illegal3.png}}
+      \caption{Crop Area Out Of Image Boundary}
   \end{subfigure}
-  \begin{subfigure}[][][t]{0.3\textwidth}
-      \includegraphics[width=1\linewidth]{figures/crop_strat_illegal2.png}
-  \end{subfigure}
-  \begin{subfigure}[][][t]{0.3\textwidth}
-      \includegraphics[width=1\linewidth]{figures/crop_strat_illegal3.png}
-  \end{subfigure}
+
   \caption{Cropping without Strategy (Random Center)}
   \label{fig:crop-illegal}
 \end{figure}
@@ -301,10 +305,10 @@ this modification was able to improve the mAP score by 21.78\%.
   \centering
   \begin{subfigure}[][][t]{0.3\textwidth}
       \includegraphics[width=1\linewidth]{figures/crop_strat_legal1.png}
-  \end{subfigure}
+  \end{subfigure}\hfill
   \begin{subfigure}[][][t]{0.3\textwidth}
       \includegraphics[width=1\linewidth]{figures/crop_strat_legal2.png}
-  \end{subfigure}
+  \end{subfigure}\hfill
   \begin{subfigure}[][][t]{0.3\textwidth}
       \includegraphics[width=1\linewidth]{figures/crop_strat_legal3.png}
   \end{subfigure}
@@ -322,10 +326,10 @@ To generate partitioned data for training, we cropped image with size of $(W/2,H
 based on the location of the objects bounding boxes. Therefore, it can be guaranteed that each image has at least
 an object except for negative class images.
 The procedure for this is described in the following:
-\begin{itemize}[topsep=0pt]
+\begin{enumerate}[topsep=0pt]
   \item Open all images and their labels which consist of list of objects in it.
   \item For each object in an image, define a crop area with the following way:
-  \begin{itemize}
+  \begin{enumerate}
     \item First, define the width and height of crop as a vector $\overrightarrow{crop_{wh}}$
     \item Then, we wanted to find a lower bound and upper bound for the x and y value that the crop center can be placed such that
     it would not cut object bounding box and not out of the boundary of the image itself. For example, for cropping the 
@@ -354,7 +358,7 @@ The procedure for this is described in the following:
       \text{Where}~R &= \text{a random vector with value of its element is within $(0,1)$}\\
       \text{diag}(R) &= \text{a function that convert a vector $R$ to a diagonal matrix with elements of}\\ &\text{ R as its diagonal}\\
     \end{align*}
-  \end{itemize}
+  \end{enumerate}
   \item After the cropping area has been defined, the bounding boxes' values must also be converted to the cropped perspective.
   These conversions were done like the following:
   \begin{align}
@@ -362,7 +366,7 @@ The procedure for this is described in the following:
     \overrightarrow{\hat{c}_{wh}} &= \frac{\overrightarrow{c_{wh}}}{\overrightarrow{crop_{wh}}} \label{eq:partition-wh-conversion}
   \end{align}
   Where the division operation in Equation \ref{eq:partition-wh-conversion} is an element-wise division, meaning the x component of the numerator is divided by the x component of the denominator, likewise for y component.
-\end{itemize}
+\end{enumerate}
 By following this procedure, it is ensured that the cropping for training image would be like in Figure \ref{fig:crop-legal} and not like Figure \ref{fig:crop-illegal}.
 Without using this strategy, the resulting partitioned image for training would have a significant increase in negative class that could reduce the neural network recall ability.
 
@@ -436,22 +440,28 @@ mAP score that is 46.18\%.
 An example of detection result from this model can be seen on Figure \ref{fig:inference-out}.
 As shown in the figure, the model was able to localize and classify the helicopter when it was still very far away.
 
+%\begin{figure}[btp]
+%  \centering
+%  \begin{subfigure}{\textwidth}
+%    \centering
+%    \includegraphics[width = .45\linewidth]{figures/best-1.png}
+%  \end{subfigure}
+%  \vspace{1ex}
+%
+%  \begin{subfigure}{.45\textwidth}
+%    \centering
+%    \includegraphics[width = \linewidth]{figures/best-2.png}
+%  \end{subfigure}\hspace{1ex}
+%  \begin{subfigure}{.45\textwidth}
+%    \centering
+%    \includegraphics[width = \linewidth]{figures/best-3.png}
+%  \end{subfigure}
+%  \caption{Example Prediction Result of The Selected Best Model}
+%  \label{fig:inference-out}
+%\end{figure}
 \begin{figure}[btp]
   \centering
-  \begin{subfigure}{\textwidth}
-    \centering
-    \includegraphics[width = .45\linewidth]{figures/best-1.png}
-  \end{subfigure}
-  \vspace{1ex}
-
-  \begin{subfigure}{.45\textwidth}
-    \centering
-    \includegraphics[width = \linewidth]{figures/best-2.png}
-  \end{subfigure}\hspace{1ex}
-  \begin{subfigure}{.45\textwidth}
-    \centering
-    \includegraphics[width = \linewidth]{figures/best-3.png}
-  \end{subfigure}
+  \includegraphics[width = .8\linewidth]{figures/best-1.png}
   \caption{Example Prediction Result of The Selected Best Model}
   \label{fig:inference-out}
 \end{figure}
@@ -467,6 +477,7 @@ For the experiment, we purposely select 50 images from \textcite{mva2023} with a
 These images will first converted into grayscale to make it similar with the training dataset that was obtained from \textcite{aot_dataset}.
 \textcite{mva2023} images quality are different compared to \textcite{aot_dataset}.
 Although it has higher pixel resolution ($\sim 3000\times 2000$), \textcite{mva2023} images' pixel density is subpar compared to \textcite{aot_dataset}.
+\textcite{mva2023} has $136.6\ ppi$ pixel density while \textcite{aot_dataset} has $187.4\ ppi$.
 Observe Figure \ref{fig:mva}, the object is almost not recognizable even after zooming due to low pixel density, different from Figure \ref{fig:airborne-object-example-1} introduced in section \ref{section:background}.
 
 After running these low pixel density images with the best modified YOLOv7 model, we found that the model was unable to correctly detect the airborne objects in them (mAP = 0\%).
