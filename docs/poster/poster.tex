@@ -80,15 +80,22 @@
 \begin{frame}[t] % The whole poster is enclosed in one beamer frame
 
 \begin{block}{ABSTRACT}
-  Airborne objects appear very small on cameras.
-  YOLOv7 is the state of the art real-time object detector optimized for general object detections.
-  Thus, to detect airborne objects with YOLOv7, modifications are needed to be applied.
-  The purpose of this research is to find a modification solution for YOLOv7 to optimize its small object detection capability especially for airborne objects.
-  Modifications to be applied on YOLOv7 consists of architecture modifications and bag-of-freebies modifications.
-  Architecture modifications consist of neck modification and head layer addition.
-  Bag-of-freebies modifications consist of mosaic data augmentation dan active anchor recalculation.
-  These modifications will be combined one with another and have their performance tested.
-  Modifications that produces model with the highest mAP score on airborne objects dataset will be chosen as the optimization solution of this research.
+  In this research, we present an attempt to improve the detection capability of YOLOv7 for airborne objects. 
+  Airborne objects appear considerably small in camera images when they are located at a considerable distance from the camera. 
+  However, due to their high speed of movement, it is crucial to detect them while they are still far away. 
+  Therefore, to effectively detect these objects, YOLOv7 needs to be optimized for small objects.
+  To address this challenge, we proposed several modifications that include changes in the architecture (adding an extra detection head, modifying the feature-map source, and replacing the detection head with a detached anchor-free head), application of bag-of-freebies techniques (anchor recalculation and mosaic augmentation), and change in the inference process (partitioning the image and performing inference on each partition).
+  Through comprehensive experimentation, we have discovered that the combination of replacing the detection head with a detached anchor-free head, and performing inference on partitions yields the most promising results, with a significant increase in mean average precision (mAP) of 46.18\% while still maintaining real-time inference speed (greater than 10 FPS).
+  This improvement is notably higher compared to the unmodified plain YOLOv7, which achieved a mAP score of 0\%.
+  %Airborne objects appear very small on cameras.
+  %YOLOv7 is the state of the art real-time object detector optimized for general object detections.
+  %Thus, to detect airborne objects with YOLOv7, modifications are needed to be applied.
+  %The purpose of this research is to find a modification solution for YOLOv7 to optimize its small object detection capability especially for airborne objects.
+  %Modifications to be applied on YOLOv7 consists of architecture modifications and bag-of-freebies modifications.
+  %Architecture modifications consist of neck modification and head layer addition.
+  %Bag-of-freebies modifications consist of mosaic data augmentation dan active anchor recalculation.
+  %These modifications will be combined one with another and have their performance tested.
+  %Modifications that produces model with the highest mAP score on airborne objects dataset will be chosen as the optimization solution of this research.
 \end{block}
 
 \begin{columns}[t] % The whole poster consists of two major columns, each of which can be subdivided further with another \begin{columns} block - the [t] argument aligns each column's content to the top
@@ -115,48 +122,102 @@
   is about the problem of sensing and avoiding (SAA) airborne objects like bird, airplane, helicopter, and other.
   Camera is a popular choice of sensor for this task due to its cheaper price and small payload.
   One problem however, airborne objects appear very small on cameras.
-  The size is about 4-1000 pixels in a 20 million pixels camera.
+  In Airborne Object Tracking Dataset 2023, the size is about 4-1000 pixels in a 20 million pixels camera.
   Detecting such small objects is very challenging.
 
-  In this study, we will try to optimize YOLOv7 to solve this challenge.
-  YOLOv7 is an general real-time object detection architecture with the highest accuracy at the time its paper was published (July 2022).
-  YOLOv7 can be scaled down so that it can run on edge computing devices such as Jetson TX2.
+  In this research, we will try to optimize YOLOv7 to solve this challenge.
+  YOLOv7 is an general real-time object detection architecture with the highest accuracy at the time this research was proposed (September 2022).
+  YOLOv7 can be scaled down so that it can run on consumer GPU or edge computing devices.
   Its high accuracy and low computational cost were the reason why YOLOv7 was chosen for this study.
 
   To optimize YOLOv7, we will carry out modifications to the bag-of-freebies and architecture of YOLOv7.
   These modifications however must not cause YOLOv7 lose its ability to detect objects in real-time.
-
 \end{block}
 
 %----------------------------------------------------------------------------------------
 %	MATERIALS
 %----------------------------------------------------------------------------------------
 
-\begin{block}{Related Works}
-  There are some similar attempts of modifying YOLO architecture to improve its object detection capability.
-  \begin{itemize}
-    \item YOLOZ
-    \begin{itemize}
-      \item Based on YOLOv5.
-      \item Changed YOLOv5 backbone to DenseNet.
-      \item Changed the neck to biFPN.
-      \item Optimized to detect autonomous racing cones.
-    \end{itemize}
-    \item exYOLO
-    \begin{itemize}
-      \item Based on YOLOv3.
-      \item Added Receptive Field Block prior to feature fusion in the neck.
-    \end{itemize}
-  \end{itemize}
+\begin{block}{Methodology: Modification Candidates}
+\begin{itemize}
+  \item {Mosaic Augmentation}
 
-\end{block}
+  We add mosaic augmentation to the training dataset to improve small object detection.
+  %Mosaic Augmentation was reported to increase the mAP score of the model in
+  %YOLOv4 and YOLOv5. This augmentation is simple to implement. Therefore,
+  %we included mosaic augmentation in our set of modifications combine.
+  
+  \item {Anchor Recalculation}
 
-\begin{block}{Methodology: Flow of Work}
+  We performed anchor recalculation to have anchors that better fit the airborne object dataset.
+  %Anchor points that were available on the implementation code of YOLOv7
+  %are optimized for COCO2017 dataset. As the AOT dataset distribution
+  %are heavily skewed, the anchors need to be adjusted to match the data distribution.
+  %For this reason, anchor recalculation is included in our set of modifications.
+  
+  \item {EIoU localization loss}
 
-\begin{figure}
-\includegraphics[width=\linewidth]{metodologi.png}
-\end{figure}
+  We replace the original CIoU loss of YOLOv7 to EIoU.
 
+  %The localization loss used in YOLOv7 is CIoU.
+  %Both EIoU and CIoU are designed to solve the vanishing gradient problem of the standard
+  %IoU. The advantage EIoU has over CIoU is that when the bounding boxes intersect, EIoU
+  %behaves like the standard IoU while CIoU doesn't. The metrics used to evaluate the models
+  %like mAP are based on the standard IoU, thus it's better for the loss function to mimic the metric \cite{eiou}.
+  %EIoU's author reported that EIoU performs better on Faster-RCNN than CIoU, making this modification
+  %a good candidate to be tested on YOLOv7.
+  
+  \item {Reroute Neck Feature-map Source}
+
+  We reroute the source of feature map for the head to an earlier scale of prediction to reduce the length of data propagation to the neural network, which would lead to fewer information loss.
+  %%\begin{figure}[htbp]
+  %%\centerline{\includegraphics[width=0.4\textwidth]{../book/figures/neck-move-back.pdf}}
+  %%\caption{Rerouting Neck Feature-map Source}
+  %%\label{fig:neck-move-back}
+  %%\end{figure}
+  %%The source feature map that was fed on the feature pyramid can be rerouted 
+  %%to a shallower layer of the backbone (look at Fig. \ref{fig:neck-move-back}). 
+  %%By using the shallower layer, the input data will have a shorter propagation through the neural network.
+  %%This way, less information will be lost through propagation layer-by-layer.
+
+  %The shallower layer (layers that are closer to the input) has more 
+  %information about the image, albeit have less abstraction. 
+  %By doing this, we avoid the loss of information.
+  
+  \item {Additional Detection Layer}
+
+  We add a head detection layer to the neural network, increasing from the original 3 to 4.
+  %\begin{figure}[htbp]
+  %\centerline{\includegraphics[width=0.4\textwidth]{../book/figures/addmorehead.pdf}}
+  %\caption{Adding More Detection Layer}
+  %\label{fig:add-head}
+  %\end{figure}
+  %An additional detection layer enable YOLOv7 to detect at more scales. With more scales,
+  %the detection layers can be more specialized to specific cluster of data.
+  %This approach has been tried in \cite{barunastra} by increasing the number of
+  %detection layer from 2 to 3 in YOLOv4-tiny. In this experiment, we will increase
+  %the number of detection layer from 3 to 4.
+
+  \item {Replacing Detection Layer to Decoupled Anchor-Free Head}
+
+  We replace the head layer from anchor head to decoupled anchor-free head of YOLOv6.
+  %One of the advantage of anchor-free model to anchor-based model
+  %is that it decreases the amount of heuristic tuning parameter as we don't
+  %have to define the anchors. \cite{yolox}\cite{yolov6} reported that using anchor-free
+  %head increases the accuracy and decreases the number of parameters in the model,
+  %resulting in a faster and more accurate model.
+  
+  \item {Partitioning Image for Inference}
+
+  We do detection by partitioning the image into 4.
+  %Partitioning the image has the potential to improve the accuracy of small object detection.
+  %By partitioning an image into multiple smaller images as shown in Fig. \ref{fig:partition}, 
+  %the down-scaling factor of the original image to neural network input size is greatly reduced,
+  %thereby reducing the loss of information. This approach allows the finer detail like small objects in the data.
+  
+  %One challenge with partitioning is the latency. As the neural network has to perform detection on each partition, the
+  %total inference time is multiplied by the number of partitions.
+\end{itemize}
 \end{block}
 
 
@@ -221,68 +282,75 @@
 %----------------------------------------------------------------------------------------
 %	RESULTS
 %----------------------------------------------------------------------------------------
-\begin{block}{Methodology: Step by Step}
-  To conduct this study, first the dataset must be prepared to conform with format understandable by YOLOv7.
-  Then, to aid and accelerate the process of this study, we will automate the training process.
-  Modification configurations will be made and then inputted to the trainer. 
-  These modifications might or might not include a combinations of modifications candidates.
-  The trainer will built neural network according to the modification configuration and train them.
-  The traned neural networks will be analyzed for their performance and to look for potential modifications that can be made to optimize the neural network more.
-  If such modification was found, we will create a configuration for it and then feed it to the trainer.
-  Finally, among all of the modifications, the best model will be chosen.
-  The best model will be decided according to their mAP score.
-\end{block}
+%\begin{block}{Methodology: Step by Step}
+%  To conduct this study, first the dataset must be prepared to conform with format understandable by YOLOv7.
+%  Then, to aid and accelerate the process of this study, we will automate the training process.
+%  Modification configurations will be made and then inputted to the trainer. 
+%  These modifications might or might not include a combinations of modifications candidates.
+%  The trainer will built neural network according to the modification configuration and train them.
+%  The traned neural networks will be analyzed for their performance and to look for potential modifications that can be made to optimize the neural network more.
+%  If such modification was found, we will create a configuration for it and then feed it to the trainer.
+%  Finally, among all of the modifications, the best model will be chosen.
+%  The best model will be decided according to their mAP score.
+%\end{block}
 
 
-\begin{block}{Modifications Candidates}
-  \begin{itemize}
-    \item Bag-of-Freebies Modifications
-    \begin{itemize}
-      \item On-training Anchor Box Recalculation
-      A layer will be added in the neural network to learn the optimal size
-      for anchor box. 
-      In most YOLO architectures, the anchor box are constant and calculated prior to training.
-      \item Mosaic Augmentation
-      Mosaic Augmentations has been proven to increase the object detection accuracy in YOLOv4 and YOLOv5.
-    \end{itemize}
-    \item Architecture Modifications
-    \begin{itemize}
-      \item Neck Modifications
-      Some layer of the neck will be modified to take input from a more shallow layer of the backbone of YOLOv7.
-      \item Head layer addition
-      Another head layer will be added so that YOLOv7 can detect on a higher scale.
-    \end{itemize}
-  \end{itemize}
-\end{block}
+%\begin{block}{Modifications Candidates}
+%  \begin{itemize}
+%    \item Bag-of-Freebies Modifications
+%    \begin{itemize}
+%      \item On-training Anchor Box Recalculation
+%      A layer will be added in the neural network to learn the optimal size
+%      for anchor box. 
+%      In most YOLO architectures, the anchor box are constant and calculated prior to training.
+%      \item Mosaic Augmentation
+%      Mosaic Augmentations has been proven to increase the object detection accuracy in YOLOv4 and YOLOv5.
+%    \end{itemize}
+%    \item Architecture Modifications
+%    \begin{itemize}
+%      \item Neck Modifications
+%      Some layer of the neck will be modified to take input from a more shallow layer of the backbone of YOLOv7.
+%      \item Head layer addition
+%      Another head layer will be added so that YOLOv7 can detect on a higher scale.
+%    \end{itemize}
+%  \end{itemize}
+%\end{block}
 
-\begin{block}{Sampled Dataset Distribution}
+\begin{block}{Result}
+\begin{itemize}
+  \item Mosaic Augmentation and Anchor Recalculation
+    \begin{table}
+    \small
+    \input{../book/tables/mosaic-reanchor-perf-paper.tex}
+    \end{table}
+  \item EIoU Localization Loss
+    \begin{table}
+    \small
+    \input{../book/tables/loss-functions.tex}
+    \end{table}
+  \item {Reroute Neck Feature-map Source}
+    \begin{table}
+    \small
+    \input{../book/tables/neck-backbone.tex}
+    \end{table}
+  \item {Additional Detection Layer}
+    \begin{table}
+    \small
+    \input{../book/tables/add-head.tex}
+    \end{table}
+  \item {Replacing Detection Layer to Decoupled Anchor-Free Head}
+    \begin{table}
+    \small
+    \input{../book/tables/anchor-free-perf.tex}
+    \end{table}
+  \item {Partitioning Image for Inference}
+    \begin{table}
+    \small
+    \input{../book/tables/partition-perf.tex}
+    \end{table}
+\end{itemize}
 
-\begin{table}
-\small
-\begin{tabular}{|c|c|c|c|c|c|c|}
-        \hline
-        Division &Total & \multicolumn{4}{c}{Percentage}&\\
-                           \cline{3-7}
-                  &image& Airplane & Helicopter & Bird & \emph{Other} & Negative\\
-        \hline
-        Train  &54k &23,75\%  &23,75\%     &23,75\% &23,75\%       &5\%\\
-        \hline                                              
-        Valid&3k  &20\%     &20\%        &20\%    &20\%          &20\%\\
-        \hline                                                           
-        Test      &3k  &20\%     &20\%        &20\%    &20\%          &20\%\\
-        \hline
-\end{tabular}
-%  \begin{tabular}{l l l}
-%  \toprule
-%  \textbf{Treatments} & \textbf{Response 1} & \textbf{Response 2}\\
-%  \midrule
-%  Treatment 1 & 0.0003262 & 0.562 \\
-%  Treatment 2 & 0.0015681 & 0.910 \\
-%  Treatment 3 & 0.0009271 & 0.296 \\
-%  \bottomrule
-%  \end{tabular}
-\end{table}
-
+From the result, we can conclude that using anchor-free head with mosaic augmentation and partitioning, we can produce the greatest mAP score of 46.18\%.
 \end{block}
 
 %------------------------------------------------
@@ -303,17 +371,17 @@
 % %	CONTACT INFORMATION
 % %----------------------------------------------------------------------------------------
 % 
-\setbeamercolor{block title}{fg=black,bg=orange!70} % Change the block title color
-
-\begin{block}{Contact Information}
-
-\begin{itemize}
-\item Implementation: \href{https://github.com/messier12/final-project-yolo-optimization.git}{https://github.com/messier12/final-project-yolo-optimization.git}
-\item Email: \href{mailto:solang.dion@gmail.com}{solang.dion@gmail.com}
-\item Phone: +62 813 2752 2023
-\end{itemize}
-
-\end{block}
+%\setbeamercolor{block title}{fg=black,bg=orange!70} % Change the block title color
+%
+%\begin{block}{Contact Information}
+%
+%\begin{itemize}
+%\item Implementation: \href{https://github.com/messier12/final-project-yolo-optimization.git}{https://github.com/messier12/final-project-yolo-optimization.git}
+%\item Email: \href{mailto:solang.dion@gmail.com}{solang.dion@gmail.com}
+%\item Phone: +62 813 2752 2023
+%\end{itemize}
+%
+%\end{block}
 
 %----------------------------------------------------------------------------------------
 

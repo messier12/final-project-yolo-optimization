@@ -10,7 +10,11 @@
 \usepackage{float}
 \usepackage{caption}
 \usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{subcaption}
+\usepackage{adjustbox}
 \usepackage{url}
+
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
@@ -121,13 +125,13 @@ In this research, we attempt to optimize YOLOv7 to be able to perform airborne
 object detection. YOLOv7 was chosen due to its ability to perform real-time
 object detection accurately even under complex outdoor environment. 
 At the time of execution of this research, YOLOv7 had the highest mAP score amongst all published real-time object detector \cite{yolov7}.
-This research was not about finding the ultimate solution for airborne object detection, but rather an exploration of methods that can be used
+This research is not about finding the ultimate solution for airborne object detection, but rather an exploration of methods that can be used
 to enhance YOLOv7 on detecting small objects, which extends to airborne objects.
 
 To optimize YOLOv7, we defined a set of modification to be applied to YOLOv7
 that includes modification to its neural network architecture, some applications
 of bag-of-freebies, and modification on the way the neural network perform inference. 
-To find the best probably suboptimal solution, we will try combinations of the modification within the set, and choose the one with the highest mAP score.
+To find the best probably optimal solution, we will try combinations of the modification within the set, and choose the one with the highest mAP score.
 
 We will be using The Airborne Object Tracking (AOT) Dataset \cite{aot_dataset} to train
 and test the modification combinations. AOT Dataset consist of aerial vehicle flights
@@ -157,29 +161,35 @@ exYOLO modified
 the neck of YOLOv3 by adding Receptive Field Block before combining the feature maps.
 These modifications produce a higher mAP score than plain YOLOv3 on
 PASCAL VOC2007 dataset.
+
 \subsection{Barunastra ITS' Object Detection System 2022}
 %TODO:this section
-asdfasdfasdf
+In \cite{barunastra}, a variant of YOLOv4-tiny was applied for the object detection system in
+an Autonomous Surface Vehicle. This variant of YOLOv4-tiny added an additional detection layer
+to the architecture, making the originally 2-head architecture of YOLOv4 tiny become 3-head.
+This change in the architecture improved the detection capability, especially for small object, without
+sacrificing latency too much.
+
 
 \section{Experimental Setup}
 
-\subsection{Instruments}
+\subsection{Computational Resource and Basis Model}
 \label{section:instruments}
-To conduct the experiment, we use Nvidia RTX 2080 Ti GPU which has 11 GB of VRAM.
-We performed a pilot test using this hardware and found that
+To conduct the experiment, we utilized Nvidia RTX 2080 Ti GPU which has 11 GB of VRAM.
+We performed a pilot test with this hardware and found that
 with this limited amount of memory, training large YOLOv7 model such as W6, E6, and E2E
-is infeasible. 
+is infeasible. Thus, we chose normal YOLOv7 with input size of 1600 and training batch-size of 1 as the basis model
+for modification as it was the model with the largest input size that can be trained with enough free space in the 11 GB VRAM for minor architectural modifications.% and has a large input size.
 
 %Not to add the large input size of the image. For this reason,
 %the architecture that is chosen as the baseline for modification is the normal  size
 %YOLOv7. The model will be trained with input size of $1600\times1600$ with batch size 1.
 
-Furthermore, the dataset that will be used to train the model will be limited to 400 images.
-The sampling strategy for the dataset will be explained in section \ref{section:dataset}.
-In a pilot test of the experiment, we found that to train a model for 300 epochs with 400 images
-with this setup, it will take around 20 hours. This is the reason why we limit the 
-amount of images to 400 and epoch to 300.
-
+%Furthermore, the dataset that will be used to train the model will be limited to 400 images.
+%The sampling strategy for the dataset will be explained in section \ref{section:dataset}.
+%In a pilot test of the experiment, we found that to train a model for 300 epochs with 400 images
+%with this setup, it will take around 20 hours. This is the reason why we limit the 
+%amount of images to 400 and epoch to 300.
 \subsection{Dataset}
 \label{section:dataset}
 The AOT dataset, consist of more than 11 TB images of drone camera footage.
@@ -196,26 +206,24 @@ described in Table \ref{tbl:datasetsamplingdist}.
   \label{tbl:datasetsamplingdist}
   %\resizebox{\columnwidth}{!}{%
   \tabcolsep4pt
-  \begin{tabular}{c c c c c c c}
-    \toprule[1.5pt]
-              &Total & \multicolumn{5}{c}{Percentage}\\
-%                       \cline{3-7}
-              &Images&Airplane & Helicopter & Bird & Drone & Negative\\
-    \midrule
-    Training  &400 &23.75\%    &23.75\%     &23.75\% &23.75\%       &5\%\\
-    \midrule
-    Validation&100  &20\%      &20\%        &20\%    &20\%          &20\%\\
-    \midrule
-    Test      &200  &20\%      &20\%        &20\%    &20\%          &20\%\\
-    \bottomrule[1.5pt]
-  \end{tabular}%
-  %}
+  \input{../book/tables/dataset-sampling-dist.tex}
 \end{table}
 
+\subsection{Training Setup and Model Selection}
+To train the YOLOv7 modified according to modification candidates in \ref{section:modifications},
+we used images sampled as explained in \ref{section:dataset}. Each modification  was trained with 300 epochs at batch-size 1.
+For validation, the experiment was repeated with a resampled data thrice, and have the average reported.
+
+We define the best model as the model with the highest mAP@50 score.
+However, to preserve the real-time capability of the selected model, models that will be considered
+are only the model that can perform inference with speed more than 10 FPS.
+
+mAP@50 was chosen instead of mAP@50:95 because we don't expect for the neural network to have a tightly fit bounding box prediction.
+We consider a loose 50\% IoU coverage as good enough for a detection.
 
 \subsection{Modifications}
 \label{section:modifications}
-We proposed some modifications that can be applied to YOLOv7
+Here we present the proposed modification candidates for YOLOv7
 
 \subsubsection{Mosaic Augmentation}
 Mosaic Augmentation was reported to increase the mAP score of the model in
@@ -237,21 +245,23 @@ like mAP are based on the standard IoU, thus it's better for the loss function t
 \cite{eiou} reported that EIoU performs better on Faster-RCNN than CIoU, making this modification
 a good candidate to be tested on YOLOv7.
 
-\subsubsection{Modify Neck Feature-map Source}
+\subsubsection{Reroute Neck Feature-map Source}
 \begin{figure}[htbp]
-\centerline{\includegraphics[width=0.4\textwidth]{../book/figures/neck-move-back.png}}
-\caption{Moving Neck Feature-map Source}
+\centerline{\includegraphics[width=0.4\textwidth]{../book/figures/neck-move-back.pdf}}
+\caption{Rerouting Neck Feature-map Source}
 \label{fig:neck-move-back}
 \end{figure}
-The source feature map that was fed on the feature pyramid can be moved
+The source feature map that was fed on the feature pyramid can be rerouted 
 to a shallower layer of the backbone (look at Fig. \ref{fig:neck-move-back}). 
-The shallower layer (layers that are closer to the input) has more 
-information about the image, albeit have less abstraction. 
-By doing this, we avoid the loss of information.
+By using the shallower layer, the input data will have a shorter propagation through the neural network.
+This way, less information will be lost through propagation layer-by-layer.
+%The shallower layer (layers that are closer to the input) has more 
+%information about the image, albeit have less abstraction. 
+%By doing this, we avoid the loss of information.
 
 \subsubsection{Additional Detection Layer}
 \begin{figure}[htbp]
-\centerline{\includegraphics[width=0.4\textwidth]{../book/figures/add-more-upsampling.png}}
+\centerline{\includegraphics[width=0.4\textwidth]{../book/figures/addmorehead.pdf}}
 \caption{Adding More Detection Layer}
 \label{fig:add-head}
 \end{figure}
@@ -263,9 +273,23 @@ the number of detection layer from 3 to 4.
 \subsubsection{Replacing Detection Layer to Decoupled Anchor-Free Head}
 One of the advantage of anchor-free model to anchor-based model
 is that it decreases the amount of heuristic tuning parameter as we don't
-have to define the anchors. \cite{yolox} reported that using anchor-free
+have to define the anchors. \cite{yolox}\cite{yolov6} reported that using anchor-free
 head increases the accuracy and decreases the number of parameters in the model,
 resulting in a faster and more accurate model.
+
+\subsubsection{Partitioning Image for Inference}
+Partitioning the image has the potential to improve the accuracy of small object detection.
+By partitioning an image into multiple smaller images as shown in Fig. \ref{fig:partition}, 
+the down-scaling factor of the original image to neural network input size is greatly reduced,
+thereby reducing the loss of information. This approach allows the finer detail like small objects in the data.
+
+One challenge with partitioning is the latency. As the neural network has to perform detection on each partition, the
+total inference time is multiplied by the number of partitions.
+\begin{figure}
+  \centerline{\includegraphics[width=\linewidth]{../book/figures/crop_strat.png}}
+  \caption{Image Partitioning}
+  \label{fig:partition}
+\end{figure}
 
 \section{Result}
 \subsection{Initial Performance}
@@ -289,7 +313,8 @@ In this section, we will compare 3 modification combination
     \item YOLOv7-plain + Anchor Recalculation
     \item YOLOv7-plain + Mosaic + Anchor Recalculation
 \end{itemize}
-We calculated the anchors using k-means clustering algorithm on the
+We named these models as \verb|YOLOv7+M|, \verb|YOLOv7+AR|, and \verb|YOLOv7+MAR|.
+We calculated the anchors using k-means clustering algorithm with log-distance function on the
 training dataset. The result of the recalculation can be seen on Fig. \ref{fig:anchor-recalculated}.
 As can be seen on the figure, 8 out of 9 of the old anchor points are placed in the first quadrant
 of the median line. This means that those 8 anchors responsible only for 25\% of the dataset, which
@@ -300,127 +325,156 @@ point responsible to it.
   \caption{Mosaic Augmentation and Anchor Recalculation Performance}
   \label{tbl:mosaic_reanchor_performance}
   \vspace{-1ex}
-  \begin{tabular}{ l l c }
-    \toprule[1.5pt]
-    No & Modification        &mAP@50 \\
-    \midrule
-    0  & \textbf{YOLOv7-plain               }& 0\%\\
-    1  & \textbf{YOLOv7-plain + mosaic                     }& 0\%\\
-    2  & \textbf{YOLOv7-plain + anchor recalculation         }& 0\%\\
-    3  & \textbf{YOLOv7-plain + mosaic + anchor recalculation}& \textbf{11,2}\%\\
-    \midrule
-       & Improvement                         & \textbf{\textcolor{green}{+11,2\%}}\\
-    \bottomrule[1.5pt]
-  \end{tabular}
+  \input{../book/tables/mosaic-reanchor-perf.tex}
 \end{table}
-Table \ref{tbl:mosaic_reanchor_performance} shows that the model was only able
-to detect something on the test dataset after being applied mosaic augmentation
-and anchor recalculation.
 
-This model will be used as the basis for further 
+Table \ref{tbl:mosaic_reanchor_performance} shows that the model was only able
+to detect something on the test dataset after being applied both mosaic augmentation
+and anchor recalculation.
+For that reason, this model will be used as the basis for further 
 modification, as it was the only model that could detect objects in test dataset.
-For this reason, this combination of modification shall be called \verb*|YOLOv7-base|
-from this point on.
+Therefore, it should be assumed that the modification presented in
+further sections is composed of mosaic augmentation and anchor recalculation, 
+in addition to the respective modification that was applied, unless explicitly stated otherwise.
 
 \subsection{EIoU Localization Loss}
 In addition to just using EIoU, we also tested EIoU with its convexication technique 
 mentioned in \cite{eiou}. The result can be seen on Table \ref{tbl:loss_function_perf}
+It turns out that EIoU only worsen the performance of YOLOv7 in AOT dataset.
+One possible reason for this is that: although CIoU have residue of regularization terms when the bounding boxes intersect,
+these regularization helped the predicted box to fit faster. EIoU has a weaker values when the boxes not intersect.
+Perhaps, on a longer training epoch, the EIoU can outperform CIoU.
 \begin{table}[htbp]
   \centering
   \captionof{table}{EIoU Localization Loss Performance}
   \label{tbl:loss_function_perf}
   \vspace{-1ex}
-  \begin{tabular}{ l l c }
-    \toprule[1.5pt]
-    No & Modifikasi        &mAP@50 \\
-    \midrule
-    0  & \textbf{yolov7-base + CIoU (original)}     & \textbf{11,2}\%\\
-    1  & \textbf{yolov7-base + EIoU}                & 0\%\\
-    2  & \textbf{yolov7-base + EIoU + Convexication} & 4.92\%\\
-    \midrule
-       & Improvement                                & \textbf{\textcolor{red}{-6.28\%}}\\
-    \bottomrule[1.5pt]
-  \end{tabular}
+  \input{../book/tables/loss-functions.tex}
 \end{table}
-It turns out that EIoU only worsen the performance of YOLOv7 in AOT dataset.
 
-\subsection{Modify Neck Feature-map Source}
+\subsection{Rerouting Neck Feature-map Source}
 \begin{figure}[htbp]
-\centerline{\includegraphics[width=0.5\textwidth]{../book/figures/deeperconn.png}}
+%\centerline{\includegraphics[width=0.5\textwidth]{../book/figures/deeperconn.png}}
+  \begin{subfigure}[][][b]{0.5\linewidth}
+    \includegraphics[width=1\linewidth]{../book/figures/deeperconn-before.png}
+    \caption{Before Rerouting}
+    \label{fig:deeperconn-before}
+  \end{subfigure}\hfill%\hspace{4em}
+  \begin{subfigure}[][][t]{0.5\linewidth}
+    \includegraphics[width=1\linewidth]{../book/figures/deeperconn-after.png}
+    \caption{After Rerouting}
+    \label{fig:deeperconn-after}
+  \end{subfigure}
 \caption{Moving Feature-map Source}
 \label{fig:deeperconn}
 \end{figure}
-We move the connection of the first pyramid from scale 8 to scale 4 of the backbone.
+We rerouted connection of the first pyramid from scale 8 to scale 4 of the backbone.
 That is from layer 24 to layer 11 of the configuration file.
 The moving of this connection is illustrated in Fig. \ref{fig:deeperconn}.
 The performance of this modification can be seen on Table \ref{tbl:neck_backbone_perf}.
+This modification managed to increase the mAP score by 2.98\%.
+
 \begin{table}[htbp]
   \centering
-  \caption{Moving Feature-map Source Performance}
+  \caption{Rerouting Feature-map Source Performance}
   \label{tbl:neck_backbone_perf}
   \vspace{-1ex}
-  \begin{tabular}{ l l c }
-    \toprule[1.5pt]
-    No & Modification                                      &mAP@50 \\
-    \midrule
-    0  & \textbf{yolov7-base}                            & 11.2\%\\
-    1  & \textbf{yolov7-base + modifikasi neck-backbone} & \textbf{14.09\%}\\
-    \midrule
-       & Improvement                                & \textbf{\textcolor{green}{+2.98\%}}\\
-    \bottomrule[1.5pt]
-  \end{tabular}
+  \input{../book/tables/neck-backbone.tex}
 \end{table}
-This modification managed to increase the mAP score by 2.98\%.
-For the purpose of comparison with other modification combinations, we shall call
-this model \verb*|YOLOv7-moveconnection| from this point on.
 
 
 \subsection{Adding Extra Detection Layer}
 \begin{figure}[htbp]
-\centerline{\includegraphics[width=0.4\textwidth]{../book/figures/addhead.png}}
+\centerline{\includegraphics[width=0.3\textwidth]{../book/figures/addheadn.png}}
 \caption{Adding More Detection Layer}
 \label{fig:add-head-2}
 \end{figure}
 We add an extra feature pyramid stage connected to scale 4 of the backend, and put a detection head on it.
 This modification is illustrated in Fig. \ref{fig:add-head-2}. We find that this modification
-perform worse than YOLOv7-moveconnection as seen on Table \ref{tbl:addhead}.
+perform worse than rerouting as seen on Table \ref{tbl:addhead}.
 \begin{table}[htbp]
   \centering
   \captionof{table}{Performance of Adding Extra Detection Layer}
   \label{tbl:addhead}
   \vspace{-1ex}
-  \begin{tabular}{ l l c }
-    \toprule[1.5pt]
-    No & Modifikasi                                 &mAP@50 \\
-    \midrule
-    0  & \textbf{yolov7-base}                       & \textbf{11.2\%}\\
-    1  & \textbf{yolov7-base + additional head}       & 5.19\%\\
-    \midrule
-       & Improvement                                & \textbf{\textcolor{red}{-6\%}}\\
-    \bottomrule[1.5pt]
-  \end{tabular}
+  \input{../book/tables/add-head.tex}
 \end{table}
 
 \subsection{Decoupled Anchor-free Head}
-We changed the head of the model to anchor-free head with Task Aligned Labelling.
-It resulted in 0 mAP.
+We changed the head of the model to anchor-free head with Task Aligned Labelling like in \cite{yolov6}.
+After some fixing numerical instability due to division by very small object by clipping the values, we found a dramatic increase in mAP as seen on Table \ref{tbl:anchorfree}.
+\begin{table}[htbp]
+  \centering
+  \captionof{table}{Anchor-free Head Performance}
+  \label{tbl:anchorfree}
+  \begin{adjustbox}{width=\linewidth}
+  \input{../book/tables/anchor-free-perf.tex}
+  \end{adjustbox}
+  
+\end{table}
+\subsection{Image Partitioning}
+We partitioned the images into 4 equal-sized images.
+For training data, to reduce the number of negative samples that can impact the recall ability of the neural network,
+we cropped the images in a way that the objects is within the cropping area for positive sample images and randomly cropping for negative sample images.
+This cropping strategy was only done in the training set. For the test set, the cropping is done by dividing the image into four equal quadrants.
 
+Since the partitioned image has smaller dimension, we experimented with smaller neural network input size.
+The performance is shown on Table \ref{tbl:partition}. We can see that \texttt{YOLOv7+MAR + anchor-free} with input size 960 produced the greatest mAP score amongst other model when the images are partitioned into 4.
 
+\begin{table}[htbp]
+  \centering
+  \captionof{table}{Modification Performance on Partitioned Images}
+  \label{tbl:partition}
+  \input{../book/tables/partition-perf.tex}
+\end{table}
+
+\subsection{Latency}
+Using Nvidia RTX 2080 Ti, we can obtain the speed of inference for each modification in Table \ref{tbl:latency}
+We can see that every modified model can perform more than 10 inference per second.
+Therefore, all the modifications can be considered for model selection.
+
+As an additional information, the floating point operations for an inference of each models can be seen on table \ref{tbl:gflops}
+\begin{table*}
+  \centering
+  \captionof{table}{Inference Speed of Modified Models}
+  \label{tbl:latency}
+  \input{../book/tables/latency.tex}
+\end{table*}
+
+\begin{table*}
+  \centering
+  \captionof{table}{FLOPs for Architectural Modifications with Different Input Sizes}
+  \label{tbl:gflops}
+  \input{../book/tables/gflops.tex}
+\end{table*}
 \section{Conclusion}
-From the result of the experiment, we can conclude that, from the set of modification
-candidates proposed in this research, we found that the combination of mosaic augmentation,
-anchor recalculation, and modifying the connection of neck and backbone produces a model
-with the greatest mAP score which is 14.09\%.
+From the conducted experiment, we found that the best modification amongst the 
+proposed modification candidates are the combination of mosaic augmentation, anchor-free head, and image partition.
+The resulting modified model was able to produce mAP@50 score of 46.18\% on the test set while still able to
+perform detection faster than 10 FPS on consumer GPU Nvidia RTX 2080 Ti.
+%From the result of the experiment, we can conclude that, from the set of modification
+%candidates proposed in this research, we found that the combination of mosaic augmentation,
+%anchor recalculation, and modifying the connection of neck and backbone produces a model
+%with the greatest mAP score which is 14.09\%.
 
 \section{Discussion}
-As of today, the modification proposed in this research only includes the modification that
-doesn't significantly impact the latency of the model. Some modification like partitioning
-the image and perform detection on each of partition could produce a great increase in mAP
-as the objects are magnified (number of partition) times. The latency also multiplied
-by the number of partition. But we can make the model faster by down-scaling the model.
-Thus, it is needed to find the optimal combination between down-scaling and number of partition
-that can produce a model that have high accuracy, but still have a latency that can be categorized
-as real-time.
+We have explored different ways to improve the detection of airborne objects in YOLOv7.
+However, there are still more things we can try in the future to make it even better.
+One idea is to use attention mechanisms, which help the model focus on important features related to airborne objects.
+We could also investigate transfer learning and domain adaptation to leverage existing knowledge and adapt the model to specific situations.
+Overall, there are still many opportunities for further research and enhancements in airborne object detection using YOLOv7.
+
+%There are many more modifications that could be tried for this problem.
+%For example, the uses of attention mechanism (\cite{attention}) have not been explored in this research.
+%We will leave the experiment of these kinds of modification for future research.
+%As of today, the modification proposed in this research only includes the modification that
+%doesn't significantly impact the latency of the model. Some modification like partitioning
+%the image and perform detection on each of partition could produce a great increase in mAP
+%as the objects are magnified (number of partition) times. The latency also multiplied
+%by the number of partition. But we can make the model faster by down-scaling the model.
+%Thus, it is needed to find the optimal combination between down-scaling and number of partition
+%that can produce a model that have high accuracy, but still have a latency that can be categorized
+%as real-time.
 
 
 
